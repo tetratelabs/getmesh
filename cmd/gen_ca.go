@@ -21,9 +21,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
-	"unicode"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -114,49 +112,14 @@ func newGenCACmd() *cobra.Command {
 	genCAProviderParameters(genCACmd.Flags())
 	genCAx509CertRequestParameters(genCACmd.Flags())
 
-	genCACmd.SetHelpFunc(helpText())
-
 	return genCACmd
 }
 
-func helpText() func(*cobra.Command, []string) {
-
-	fmt.Print("testing that we called custom help function")
-
-	funcs := map[string]interface{}{
-		"trimTrailingWhitespaces": func(s string) string { return strings.TrimRightFunc(s, unicode.IsSpace) },
-	}
-	helptxt := `{{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}
-
-{{end}}{{if or .Runnable .HasSubCommands}}{{.UsageString}}{{end}}
-
-{{if gt (len .Example) 0 }}Examples:
-{{.Example}}{{end}}`
-
-	tmpl := template.New("help")
-	tmpl.Funcs(funcs)
-	tmpl = template.Must(tmpl.Parse(helptxt))
-
-	return func(cmd *cobra.Command, _ []string) {
-		cmd.Print("custom help function called here")
-		out := &bytes.Buffer{}
-		tmpl.Execute(out, cmd)
-		cmd.Println(out.String())
-	}
-}
-
 func examples() string {
-	funcs := map[string]interface{}{
-		"indent": func(spaces int, v string) string {
-			pad := strings.Repeat(" ", spaces)
-			return pad + strings.Replace(v, "\n", "\n"+pad, -1)
-		},
-	}
-
 	exampleText := `- AWS:
 
 cat <<EOF >> aws.yaml
-{{ .AWS | indent 0 }}
+{{ .AWS }}
 EOF
 getistio gen-ca --config-file aws.yaml
 
@@ -164,7 +127,7 @@ getistio gen-ca --config-file aws.yaml
 - GCP:
 
 cat <<EOF >> gcp.yaml
-{{ .GCP | indent 0 }}
+{{ .GCP }}
 EOF
 getistio gen-ca --config-file gcp.yaml`
 	aws, err := config.ExampleAWSInstance.ToYaml()
@@ -178,7 +141,6 @@ getistio gen-ca --config-file gcp.yaml`
 	}
 
 	extraTmpl := template.New("extra")
-	extraTmpl.Funcs(funcs)
 	extraHelp := template.Must(extraTmpl.Parse(exampleText))
 
 	out := &bytes.Buffer{}
