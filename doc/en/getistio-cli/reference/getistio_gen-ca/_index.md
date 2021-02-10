@@ -9,6 +9,122 @@ Generates intermediate CA from different managed services such as AWS ACMPCA, GC
 getistio gen-ca [flags]
 ```
 
+#### Examples
+
+```
+- AWS:
+
+cat <<EOF >> aws.yaml
+providerName: aws-example
+disableSecretCreation: false
+providerConfig:
+  aws:
+    signingCAArn: <your ACM PCA CA ARN>
+    templateArn: arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1
+    signingAlgorithm: SHA256WITHRSA
+certificateParameters:
+  secretOptions:
+    istioCANamespace: istio-system
+    secretFilePath: ~/.getistio/secret/
+    force: false
+  caOptions:
+    certSigningRequestParams:
+      raw: []
+      rawtbscertificaterequest: []
+      rawsubjectpublickeyinfo: []
+      rawsubject: []
+      version: 0
+      signature: []
+      signaturealgorithm: 0
+      publickeyalgorithm: 0
+      publickey: null
+      subject:
+        country:
+        - US
+        organization:
+        - Istio
+        organizationalunit: []
+        locality:
+        - Sunnyvale
+        province:
+        - California
+        streetaddress: []
+        postalcode: []
+        serialnumber: ""
+        commonname: Istio CA
+        names: []
+        extranames: []
+      attributes: []
+      extensions: []
+      extraextensions: []
+      dnsnames:
+      - ca.istio.io
+      emailaddresses: []
+      ipaddresses: []
+      uris: []
+    validityDays: 3650
+    keyLength: 2048
+
+EOF
+getistio gen-ca --config-file aws.yaml
+
+
+- GCP:
+
+cat <<EOF >> gcp.yaml
+providerName: gcp-example
+disableSecretCreation: false
+providerConfig:
+  gcp:
+    casCAName: projects/{project-id}/locations/{location}/certificateAuthorities/{YourCA}
+    maxIssuerPathLen: 0
+certificateParameters:
+  secretOptions:
+    istioCANamespace: istio-system
+    secretFilePath: ~/.getistio/secret/
+    force: false
+  caOptions:
+    certSigningRequestParams:
+      raw: []
+      rawtbscertificaterequest: []
+      rawsubjectpublickeyinfo: []
+      rawsubject: []
+      version: 0
+      signature: []
+      signaturealgorithm: 0
+      publickeyalgorithm: 0
+      publickey: null
+      subject:
+        country:
+        - US
+        organization:
+        - Istio
+        organizationalunit: []
+        locality:
+        - Sunnyvale
+        province:
+        - California
+        streetaddress: []
+        postalcode: []
+        serialnumber: ""
+        commonname: Istio CA
+        names: []
+        extranames: []
+      attributes: []
+      extensions: []
+      extraextensions: []
+      dnsnames:
+      - ca.istio.io
+      emailaddresses: []
+      ipaddresses: []
+      uris: []
+    validityDays: 3650
+    keyLength: 2048
+
+EOF
+getistio gen-ca --config-file gcp.yaml
+```
+
 #### Options
 
 ```

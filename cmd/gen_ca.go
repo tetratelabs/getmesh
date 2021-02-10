@@ -15,11 +15,15 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+	"text/template"
+	"unicode"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -39,9 +43,10 @@ import (
 
 func newGenCACmd() *cobra.Command {
 	genCACmd := &cobra.Command{
-		Use:   "gen-ca",
-		Short: "Generate intermediate CA",
-		Long:  `Generates intermediate CA from different managed services such as AWS ACMPCA, GCP CAS`,
+		Use:     "gen-ca",
+		Short:   "Generate intermediate CA",
+		Long:    `Generates intermediate CA from different managed services such as AWS ACMPCA, GCP CAS`,
+		Example: examples(),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if getistio.GetActiveConfig().IstioDistribution == nil {
 				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
@@ -109,7 +114,82 @@ func newGenCACmd() *cobra.Command {
 	genCAProviderParameters(genCACmd.Flags())
 	genCAx509CertRequestParameters(genCACmd.Flags())
 
+	genCACmd.SetHelpFunc(helpText())
+
 	return genCACmd
+}
+
+func helpText() func(*cobra.Command, []string) {
+
+	fmt.Print("testing that we called custom help function")
+
+	funcs := map[string]interface{}{
+		"trimTrailingWhitespaces": func(s string) string { return strings.TrimRightFunc(s, unicode.IsSpace) },
+	}
+	helptxt := `{{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}
+
+{{end}}{{if or .Runnable .HasSubCommands}}{{.UsageString}}{{end}}
+
+{{if gt (len .Example) 0 }}Examples:
+{{.Example}}{{end}}`
+
+	tmpl := template.New("help")
+	tmpl.Funcs(funcs)
+	tmpl = template.Must(tmpl.Parse(helptxt))
+
+	return func(cmd *cobra.Command, _ []string) {
+		cmd.Print("custom help function called here")
+		out := &bytes.Buffer{}
+		tmpl.Execute(out, cmd)
+		cmd.Println(out.String())
+	}
+}
+
+func examples() string {
+	funcs := map[string]interface{}{
+		"indent": func(spaces int, v string) string {
+			pad := strings.Repeat(" ", spaces)
+			return pad + strings.Replace(v, "\n", "\n"+pad, -1)
+		},
+	}
+
+	exampleText := `- AWS:
+
+cat <<EOF >> aws.yaml
+{{ .AWS | indent 0 }}
+EOF
+getistio gen-ca --config-file aws.yaml
+
+
+- GCP:
+
+cat <<EOF >> gcp.yaml
+{{ .GCP | indent 0 }}
+EOF
+getistio gen-ca --config-file gcp.yaml`
+	aws, err := config.ExampleAWSInstance.ToYaml()
+	if err != nil {
+		panic(fmt.Sprintf("error marshalling default aws config to yaml: %v", err))
+	}
+
+	gcp, err := config.ExampleGCPInstance.ToYaml()
+	if err != nil {
+		panic(fmt.Sprintf("error marshalling default gcp config to yaml: %v", err))
+	}
+
+	extraTmpl := template.New("extra")
+	extraTmpl.Funcs(funcs)
+	extraHelp := template.Must(extraTmpl.Parse(exampleText))
+
+	out := &bytes.Buffer{}
+	err = extraHelp.Execute(out, struct {
+		AWS string
+		GCP string
+	}{AWS: aws, GCP: gcp})
+	if err != nil {
+		panic(fmt.Sprintf("failed to marshal template for extra help text: %v", err))
+	}
+	return out.String()
 }
 
 func genCAProviderParameters(flags *pflag.FlagSet) {
