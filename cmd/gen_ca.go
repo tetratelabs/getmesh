@@ -140,7 +140,7 @@ func genCAx509CertRequestParameters(flags *pflag.FlagSet) {
 	flags.StringArrayP("email", "", []string{""}, "Emails for x509 Cert request")
 	flags.StringP("istio-ca-namespace", "", "", "Namespace refered for creating the `cacerts` secrets in")
 	flags.StringP("secret-file-path", "", "", "secret-file-path flag creates the secret YAML file")
-	flags.BoolP("force", "", false, "force flag just deletes the existing secret and creates a new one")
+	flags.BoolP("override-existing-ca-cert-secret", "", false, "override-existing-ca-cert-secret overrides the existing secret and creates a new one")
 	flags.Int64P("validity-days", "", 0, "valid dates for subordinate CA")
 	flags.IntP("key-length", "", 0, "length of generated key in bits for CA")
 
@@ -326,13 +326,13 @@ func genCAFetchParameters(flags *pflag.FlagSet) (*config.Config, error) {
 		configBuilder.CertParameters.SecretFilePath = secretFilePath
 	}
 
-	force, err := flags.GetBool("force")
+	overrideExistingCACertSecret, err := flags.GetBool("override-existing-ca-cert-secret")
 	if err != nil {
-		errorList = append(errorList, fmt.Errorf("invalid --force: %w", err))
+		errorList = append(errorList, fmt.Errorf("invalid --override-existing-ca-cert-secret: %w", err))
 	}
 
-	if force {
-		configBuilder.CertParameters.Force = force
+	if overrideExistingCACertSecret {
+		configBuilder.CertParameters.OverrideExistingCACertSecret = overrideExistingCACertSecret
 	}
 
 	istioNamespace, err := flags.GetString("istio-ca-namespace")
@@ -369,7 +369,7 @@ func genCAPreFlightChecks(cfg *config.Config, kubeCli kubernetes.Interface) erro
 		}
 
 		_, err = kubeCli.CoreV1().Secrets(opts.IstioNamespace).Get(context.Background(), "cacerts", v1.GetOptions{})
-		if err == nil && !opts.Force {
+		if err == nil && !opts.OverrideExistingCACertSecret {
 			return fmt.Errorf("`cacerts` secret already exist in %s namespace", opts.IstioNamespace)
 		}
 

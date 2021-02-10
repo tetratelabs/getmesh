@@ -192,7 +192,7 @@ func (secret *IstioSecretDetails) CreateSecret(secretOptions *models.SecretOptio
 		return fmt.Errorf("unable to create kube cli: %w", err)
 	}
 
-	if secretOptions.Force {
+	if secretOptions.OverrideExistingCACertSecret {
 		err := secret.ForceCreate(secretOptions.IstioNamespace, kubeCli)
 		return err
 	}
