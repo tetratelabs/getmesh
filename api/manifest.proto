@@ -1,0 +1,47 @@
+// Copyright 2021 Tetrate
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+package api;
+
+option go_package = ".;api";
+
+message Manifest {
+  string manifest_version = 1;
+
+  repeated IstioDistribution istio_distributions = 2;
+
+  // the end of life of Istio minor versions
+  // key: "x.y", "1.7" for example
+  // value: "YYYY-MM-DD"
+  map<string, string> istio_minor_versions_eol_dates = 3;
+}
+
+message IstioDistribution {
+  // Distributions are tagged with `x.y.z-${flavor}-v${flavor_version}` where
+  // - ${flavor} is either "tetrate" or "tetratefips"
+  // - ${flavor_version} is ""numeric"" and the version  of that distribution
+  string version = 1;
+  string flavor = 2;  // note that intentionally use string instead of enum here
+  int64 flavor_version = 3;
+
+  // supported k8s versions of this distribution
+  repeated string k8s_versions = 4;
+
+  // indicates if this is a security update
+  bool is_security_patch = 6;
+
+  // release notes for this distribution
+  repeated string release_notes = 7;
+}

@@ -1,0 +1,1 @@
+Auto generated docs for getistio.io website. The directory structure should be the same of `/content/` directory of getistio.io.

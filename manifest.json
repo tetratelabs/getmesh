@@ -1,0 +1,120 @@
+{
+  "istio_minor_versions_eol_dates": {
+    "1.7": "2021-10-20",
+    "1.6": "2020-11-21"
+  },
+  "istio_distributions": [
+    {
+      "version": "1.8.2",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.8.x/announcing-1.8.2/"
+      ],
+      "is_security_patch": false
+    },
+	{
+      "version": "1.8.2",
+      "flavor": "tetratefips",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.8.x/announcing-1.8.2/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.8.1",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.8.x/announcing-1.8.1/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.8.0",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.8.x/announcing-1.8.0/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.7.7",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.7.x/announcing-1.7.7/"
+      ],
+      "is_security_patch": false
+    },
+	{
+      "version": "1.7.6",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.7.x/announcing-1.7.6/"
+      ],
+      "is_security_patch": true
+    },
+    {
+      "version": "1.7.5",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.7.x/announcing-1.7.5/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.7.4",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.7.x/announcing-1.7.4/"
+      ],
+      "is_security_patch": false
+    }
+  ]
+}
