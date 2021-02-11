@@ -15,7 +15,7 @@ getistio gen-ca [flags]
 - AWS:
 
 cat <<EOF >> aws.yaml
-providerName: aws-example
+providerName: aws
 disableSecretCreation: false
 providerConfig:
   aws:
@@ -72,7 +72,7 @@ getistio gen-ca --config-file aws.yaml
 - GCP:
 
 cat <<EOF >> gcp.yaml
-providerName: gcp-example
+providerName: gcp
 disableSecretCreation: false
 providerConfig:
   gcp:

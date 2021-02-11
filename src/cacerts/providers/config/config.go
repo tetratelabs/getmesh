@@ -80,11 +80,11 @@ type Config struct {
 	} `yaml:"providerConfig"`
 
 	// CertParameters contains all the Certificate related information.
-	CertParameters models.IssueCAOptions `yaml:"certificateParameters"`
+	CertParameters models.IssueCAOptions `yaml:"certificateParameters,omitempty"`
 }
 
 var ExampleAWSInstance = Config{
-	ProviderName:          "aws-example",
+	ProviderName:          "aws",
 	DisableSecretCreation: false,
 	ProviderConfig: struct {
 		AWSConfig *ops.ProviderAWS `yaml:"aws,omitempty"`
@@ -98,7 +98,7 @@ var ExampleAWSInstance = Config{
 }
 
 var ExampleGCPInstance = Config{
-	ProviderName:          "gcp-example",
+	ProviderName:          "gcp",
 	DisableSecretCreation: false,
 	ProviderConfig: struct {
 		AWSConfig *ops.ProviderAWS `yaml:"aws,omitempty"`
