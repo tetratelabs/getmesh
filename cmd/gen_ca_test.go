@@ -224,11 +224,11 @@ func TestFetchParametersSucess(t *testing.T) {
 		},
 		label: "Secret file path flag check",
 	}, {
-		arguments: []string{"--provider", "aws", "--signing-ca", "dummy", "--force"},
+		arguments: []string{"--provider", "aws", "--signing-ca", "dummy", "--override-existing-ca-cert-secret"},
 		checker: func(c *config.Config) bool {
-			return c.CertParameters.Force
+			return c.CertParameters.OverrideExistingCACertSecret
 		},
-		label: "Force flag check",
+		label: "OverrideExistingCACertSecret flag check",
 	}, {
 		arguments: []string{"--provider", "aws", "--signing-ca", "dummy", "--istio-ca-namespace", "dummy-namespace"},
 		checker: func(c *config.Config) bool {

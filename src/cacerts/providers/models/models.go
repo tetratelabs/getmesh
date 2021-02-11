@@ -47,9 +47,9 @@ type SecretOptions struct {
 	// SecretFilePath is the file path used to store the Kubernetes Secret
 	// to be applied afterwards.
 	SecretFilePath string `yaml:"secretFilePath"`
-	// Force flag when enabled forcefully deletes the `cacerts` secret
+	// OverrideExistingCACertSecret flag, when enabled, overrides the existing `cacerts` secret
 	// in istioNamespace, and creates a new one.
-	Force bool `yaml:"force"`
+	OverrideExistingCACertSecret bool `yaml:"overrideExistingCACertsSecret"`
 }
 
 // IssueCAOptions are the options available for CA creation/
