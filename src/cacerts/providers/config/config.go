@@ -165,9 +165,9 @@ func (c *Config) ValidationsForConfig() error {
 
 var defaultCertParams = models.IssueCAOptions{
 	SecretOptions: models.SecretOptions{
-		IstioNamespace: "istio-system",
-		SecretFilePath: "~/.getistio/secret/",
-		Force:          false,
+		IstioNamespace:               "istio-system",
+		SecretFilePath:               "~/.getistio/secret/",
+		OverrideExistingCACertSecret: false,
 	},
 	CAOptions: models.CAOptions{
 		CertRequest: x509.CertificateRequest{

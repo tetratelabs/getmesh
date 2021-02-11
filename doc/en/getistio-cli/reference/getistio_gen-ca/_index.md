@@ -26,7 +26,7 @@ certificateParameters:
   secretOptions:
     istioCANamespace: istio-system
     secretFilePath: ~/.getistio/secret/
-    force: false
+    overrideExistingCACertsSecret: false
   caOptions:
     certSigningRequestParams:
       raw: []
@@ -82,7 +82,7 @@ certificateParameters:
   secretOptions:
     istioCANamespace: istio-system
     secretFilePath: ~/.getistio/secret/
-    force: false
+    overrideExistingCACertsSecret: false
   caOptions:
     certSigningRequestParams:
       raw: []
