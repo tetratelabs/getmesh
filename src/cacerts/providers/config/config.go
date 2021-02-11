@@ -15,6 +15,8 @@
 package config
 
 import (
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -73,12 +75,39 @@ type Config struct {
 	// needed to connect to the Provider.
 	ProviderConfig struct {
 		// AWSConfig contains all the AWS related configuration
-		AWSConfig *ops.ProviderAWS `yaml:"aws"`
-		GCPConfig *ops.ProviderGCP `yaml:"gcp"`
+		AWSConfig *ops.ProviderAWS `yaml:"aws,omitempty"`
+		GCPConfig *ops.ProviderGCP `yaml:"gcp,omitempty"`
 	} `yaml:"providerConfig"`
 
 	// CertParameters contains all the Certificate related information.
-	CertParameters models.IssueCAOptions `yaml:"certificateParameters"`
+	CertParameters models.IssueCAOptions `yaml:"certificateParameters,omitempty"`
+}
+
+var ExampleAWSInstance = Config{
+	ProviderName:          "aws",
+	DisableSecretCreation: false,
+	ProviderConfig: struct {
+		AWSConfig *ops.ProviderAWS `yaml:"aws,omitempty"`
+		GCPConfig *ops.ProviderGCP `yaml:"gcp,omitempty"`
+	}{AWSConfig: &ops.ProviderAWS{
+		SigningCA:        "<your ACM PCA CA ARN>",
+		TemplateARN:      "arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1",
+		SigningAlgorithm: "SHA256WITHRSA",
+	}},
+	CertParameters: defaultCertParams,
+}
+
+var ExampleGCPInstance = Config{
+	ProviderName:          "gcp",
+	DisableSecretCreation: false,
+	ProviderConfig: struct {
+		AWSConfig *ops.ProviderAWS `yaml:"aws,omitempty"`
+		GCPConfig *ops.ProviderGCP `yaml:"gcp,omitempty"`
+	}{GCPConfig: &ops.ProviderGCP{
+		CASCAName:        "projects/{project-id}/locations/{location}/certificateAuthorities/{YourCA}",
+		MaxIssuerPathLen: 0,
+	}},
+	CertParameters: defaultCertParams,
 }
 
 // NewConfig returns new parsed config
@@ -110,6 +139,11 @@ func NewConfig(path string) (*Config, error) {
 	return c, nil
 }
 
+func (c *Config) ToYaml() (string, error) {
+	str, err := yaml.Marshal(c)
+	return string(str), err
+}
+
 // ValidationsForConfig validates the config before proceeding.
 func (c *Config) ValidationsForConfig() error {
 	if models.ProviderName(c.ProviderName) != models.AWS &&
@@ -127,6 +161,28 @@ func (c *Config) ValidationsForConfig() error {
 	default:
 		return fmt.Errorf("provider %s yet to be implemented", c.ProviderName)
 	}
+}
+
+var defaultCertParams = models.IssueCAOptions{
+	SecretOptions: models.SecretOptions{
+		IstioNamespace:               "istio-system",
+		SecretFilePath:               "~/.getistio/secret/",
+		OverrideExistingCACertSecret: false,
+	},
+	CAOptions: models.CAOptions{
+		CertRequest: x509.CertificateRequest{
+			Subject: pkix.Name{
+				CommonName:   "Istio CA",
+				Organization: []string{"Istio"},
+				Country:      []string{"US"},
+				Province:     []string{"California"},
+				Locality:     []string{"Sunnyvale"},
+			},
+			DNSNames: []string{"ca.istio.io"},
+		},
+		ValidityDays: 3650,
+		KeyLength:    2048,
+	},
 }
 
 // SetDefaultValues sets the defaults in config struct as follows:
@@ -148,40 +204,40 @@ func (c *Config) SetDefaultValues() {
 	// Default Cert Parameters
 
 	if c.CertParameters.ValidityDays == 0 {
-		c.CertParameters.ValidityDays = 3650
+		c.CertParameters.ValidityDays = defaultCertParams.ValidityDays
 	}
 
 	if c.CertParameters.KeyLength == 0 {
-		c.CertParameters.KeyLength = 2048
+		c.CertParameters.KeyLength = defaultCertParams.KeyLength
 	}
 
 	if c.CertParameters.IstioNamespace == "" {
-		c.CertParameters.IstioNamespace = "istio-system"
+		c.CertParameters.IstioNamespace = defaultCertParams.IstioNamespace
 	}
 
 	// Default Cert Request
 	if c.CertParameters.CertRequest.Subject.CommonName == "" {
-		c.CertParameters.CertRequest.Subject.CommonName = "Istio CA"
+		c.CertParameters.CertRequest.Subject.CommonName = defaultCertParams.CertRequest.Subject.CommonName
 	}
 
 	if c.CertParameters.CertRequest.Subject.Province == nil {
-		c.CertParameters.CertRequest.Subject.Province = []string{"California"}
+		c.CertParameters.CertRequest.Subject.Province = defaultCertParams.CertRequest.Subject.Province
 	}
 
 	if c.CertParameters.CertRequest.Subject.Locality == nil {
-		c.CertParameters.CertRequest.Subject.Locality = []string{"Sunnyvale"}
+		c.CertParameters.CertRequest.Subject.Locality = defaultCertParams.CertRequest.Subject.Locality
 	}
 
 	if c.CertParameters.CertRequest.Subject.Organization == nil {
-		c.CertParameters.CertRequest.Subject.Organization = []string{"Istio"}
+		c.CertParameters.CertRequest.Subject.Organization = defaultCertParams.CertRequest.Subject.Organization
 	}
 
 	if c.CertParameters.CertRequest.Subject.Country == nil {
-		c.CertParameters.CertRequest.Subject.Country = []string{"US"}
+		c.CertParameters.CertRequest.Subject.Country = defaultCertParams.CertRequest.Subject.Country
 	}
 
 	if c.CertParameters.CertRequest.DNSNames == nil {
-		c.CertParameters.CertRequest.DNSNames = []string{"ca.istio.io"}
+		c.CertParameters.CertRequest.DNSNames = defaultCertParams.CertRequest.DNSNames
 	}
 
 }

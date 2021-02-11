@@ -32,9 +32,9 @@ import (
 
 // ProviderGCP contains credentials for establishing connection to the GCP,
 type ProviderGCP struct {
-	CASCAName        string `yaml:"casCAName"`
-	MaxIssuerPathLen int32  `yaml:"maxIssuerPathLen"`
-	*privateca.CertificateAuthorityClient
+	CASCAName                             string `yaml:"casCAName"`
+	MaxIssuerPathLen                      int32  `yaml:"maxIssuerPathLen"`
+	*privateca.CertificateAuthorityClient `yaml:"-"`
 }
 
 var _ ProviderInterface = &ProviderGCP{}

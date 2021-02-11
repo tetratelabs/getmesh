@@ -15,11 +15,13 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -39,9 +41,10 @@ import (
 
 func newGenCACmd() *cobra.Command {
 	genCACmd := &cobra.Command{
-		Use:   "gen-ca",
-		Short: "Generate intermediate CA",
-		Long:  `Generates intermediate CA from different managed services such as AWS ACMPCA, GCP CAS`,
+		Use:     "gen-ca",
+		Short:   "Generate intermediate CA",
+		Long:    `Generates intermediate CA from different managed services such as AWS ACMPCA, GCP CAS`,
+		Example: examples(),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if getistio.GetActiveConfig().IstioDistribution == nil {
 				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
@@ -110,6 +113,45 @@ func newGenCACmd() *cobra.Command {
 	genCAx509CertRequestParameters(genCACmd.Flags())
 
 	return genCACmd
+}
+
+func examples() string {
+	exampleText := `- AWS:
+
+cat <<EOF >> aws.yaml
+{{ .AWS }}
+EOF
+getistio gen-ca --config-file aws.yaml
+
+
+- GCP:
+
+cat <<EOF >> gcp.yaml
+{{ .GCP }}
+EOF
+getistio gen-ca --config-file gcp.yaml`
+	aws, err := config.ExampleAWSInstance.ToYaml()
+	if err != nil {
+		panic(fmt.Sprintf("error marshalling default aws config to yaml: %v", err))
+	}
+
+	gcp, err := config.ExampleGCPInstance.ToYaml()
+	if err != nil {
+		panic(fmt.Sprintf("error marshalling default gcp config to yaml: %v", err))
+	}
+
+	extraTmpl := template.New("extra")
+	extraHelp := template.Must(extraTmpl.Parse(exampleText))
+
+	out := &bytes.Buffer{}
+	err = extraHelp.Execute(out, struct {
+		AWS string
+		GCP string
+	}{AWS: aws, GCP: gcp})
+	if err != nil {
+		panic(fmt.Sprintf("failed to marshal template for extra help text: %v", err))
+	}
+	return out.String()
 }
 
 func genCAProviderParameters(flags *pflag.FlagSet) {

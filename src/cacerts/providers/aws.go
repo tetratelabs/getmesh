@@ -36,8 +36,8 @@ type ProviderAWS struct {
 	SigningCA   string `yaml:"signingCAArn"`
 	TemplateARN string `yaml:"templateArn"`
 	// SigningAlgorithm is the signing algorithm to be used by AWS Issue Certificate.
-	SigningAlgorithm string `yaml:"signingAlgorithm"`
-	acmpcaiface.ACMPCAAPI
+	SigningAlgorithm      string `yaml:"signingAlgorithm"`
+	acmpcaiface.ACMPCAAPI `yaml:"-"`
 }
 
 var _ ProviderInterface = &ProviderAWS{}
