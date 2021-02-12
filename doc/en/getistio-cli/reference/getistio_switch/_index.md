@@ -19,10 +19,10 @@ $ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1
 #### Options
 
 ```
+      --version string       Version of istioctl e.g. 1.7.4
       --flavor string        Flavor of istioctl, e.g. "tetrate" or "tetratefips"
       --flavor-version int   Version of the flavor, e.g. 1 (default -1)
   -h, --help                 help for switch
-      --version string       Version of istioctl e.g. 1.7.4
 ```
 
 #### Options inherited from parent commands
