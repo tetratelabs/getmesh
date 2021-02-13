@@ -102,6 +102,7 @@ The error code of the found issue which is prefixed by 'IST' or 'KIA'. Please re
 	}
 
 	flags := cmd.Flags()
+	flags.SortFlags = false
 	flags.StringVarP(&flagNS, "namespace", "n", "", "namespace for config validation")
 	flags.StringVarP(&flagOutputThreshold, "output-threshold", "",
 		configvalidator.SeverityLevelInfo.Name,

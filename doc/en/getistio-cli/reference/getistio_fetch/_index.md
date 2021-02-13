@@ -49,10 +49,10 @@ For more information, please refer to "getistio list --help" command.
 #### Options
 
 ```
+      --version string       Version of istioctl e.g. "--version 1.7.4"
       --flavor string        Flavor of istioctl, e.g. "--flavor tetrate" or --flavor tetratefips"
       --flavor-version int   Version of the flavor, e.g. "--version 1" (default -1)
   -h, --help                 help for fetch
-      --version string       Version of istioctl e.g. "--version 1.7.4"
 ```
 
 #### Options inherited from parent commands

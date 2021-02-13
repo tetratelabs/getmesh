@@ -109,8 +109,10 @@ func newGenCACmd() *cobra.Command {
 		},
 	}
 
-	genCAProviderParameters(genCACmd.Flags())
-	genCAx509CertRequestParameters(genCACmd.Flags())
+	flags := genCACmd.Flags()
+	flags.SortFlags = false
+	genCAProviderParameters(flags)
+	genCAx509CertRequestParameters(flags)
 
 	return genCACmd
 }

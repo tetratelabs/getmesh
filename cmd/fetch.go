@@ -93,6 +93,7 @@ For more information, please refer to "getistio list --help" command.
 	}
 
 	flags := cmd.Flags()
+	flags.SortFlags = false
 	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl e.g. \"--version 1.7.4\"")
 	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"--flavor tetrate\" or --flavor tetratefips\"")
 	flags.IntVarP(&flagFlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. \"--version 1\"")

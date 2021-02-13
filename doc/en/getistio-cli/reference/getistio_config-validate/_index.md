@@ -66,9 +66,9 @@ The error code of the found issue which is prefixed by 'IST' or 'KIA'. Please re
 #### Options
 
 ```
-  -h, --help                      help for config-validate
   -n, --namespace string          namespace for config validation
       --output-threshold string   severity level of analysis at which to display messages. Valid values: [Error Warning Info] (default "Info")
+  -h, --help                      help for config-validate
 ```
 
 #### Options inherited from parent commands
