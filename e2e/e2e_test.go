@@ -88,7 +88,6 @@ func getTestBinaryServer(t *testing.T) *httptest.Server {
 }
 
 func Test_E2E(t *testing.T) {
-	t.Run("list", list)
 	t.Run("getistio_install", getistioInstall)
 	t.Run("list", list)
 	t.Run("end_of_life", enfOfLife)
