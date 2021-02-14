@@ -5,6 +5,20 @@
   },
   "istio_distributions": [
     {
+      "version": "1.8.3",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.16",
+        "1.17",
+        "1.18"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.8.x/announcing-1.8.2/"
+      ],
+      "is_security_patch": false
+    },
+    {
       "version": "1.8.2",
       "flavor": "tetrate",
       "flavor_version": 0,

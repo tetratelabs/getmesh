@@ -45,11 +45,12 @@ The following is the explanation of each column:
 The official tagged version of Istio on which the distribution is built.
 
 [FLAVOR]
-The kind of the distribution. As of now, there's one flavor which is called "tetrate",
-and "tetratefips" flavor will be added shortly.
+The kind of the distribution. As of now, there are three flavors "tetrate",
+"tetratefips" and "istio".
 
 - "tetrate" flavor equals the official Istio except it is built by Tetrate.
 - "tetratefips" flavor is FIPS-compliant, and can be used for installing FIPS-compliant control plain and data plain built by Tetrate.
+- "istio" flavor is the upstream build.
 
 [FLAVOR VERSION]
 The flavor's version. A flavor version 0 maps to the distribution that is built on 

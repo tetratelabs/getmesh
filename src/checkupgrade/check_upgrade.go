@@ -219,8 +219,8 @@ func findLowestPatchVersionsInGroup(in []*api.IstioDistribution) (map[string]*ap
 	ret := make(map[string]*api.IstioDistribution, len(in))
 	for _, d := range in {
 		if d.IsOfficial() {
-			logger.Warnf("the official istio distributions are not supported by check-upgrade command: %s. "+
-				"Please install distributions listed in `getistio list` command\n", d.Version)
+			logger.Warnf("the upstream istio distributions are not supported by check-upgrade command: %s. "+
+				"Please install distributions with tetrate flavor listed in `getistio list` command\n", d.Version)
 			continue
 		}
 

@@ -10,6 +10,7 @@ import (
 const (
 	IstioDistributionFlavorTetrate     = "tetrate"
 	IstioDistributionFlavorTetrateFIPS = "tetratefips"
+	IstioDistributionFlavorIstio       = "istio"
 )
 
 func (x *Manifest) GetEOLDates() (map[string]time.Time, error) {
@@ -71,7 +72,7 @@ func (x *IstioDistribution) Group() (string, error) {
 }
 
 func (x *IstioDistribution) IsOfficial() bool {
-	return x.Flavor == ""
+	return x.Flavor == "" || x.Flavor == "istio"
 }
 
 // compare two (patch version, flavor version) tuples in the same group

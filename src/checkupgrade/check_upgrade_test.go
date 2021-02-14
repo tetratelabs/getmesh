@@ -196,7 +196,7 @@ func Test_printGetistioCheck(t *testing.T) {
 				})
 
 				actual := buf.String()
-				assert.Contains(t, actual, "Please install distributions listed in `getistio list` command")
+				assert.Contains(t, actual, "Please install distributions with tetrate flavor listed in `getistio list` command")
 				assert.Contains(t, actual, "nothing to check")
 				t.Log(actual)
 			})
@@ -505,7 +505,7 @@ func Test_getControlPlaneVersions(t *testing.T) {
 			require.NoError(t, err)
 		})
 
-		assert.Contains(t, buf.String(), "Please install distributions listed in")
+		assert.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
 		t.Log(buf.String())
 	})
 
@@ -584,7 +584,7 @@ func Test_getDataPlaneVersions(t *testing.T) {
 			require.NoError(t, err)
 		})
 
-		assert.Contains(t, buf.String(), "Please install distributions listed in")
+		assert.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
 		t.Log(buf.String())
 	})
 

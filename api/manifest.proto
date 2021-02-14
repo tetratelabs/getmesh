@@ -30,7 +30,7 @@ message Manifest {
 
 message IstioDistribution {
   // Distributions are tagged with `x.y.z-${flavor}-v${flavor_version}` where
-  // - ${flavor} is either "tetrate" or "tetratefips"
+  // - ${flavor} is either "tetrate" or "tetratefips" or istio
   // - ${flavor_version} is ""numeric"" and the version  of that distribution
   string version = 1;
   string flavor = 2;  // note that intentionally use string instead of enum here

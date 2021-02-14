@@ -75,6 +75,14 @@ func TestIstioDistribution_ToString(t *testing.T) {
 			},
 			exp: "1.7.7-tetratefips-v15",
 		},
+		{
+			in: &IstioDistribution{
+				Version:       "1.8.3",
+				Flavor:        IstioDistributionFlavorIstio,
+				FlavorVersion: 0,
+			},
+			exp: "1.8.3-istio-v0",
+		},
 	} {
 		assert.Equal(t, c.exp, c.in.ToString())
 	}
@@ -106,6 +114,14 @@ func TestIstioDistributionEqual(t *testing.T) {
 				FlavorVersion: 15,
 			},
 			exp: true,
+		},
+		{
+			in: &IstioDistribution{
+				Version:       "1.8.3",
+				Flavor:        IstioDistributionFlavorIstio,
+				FlavorVersion: 0,
+			},
+			exp: false,
 		},
 	} {
 		assert.Equal(t, c.exp, c.in.Equal(operand))
@@ -153,6 +169,7 @@ func TestIstioDistribution_Group(t *testing.T) {
 	}{
 		{exp: "1.3-tetrate", in: &IstioDistribution{Version: "1.3.1", Flavor: "tetrate"}},
 		{exp: "1.7-tetratefips", in: &IstioDistribution{Version: "1.7.6", Flavor: "tetratefips"}},
+		{exp: "1.8-istio", in: &IstioDistribution{Version: "1.8.3", Flavor: "istio"}},
 	} {
 		actual, err := c.in.Group()
 		require.NoError(t, err)
@@ -161,7 +178,7 @@ func TestIstioDistribution_Group(t *testing.T) {
 }
 
 func TestIstioDistribution_IsOfficial(t *testing.T) {
-	assert.True(t, (&IstioDistribution{Flavor: ""}).IsOfficial())
+	assert.True(t, (&IstioDistribution{Flavor: "istio"}).IsOfficial())
 	assert.False(t, (&IstioDistribution{Flavor: "tetrate"}).IsOfficial())
 	assert.False(t, (&IstioDistribution{Flavor: "tetratefips"}).IsOfficial())
 }
@@ -204,6 +221,7 @@ func TestIstioDistribution_Equal(t *testing.T) {
 			{Version: "1.2.300", Flavor: "tetrate", FlavorVersion: 4},
 			{Version: "1.2.3", Flavor: "tetratefips", FlavorVersion: 4},
 			{Version: "1.2.3", Flavor: "tetrate", FlavorVersion: 1},
+			{Version: "1.2.3", Flavor: "istio", FlavorVersion: 4},
 		} {
 			require.False(t, base.Equal(c), fmt.Sprintf("%d-th", i))
 		}
@@ -220,6 +238,8 @@ func TestIstioDistributionFromString(t *testing.T) {
 				exp: &IstioDistribution{Version: "1.7.3", Flavor: "tetrate", FlavorVersion: 0}},
 			{in: "1.1000.3-tetratefips-v1",
 				exp: &IstioDistribution{Version: "1.1000.3", Flavor: "tetratefips", FlavorVersion: 1}},
+			{in: "1.8.3-istio-v0",
+				exp: &IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 0}},
 			{in: "1.7.30-tetratefips-v100",
 				exp: &IstioDistribution{Version: "1.7.30", Flavor: "tetratefips", FlavorVersion: 100}},
 			{in: "2001.7.3-tetrate-v0",
@@ -253,6 +273,7 @@ func Test_parseFlavor(t *testing.T) {
 		}{
 			{in: "tetrate-v0", flavor: "tetrate", flavorVersion: 0},
 			{in: "tetratefips-v100", flavor: "tetratefips", flavorVersion: 100},
+			{in: "istio-v0", flavor: "istio", flavorVersion: 0},
 		} {
 			flavor, flavorVersion, err := parseFlavor(c.in)
 			require.NoError(t, err)
@@ -285,6 +306,13 @@ func TestGetLatestDistribution(t *testing.T) {
 			name: "ok",
 			maniest: &Manifest{
 				IstioDistributions: []*IstioDistribution{
+					{
+						Version:         "1.8.3",
+						Flavor:          IstioDistributionFlavorIstio,
+						FlavorVersion:   0,
+						K8SVersions:     []string{"1.17"},
+						IsSecurityPatch: false,
+					},
 					{
 						Version:         "1.8.2",
 						Flavor:          IstioDistributionFlavorTetrateFIPS,
@@ -349,6 +377,13 @@ func TestGetLatestDistribution(t *testing.T) {
 						K8SVersions:     []string{"1.16"},
 						IsSecurityPatch: false,
 					},
+					{
+						Version:         "1.8.3",
+						Flavor:          IstioDistributionFlavorIstio,
+						FlavorVersion:   0,
+						K8SVersions:     []string{"1.16"},
+						IsSecurityPatch: false,
+					},
 				},
 			},
 			current: &IstioDistribution{
@@ -392,6 +427,13 @@ func TestGetLatestDistribution(t *testing.T) {
 						K8SVersions:     []string{"1.16"},
 						IsSecurityPatch: false,
 					},
+					{
+						Version:         "1.8.3",
+						Flavor:          IstioDistributionFlavorIstio,
+						FlavorVersion:   0,
+						K8SVersions:     []string{"1.18"},
+						IsSecurityPatch: false,
+					},
 				},
 			},
 			current: &IstioDistribution{
@@ -433,6 +475,13 @@ func TestGetLatestDistribution(t *testing.T) {
 						Flavor:          IstioDistributionFlavorTetrateFIPS,
 						FlavorVersion:   0,
 						K8SVersions:     []string{"1.16"},
+						IsSecurityPatch: true,
+					},
+					{
+						Version:         "1.8.4",
+						Flavor:          IstioDistributionFlavorIstio,
+						FlavorVersion:   0,
+						K8SVersions:     []string{"1.17"},
 						IsSecurityPatch: true,
 					},
 				},
