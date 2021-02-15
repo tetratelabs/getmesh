@@ -147,7 +147,7 @@ func update(t *testing.T) {
 	cmd.Env = env
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.0!")
+	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.1!")
 	t.Log(actual)
 }
 
