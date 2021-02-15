@@ -202,8 +202,9 @@ func list(t *testing.T) {
 	require.NoError(t, cmd.Run())
 
 	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	 K8S VERSIONS  
+   *1.8.3    	  tetrate  	      0       	1.16,1.17,1.18	
     1.8.3    	   istio   	      0       	1.16,1.17,1.18	
-   *1.8.2    	  tetrate  	      0       	1.16,1.17,1.18	
+    1.8.2    	  tetrate  	      0       	1.16,1.17,1.18	
     1.8.2    	tetratefips	      0       	1.16,1.17,1.18	
     1.8.1    	  tetrate  	      0       	1.16,1.17,1.18	
     1.8.0    	  tetrate  	      0       	1.16,1.17,1.18	
@@ -218,7 +219,7 @@ func list(t *testing.T) {
 func fetch(t *testing.T) {
 	defer func() {
 		cmd := exec.Command("./getistio", "switch",
-			"--version", "1.8.2", "--flavor", "tetrate", "--flavor-version=0",
+			"--version", "1.8.3", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -313,7 +314,7 @@ func prune(t *testing.T) {
 				FlavorVersion: 0,
 			},
 			{
-				Version:       "1.8.2",
+				Version:       "1.8.3",
 				Flavor:        "tetrate",
 				FlavorVersion: 0,
 			},
@@ -359,13 +360,13 @@ func show(t *testing.T) {
 	require.NoError(t, cmd.Run())
 	exp := `1.7.5-tetrate-v0
 1.8.1-tetrate-v0
-1.8.2-tetrate-v0 (Active)`
+1.8.3-tetrate-v0 (Active)`
 	assert.Contains(t, buf.String(), exp)
 	fmt.Println(buf.String())
 }
 
 func switchTest(t *testing.T) {
-	for _, v := range []string{"1.8.1", "1.8.2"} {
+	for _, v := range []string{"1.8.1", "1.8.3"} {
 		{
 			cmd := exec.Command("./getistio", "switch",
 				"--version", v, "--flavor", "tetrate", "--flavor-version=0",
@@ -482,7 +483,7 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "1.8.2-tetrate-v0 is the latest version in 1.8-tetrate")
+	assert.Contains(t, actual, "1.8.3-tetrate-v0 is the latest version in 1.8-tetrate")
 	fmt.Println(actual)
 
 	// change image to 1.8.1-tetrate-v0
@@ -508,7 +509,7 @@ func checkUpgrade(t *testing.T) {
 		fmt.Println(actual)
 		if strings.Contains(actual,
 			"There is the available patch for the minor version 1.8-tetrate. "+
-				"We recommend upgrading all 1.8-tetrate versions -> 1.8.2-tetrate-v0") {
+				"We recommend upgrading all 1.8-tetrate versions -> 1.8.3-tetrate-v0") {
 			break
 		}
 	}
