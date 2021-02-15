@@ -218,7 +218,7 @@ func getDataPlaneVersions(info *[]istioversion.ProxyInfo) (map[string]*api.Istio
 func findLowestPatchVersionsInGroup(in []*api.IstioDistribution) (map[string]*api.IstioDistribution, error) {
 	ret := make(map[string]*api.IstioDistribution, len(in))
 	for _, d := range in {
-		if d.IsOfficial() {
+		if d.IsUpstream() {
 			logger.Warnf("the upstream istio distributions are not supported by check-upgrade command: %s. "+
 				"Please install distributions with tetrate flavor listed in `getistio list` command\n", d.Version)
 			continue

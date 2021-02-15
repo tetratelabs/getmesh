@@ -177,10 +177,10 @@ func TestIstioDistribution_Group(t *testing.T) {
 	}
 }
 
-func TestIstioDistribution_IsOfficial(t *testing.T) {
-	assert.True(t, (&IstioDistribution{Flavor: "istio"}).IsOfficial())
-	assert.False(t, (&IstioDistribution{Flavor: "tetrate"}).IsOfficial())
-	assert.False(t, (&IstioDistribution{Flavor: "tetratefips"}).IsOfficial())
+func TestIstioDistribution_IsUpstream(t *testing.T) {
+	assert.True(t, (&IstioDistribution{Flavor: "istio"}).IsUpstream())
+	assert.False(t, (&IstioDistribution{Flavor: "tetrate"}).IsUpstream())
+	assert.False(t, (&IstioDistribution{Flavor: "tetratefips"}).IsUpstream())
 }
 
 func TestIstioDistribution_GreaterThan(t *testing.T) {
