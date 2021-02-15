@@ -38,7 +38,7 @@ GetIstio can be obtained by issuing the following command:
 curl -sL https://tetrate.bintray.com/getistio/download.sh | bash
 ```
 
-This, by default, downloads the latest version of GetIstio and certified Istio. To check if the download was successful, run the [version command](/getistio-cli/reference/getistio_version):
+This, by default, downloads the latest version of GetIstio and certified Istio. To check if the download was successful, run the [version command](/doc/en/getistio-cli/reference/getistio_version/_index.md):
 
 ```sh
 getistio version
@@ -56,14 +56,16 @@ active istioctl: 1.8.2-tetrate-v0
 </pre>
 
 <br />
-To see the list of commands available with GetIstio and its supported features, run the [help command](/getistio-cli/reference/getistio_help):
+
+To see the list of commands available with GetIstio and its supported features, run the [help command](/doc/en/getistio-cli/reference/getistio_help/_index.md):
 
 ```sh
 getistio --help
 ```
 
 <br />
-Once GetIstio is downloaded, it can be self-updated to the latest version by running the [update command](/getistio-cli/reference/getistio_update):
+
+Once GetIstio is downloaded, it can be self-updated to the latest version by running the [update command](/doc/en/getistio-cli/reference/getistio_update/_index.md):
 
 ```sh
 getistio update
