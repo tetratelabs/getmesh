@@ -10,6 +10,7 @@ import (
 const (
 	IstioDistributionFlavorTetrate     = "tetrate"
 	IstioDistributionFlavorTetrateFIPS = "tetratefips"
+	IstioDistributionFlavorIstio       = "istio"
 )
 
 func (x *Manifest) GetEOLDates() (map[string]time.Time, error) {
@@ -70,7 +71,9 @@ func (x *IstioDistribution) Group() (string, error) {
 	return fmt.Sprintf("%s.%s-%s", ts[0], ts[1], x.Flavor), nil
 }
 
-func (x *IstioDistribution) IsOfficial() bool {
+func (x *IstioDistribution) IsUpstream() bool {
+	// manifest.json denotes upstream by flavor 'istio'. Whereas the actual upstream images
+	// in the cluster is of the form 'x.y.z' with no flavor set
 	return x.Flavor == ""
 }
 
@@ -108,8 +111,8 @@ func (x *IstioDistribution) GreaterThan(y *IstioDistribution) (bool, error) {
 
 func IstioDistributionFromString(in string) (*IstioDistribution, error) {
 	if !strings.Contains(in, "-") {
-		// handle the official version schema: 'x.y.z'
-		if err := verifyOfficialVersionString(in); err != nil {
+		// handle the upstream version schema: 'x.y.z'
+		if err := verifyUpstreamVersionString(in); err != nil {
 			return nil, err
 		}
 
@@ -121,7 +124,7 @@ func IstioDistributionFromString(in string) (*IstioDistribution, error) {
 		return nil, fmt.Errorf("invalid version schema: %s", in)
 	}
 
-	if err := verifyOfficialVersionString(parts[0]); err != nil {
+	if err := verifyUpstreamVersionString(parts[0]); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +146,7 @@ func parseFlavor(in string) (string, int64, error) {
 	return flavor, flavorVersion, nil
 }
 
-func verifyOfficialVersionString(in string) error {
+func verifyUpstreamVersionString(in string) error {
 	ts := strings.Split(in, ".")
 	if len(ts) != 3 {
 		return fmt.Errorf("invalid vesion: cannot parse %s in the form of 'x.y.z'", in)

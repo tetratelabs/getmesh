@@ -42,18 +42,19 @@ ISTIO VERSION	FLAVOR 	FLAVOR VERSION	 K8S VERSIONS
 The following is the explanation of each column:
 
 [ISTIO VERSION]
-The official tagged version of Istio on which the distribution is built.
+The upstream tagged version of Istio on which the distribution is built.
 
 [FLAVOR]
-The kind of the distribution. As of now, there's one flavor which is called "tetrate",
-and "tetratefips" flavor will be added shortly.
+The kind of the distribution. As of now, there are three flavors "tetrate",
+"tetratefips" and "istio".
 
-- "tetrate" flavor equals the official Istio except it is built by Tetrate.
+- "tetrate" flavor equals the upstream Istio except it is built by Tetrate.
 - "tetratefips" flavor is FIPS-compliant, and can be used for installing FIPS-compliant control plain and data plain built by Tetrate.
+- "istio" flavor is the upstream build. Flavor version for upstream build will always be '0'
 
 [FLAVOR VERSION]
 The flavor's version. A flavor version 0 maps to the distribution that is built on 
-exactly the same source code of the corresponding official Istio version.
+exactly the same source code of the corresponding upstream Istio version.
 
 [K8S VERSIONS]
 Supported k8s versions for the distribution

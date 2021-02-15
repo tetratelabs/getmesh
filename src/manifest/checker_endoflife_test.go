@@ -42,6 +42,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 		IstioDistributions: []*api.IstioDistribution{
 			{Version: "1.8.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
 			{Version: "1.9.10", Flavor: api.IstioDistributionFlavorTetrateFIPS, FlavorVersion: 0},
+			{Version: "1.9.0", Flavor: api.IstioDistributionFlavorIstio, FlavorVersion: 0},
 		},
 		IstioMinorVersionsEolDates: map[string]string{
 			"1.7": "2020-10-10",
@@ -81,7 +82,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 
 	t.Run("warn", func(t *testing.T) {
 		now := time.Date(2020, 11, 5, 0, 0, 0, 0, time.Local)
-		exp := `[WARNING] Your current active minor version %s is reaching the end of life on 2020-10-10. We strongly recommend you to upgrade to the available higher minor versions: 1.8.1-tetrate-v0, 1.9.10-tetratefips-v0.`
+		exp := `[WARNING] Your current active minor version %s is reaching the end of life on 2020-10-10. We strongly recommend you to upgrade to the available higher minor versions: 1.8.1-tetrate-v0, 1.9.10-tetratefips-v0, 1.9.0-istio-v0.`
 		for _, c := range []struct {
 			version, minorVersion string
 		}{{version: "1.7.1", minorVersion: "1.7"}, {version: "1.6.100", minorVersion: "1.6"}} {

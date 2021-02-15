@@ -95,11 +95,13 @@ func Test_constructLatestVersionsMap(t *testing.T) {
 		{
 			in: []*api.IstioDistribution{
 				{Version: "1.8.10", FlavorVersion: 5, Flavor: "tetratefips"},
+				{Version: "1.8.4", FlavorVersion: 0, Flavor: "istio"},
 				{Version: "1.7.10", FlavorVersion: 1, Flavor: "tetrate"},
 				{Version: "1.7.8", FlavorVersion: 1, Flavor: "tetrate"},
 			},
 			exp: map[string]*api.IstioDistribution{
 				"1.8-tetratefips": {FlavorVersion: 5, Flavor: "tetratefips", Version: "1.8.10"},
+				"1.8-istio":       {FlavorVersion: 0, Flavor: "istio", Version: "1.8.4"},
 				"1.7-tetrate":     {FlavorVersion: 1, Flavor: "tetrate", Version: "1.7.10"},
 			},
 		},
@@ -108,11 +110,13 @@ func Test_constructLatestVersionsMap(t *testing.T) {
 				{Version: "1.8.10", FlavorVersion: 5, Flavor: "tetratefips"},
 				{Version: "1.7.10", FlavorVersion: 1, Flavor: "tetrate"},
 				{Version: "1.7.8", FlavorVersion: 3, Flavor: "tetratefips"},
+				{Version: "1.9.0", FlavorVersion: 0, Flavor: "istio"},
 			},
 			exp: map[string]*api.IstioDistribution{
 				"1.8-tetratefips": {FlavorVersion: 5, Flavor: "tetratefips", Version: "1.8.10"},
 				"1.7-tetrate":     {FlavorVersion: 1, Flavor: "tetrate", Version: "1.7.10"},
 				"1.7-tetratefips": {FlavorVersion: 3, Flavor: "tetratefips", Version: "1.7.8"},
+				"1.9-istio":       {FlavorVersion: 0, Flavor: "istio", Version: "1.9.0"},
 			},
 		},
 	} {

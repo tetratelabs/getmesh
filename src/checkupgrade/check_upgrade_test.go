@@ -164,7 +164,7 @@ func Test_printGetistioCheck(t *testing.T) {
 		}
 	})
 
-	t.Run("only official versions", func(t *testing.T) {
+	t.Run("only upstream versions", func(t *testing.T) {
 		for i, c := range []istioversion.Version{
 			{
 				DataPlaneVersion: &[]istioversion.ProxyInfo{
@@ -196,7 +196,7 @@ func Test_printGetistioCheck(t *testing.T) {
 				})
 
 				actual := buf.String()
-				assert.Contains(t, actual, "Please install distributions listed in `getistio list` command")
+				assert.Contains(t, actual, "Please install distributions with tetrate flavor listed in `getistio list` command")
 				assert.Contains(t, actual, "nothing to check")
 				t.Log(actual)
 			})
@@ -495,7 +495,7 @@ func Test_getControlPlaneVersions(t *testing.T) {
 		require.Error(t, err)
 	})
 
-	t.Run("official version", func(t *testing.T) {
+	t.Run("upstream version", func(t *testing.T) {
 		in := istioversion.MeshInfo{{Info: istioversion.BuildInfo{
 			Version: "1.7.1",
 		}}}
@@ -505,7 +505,7 @@ func Test_getControlPlaneVersions(t *testing.T) {
 			require.NoError(t, err)
 		})
 
-		assert.Contains(t, buf.String(), "Please install distributions listed in")
+		assert.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
 		t.Log(buf.String())
 	})
 
@@ -577,14 +577,14 @@ func Test_getDataPlaneVersions(t *testing.T) {
 		require.Error(t, err)
 	})
 
-	t.Run("official version", func(t *testing.T) {
+	t.Run("upstream version", func(t *testing.T) {
 		in := []istioversion.ProxyInfo{{IstioVersion: "1.7.1"}}
 		buf := logger.ExecuteWithLock(func() {
 			_, err := getDataPlaneVersions(&in)
 			require.NoError(t, err)
 		})
 
-		assert.Contains(t, buf.String(), "Please install distributions listed in")
+		assert.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
 		t.Log(buf.String())
 	})
 

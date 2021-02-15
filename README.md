@@ -21,6 +21,7 @@ Considering that some of Service-Mesh customers needs to support elevated securi
 
 - _tetrate_ tracks the upstream Istio and may have additional patches applied
 - _tetratefips_ a FIPS compliant version of tetrate flavor
+- _istio_ is upstream built Istio
 
 The above functionality is achieved via elegant transparent approach, where the existing setup and tools are fully leveraged to provide additional functionality and enterprise desired feature sets and controls:
 

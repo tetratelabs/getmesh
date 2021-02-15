@@ -41,6 +41,11 @@ func TestFetchManifest(t *testing.T) {
 				FlavorVersion: 0,
 			},
 			{
+				Version:       "1.7.7",
+				Flavor:        api.IstioDistributionFlavorIstio,
+				FlavorVersion: 0,
+			},
+			{
 				Version:       "1.7.5",
 				Flavor:        api.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
@@ -60,6 +65,7 @@ func TestFetchManifest(t *testing.T) {
 	require.NoError(t, err)
 
 	expIstioVersions := map[string]struct{}{
+		"1.7.7-istio-v0":       {},
 		"1.7.6-tetrate-v0":     {},
 		"1.7.5-tetrate-v0":     {},
 		"1.7.6-tetratefips-v0": {},
@@ -110,6 +116,12 @@ func TestPrintManifest(t *testing.T) {
 		manifest := &api.Manifest{
 			IstioDistributions: []*api.IstioDistribution{
 				{
+					Version:       "1.8.3",
+					Flavor:        api.IstioDistributionFlavorIstio,
+					FlavorVersion: 0,
+					K8SVersions:   []string{"1.18"},
+				},
+				{
 					Version:       "1.7.6",
 					Flavor:        api.IstioDistributionFlavorTetrateFIPS,
 					FlavorVersion: 0,
@@ -129,6 +141,7 @@ func TestPrintManifest(t *testing.T) {
 		})
 
 		assert.Equal(t, `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	K8S VERSIONS 
+    1.8.3    	   istio   	      0       	    1.18    	
    *1.7.6    	tetratefips	      0       	    1.16    	
     1.7.5    	  tetrate  	      0       	    1.16    	
 `,

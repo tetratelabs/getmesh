@@ -53,7 +53,7 @@ $ getistio prune --version 1.7.4 --flavor tetrate --flavor-version 0
 	flags := cmd.Flags()
 	flags.SortFlags = false
 	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl e.g. 1.7.4")
-	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"tetrate\" or \"tetratefips\"")
+	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"tetrate\" or \"tetratefips\" or \"istio\"")
 	flags.IntVarP(&flagFlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. 1")
 	return cmd
 }

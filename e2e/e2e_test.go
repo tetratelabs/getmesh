@@ -202,6 +202,7 @@ func list(t *testing.T) {
 	require.NoError(t, cmd.Run())
 
 	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	 K8S VERSIONS  
+    1.8.3    	   istio   	      0       	1.16,1.17,1.18	
    *1.8.2    	  tetrate  	      0       	1.16,1.17,1.18	
     1.8.2    	tetratefips	      0       	1.16,1.17,1.18	
     1.8.1    	  tetrate  	      0       	1.16,1.17,1.18	
