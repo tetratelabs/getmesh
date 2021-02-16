@@ -108,7 +108,7 @@ func securityPatchChecker(t *testing.T) {
 	m := &api.Manifest{
 		IstioDistributions: []*api.IstioDistribution{
 			{
-				Version:         "1.8.1000000000000",
+				Version:         "1.9.1000000000000",
 				Flavor:          api.IstioDistributionFlavorTetrate,
 				FlavorVersion:   0,
 				IsSecurityPatch: true,
@@ -132,7 +132,7 @@ func securityPatchChecker(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(os.Environ(), fmt.Sprintf("GETISTIO_TEST_MANIFEST_PATH=%s", f.Name()))
 	require.NoError(t, cmd.Run())
-	assert.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.8-tetrate has a latest version 1.8.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.8.1000000000000-tetrate-v0 by "getistio fetch".`)
+	assert.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.9-tetrate has a latest version 1.9.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.9.1000000000000-tetrate-v0 by "getistio fetch".`)
 }
 
 func update(t *testing.T) {
@@ -147,7 +147,7 @@ func update(t *testing.T) {
 	cmd.Env = env
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.1!")
+	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.2!")
 	t.Log(actual)
 }
 
@@ -202,7 +202,9 @@ func list(t *testing.T) {
 	require.NoError(t, cmd.Run())
 
 	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	 K8S VERSIONS  
-   *1.8.3    	  tetrate  	      0       	1.16,1.17,1.18	
+   *1.9.0    	  tetrate  	      0       	1.17,1.18,1.19	
+    1.9.0    	   istio   	      0       	1.17,1.18,1.19	
+    1.8.3    	  tetrate  	      0       	1.16,1.17,1.18	
     1.8.3    	   istio   	      0       	1.16,1.17,1.18	
     1.8.2    	  tetrate  	      0       	1.16,1.17,1.18	
     1.8.2    	tetratefips	      0       	1.16,1.17,1.18	
@@ -219,7 +221,7 @@ func list(t *testing.T) {
 func fetch(t *testing.T) {
 	defer func() {
 		cmd := exec.Command("./getistio", "switch",
-			"--version", "1.8.3", "--flavor", "tetrate", "--flavor-version=0",
+			"--version", "1.9.0", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -314,7 +316,7 @@ func prune(t *testing.T) {
 				FlavorVersion: 0,
 			},
 			{
-				Version:       "1.8.3",
+				Version:       "1.9.0",
 				Flavor:        "tetrate",
 				FlavorVersion: 0,
 			},
@@ -360,13 +362,13 @@ func show(t *testing.T) {
 	require.NoError(t, cmd.Run())
 	exp := `1.7.5-tetrate-v0
 1.8.1-tetrate-v0
-1.8.3-tetrate-v0 (Active)`
+1.9.0-tetrate-v0 (Active)`
 	assert.Contains(t, buf.String(), exp)
 	fmt.Println(buf.String())
 }
 
 func switchTest(t *testing.T) {
-	for _, v := range []string{"1.8.1", "1.8.3"} {
+	for _, v := range []string{"1.8.1", "1.9.0"} {
 		{
 			cmd := exec.Command("./getistio", "switch",
 				"--version", v, "--flavor", "tetrate", "--flavor-version=0",
@@ -483,7 +485,7 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "1.8.3-tetrate-v0 is the latest version in 1.8-tetrate")
+	assert.Contains(t, actual, "1.9.0-tetrate-v0 is the latest version in 1.9-tetrate")
 	fmt.Println(actual)
 
 	// change image to 1.8.1-tetrate-v0
@@ -646,7 +648,7 @@ func configValidate(t *testing.T) {
 
 		exps := []string{
 			`IST0108`,
-			`[e2e/testdata/config-validate-local/config-validate-local.yaml:25] Unknown annotation: networking.istio.io/non-exist`,
+			`[e2e/testdata/config-validate-local/config-validate-local.yaml:1] Unknown annotation: networking.istio.io/non-exist`,
 		}
 		out := bufOut.String()
 		for _, exp := range exps {

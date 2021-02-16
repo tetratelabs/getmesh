@@ -2,7 +2,7 @@
 
 # originally copied from https://wasmtime.dev/install.sh with some modifications
 
-GETISTIO_LATEST_VERSION="1.0.1"
+GETISTIO_LATEST_VERSION="1.0.2"
 
 if [[ -z "${GETISTIO_VERSION}" ]]; then
   VERSION="${GETISTIO_LATEST_VERSION}"

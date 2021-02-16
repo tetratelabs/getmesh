@@ -19,7 +19,7 @@ unit-test:
 
 .PHONY: e2e-test
 e2e-test:
-	go test -v ./e2e/...
+	go test -v -count=1 ./e2e/...
 
 .PHONY: doc-gen
 doc-gen:
