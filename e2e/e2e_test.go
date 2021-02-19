@@ -368,25 +368,87 @@ func show(t *testing.T) {
 }
 
 func switchTest(t *testing.T) {
-	for _, v := range []string{"1.8.1", "1.9.0"} {
-		{
-			cmd := exec.Command("./getistio", "switch",
-				"--version", v, "--flavor", "tetrate", "--flavor-version=0",
-			)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			require.NoError(t, cmd.Run())
+	t.Run("full", func(t *testing.T) {
+		for _, v := range []string{"1.8.1", "1.9.0"} {
+			{
+				cmd := exec.Command("./getistio", "switch",
+					"--version", v, "--flavor", "tetrate", "--flavor-version=0",
+				)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				require.NoError(t, cmd.Run())
+			}
+			{
+				cmd := exec.Command("./getistio", "istioctl", "version")
+				buf := new(bytes.Buffer)
+				cmd.Stdout = buf
+				cmd.Stderr = os.Stderr
+				require.NoError(t, cmd.Run())
+				assert.Contains(t, buf.String(), v)
+				fmt.Println(buf.String())
+			}
 		}
-		{
-			cmd := exec.Command("./getistio", "istioctl", "version")
-			buf := new(bytes.Buffer)
-			cmd.Stdout = buf
-			cmd.Stderr = os.Stderr
-			require.NoError(t, cmd.Run())
-			assert.Contains(t, buf.String(), v)
-			fmt.Println(buf.String())
-		}
-	}
+	})
+	t.Run("name", func(t *testing.T) {
+		cmd := exec.Command("./getistio", "switch",
+			"--version", "1.8.1", "--flavor", "tetrate", "--flavor-version=0",
+		)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+
+		cmd = exec.Command("./getistio", "istioctl", "version")
+		buf := new(bytes.Buffer)
+		cmd.Stdout = buf
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+		assert.Contains(t, buf.String(), "1.8.1-tetrate-v0")
+
+		cmd = exec.Command("./getistio", "switch",
+			"--name", "1.9.0-tetrate-v0",
+		)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+
+		cmd = exec.Command("./getistio", "istioctl", "version")
+		buf = new(bytes.Buffer)
+		cmd.Stdout = buf
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+		assert.Contains(t, buf.String(), "1.9.0-tetrate-v0")
+		fmt.Println(buf.String())
+	})
+	t.Run("active", func(t *testing.T) {
+		cmd := exec.Command("./getistio", "fetch",
+			"--version", "1.9.0", "--flavor", "istio", "--flavor-version=0",
+		)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+
+		cmd = exec.Command("./getistio", "istioctl", "version")
+		buf := new(bytes.Buffer)
+		cmd.Stdout = buf
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+		assert.Contains(t, buf.String(), "1.9.0-istio-v0")
+
+		cmd = exec.Command("./getistio", "switch",
+			"--flavor", "tetrate",
+		)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+
+		cmd = exec.Command("./getistio", "istioctl", "version")
+		buf = new(bytes.Buffer)
+		cmd.Stdout = buf
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+		assert.Contains(t, buf.String(), "1.9.0-tetrate-v0")
+		fmt.Println(buf.String())
+	})
 }
 
 func istioctlInstall(t *testing.T) {
