@@ -60,10 +60,9 @@ func newVersionCmd(homedir, getIstioVersion string) *cobra.Command {
 				} else {
 					logger.Infof("active kubernetes cluster run in %s platform in version %s\n", v.Platform, v.GitVersion)
 				}
-
 			}
 
-			if remote {
+			if err == nil && remote {
 				w := new(bytes.Buffer)
 				as := []string{"version", "--remote=true"}
 				if err := istioctl.ExecWithWriters(homedir, as, w, nil); err != nil {
