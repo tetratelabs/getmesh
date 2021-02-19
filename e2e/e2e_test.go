@@ -252,13 +252,16 @@ istioctl switched to 1.8.1-tetrate-v0 now
 
 	// fetch without version
 	cmd = exec.Command("./getistio", "fetch", "--flavor=istio", "--flavor-version=0")
-	cmd.Stdout = os.Stdout
+	buf = new(bytes.Buffer)
+	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
 	assert.Contains(t, buf.String(), `-istio-v0 now`)
 
 	// fetch with single flavor flag
 	cmd = exec.Command("./getistio", "fetch", "--flavor=istio")
+	buf = new(bytes.Buffer)
+	cmd.Stdout = buf
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
