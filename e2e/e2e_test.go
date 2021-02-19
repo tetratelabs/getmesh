@@ -421,7 +421,7 @@ func switchTest(t *testing.T) {
 	})
 	t.Run("active", func(t *testing.T) {
 		cmd := exec.Command("./getistio", "fetch",
-			"--version", "1.9.0", "--flavor", "istio", "--flavor-version=0",
+			"--version=1.9.0", "--flavor=istio", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -432,10 +432,11 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		assert.Contains(t, buf.String(), "1.9.0-istio-v0")
+		assert.Contains(t, buf.String(), "1.9.0")
+		assert.NotContains(t, buf.String(), "1.9.0-tetrate-v0")
 
 		cmd = exec.Command("./getistio", "switch",
-			"--flavor", "tetrate",
+			"--flavor=tetrate",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

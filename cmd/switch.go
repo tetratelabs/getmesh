@@ -47,8 +47,8 @@ $ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1`,
 
 	flags := cmd.Flags()
 	flags.SortFlags = false
-	flags.StringVarP(&flagName, "name", "", "", "Name of istioctl e.g. 1.9.0-istio-v0")
-	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl e.g. 1.7.4")
+	flags.StringVarP(&flagName, "name", "", "", "Name of istioctl, e.g. 1.9.0-istio-v0")
+	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl, e.g. 1.7.4")
 	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"tetrate\" or \"tetratefips\" or \"istio\"")
 	flags.IntVarP(&flagFlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. 1")
 
@@ -69,20 +69,18 @@ func switchParse(homedir, flagName, flagVersion, flagFlavor string, flagFlavorVe
 			return nil, err
 		}
 		return d, err
-	} else {
-		fetched, err := istioctl.GetFetchedVersions(homedir)
-		if err != nil {
-			logger.Infof("cannot fetch istio manifest\n")
-			return nil, err
-		}
-
-		currDistro, err := istioctl.GetCurrentExecutable(homedir)
-		if err != nil {
-			return switchHandleDistro(nil, fetched[0].Version, flagVersion, flagFlavor, flagFlavorVersion)
-		} else {
-			return switchHandleDistro(currDistro, fetched[0].Version, flagVersion, flagFlavor, flagFlavorVersion)
-		}
 	}
+	fetched, err := istioctl.GetFetchedVersions(homedir)
+	if err != nil {
+		logger.Infof("cannot fetch istio manifest\n")
+		return nil, err
+	}
+
+	currDistro, err := istioctl.GetCurrentExecutable(homedir)
+	if err != nil {
+		return switchHandleDistro(nil, fetched[0].Version, flagVersion, flagFlavor, flagFlavorVersion)
+	}
+	return switchHandleDistro(currDistro, fetched[0].Version, flagVersion, flagFlavor, flagFlavorVersion)
 }
 
 func switchHandleDistro(curr *api.IstioDistribution, latestVersion, flagVersion, flagFlavor string,
