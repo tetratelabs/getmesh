@@ -262,7 +262,6 @@ istioctl switched to 1.8.1-tetrate-v0 now
 	cmd = exec.Command("./getistio", "fetch", "--flavor=istio")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
-	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
 	assert.Contains(t, buf.String(), `-istio-v0 now`)
