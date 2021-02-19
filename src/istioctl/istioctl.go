@@ -214,7 +214,7 @@ func Fetch(homeDir string, version, flavor string, flavorVersion int, ms *api.Ma
 
 func processFetchParams(version, flavor string, flavorVersion int,
 	ms *api.Manifest) (*api.IstioDistribution, error) {
-	if flavor != api.IstioDistributionFlavorTetrate && flavor != api.IstioDistributionFlavorIstio {
+	if flavor != api.IstioDistributionFlavorTetrate && flavor != api.IstioDistributionFlavorTetrateFIPS && flavor != api.IstioDistributionFlavorIstio {
 		flavor = api.IstioDistributionFlavorTetrate
 		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flavor)
 	}
