@@ -214,19 +214,19 @@ func Fetch(homeDir string, version, flavor string, flavorVersion int, ms *api.Ma
 
 func processFetchParams(version, flavor string, flavorVersion int,
 	ms *api.Manifest) (*api.IstioDistribution, error) {
+	if flavor != api.IstioDistributionFlavorTetrate && flavor != api.IstioDistributionFlavorIstio {
+		flavor = api.IstioDistributionFlavorTetrate
+		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flavor)
+	}
 	if len(version) == 0 {
 		for _, m := range ms.IstioDistributions {
-			if m.Flavor == api.IstioDistributionFlavorTetrate {
+			if m.Flavor == flavor {
 				return m, nil
 			}
 		}
 	}
 
 	ret := &api.IstioDistribution{Version: version, Flavor: flavor, FlavorVersion: int64(flavorVersion)}
-	if ret.Flavor == "" {
-		ret.Flavor = api.IstioDistributionFlavorTetrate
-		logger.Infof("fallback to the %s flavor since --flavor flag is not given\n", ret.Flavor)
-	}
 
 	if strings.Count(version, ".") == 1 {
 		// In the case where patch version is not given,
