@@ -50,11 +50,17 @@ func newVersionCmd(homedir, getIstioVersion string) *cobra.Command {
 			}
 
 			logger.Infof("getistio version: %s\nactive istioctl: %s\n", getIstioVersion, cur.ToString())
-
-			if _, err := util.GetK8sClient(); err != nil {
+			k8sCLient, err := util.GetK8sClient()
+			if err != nil {
 				logger.Infof("no active Kubernetes clusters found\n")
 				return err
 			}
+			v, err := k8sCLient.ServerVersion()
+			if err != nil {
+				logger.Infof("cannot retrieve Kubernetes cluster server information\n")
+				return err
+			}
+			logger.Infof("active kubernetes cluster run in %s platform in version %s\n", v.Platform, v.GitVersion)
 
 			if remote {
 				w := new(bytes.Buffer)
