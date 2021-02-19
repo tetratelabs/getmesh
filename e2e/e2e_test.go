@@ -481,7 +481,7 @@ func version(t *testing.T) {
 		buf := new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
-		require.Error(t, cmd.Run())
+		require.NoError(t, cmd.Run())
 		actual := buf.String()
 		assert.Contains(t, actual, "getistio version: dev")
 		assert.Contains(t, actual, "active istioctl")
