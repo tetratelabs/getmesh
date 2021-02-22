@@ -21,7 +21,6 @@ import (
 
 	"github.com/tetratelabs/getistio/api"
 	"github.com/tetratelabs/getistio/src/istioctl"
-	"github.com/tetratelabs/getistio/src/manifest"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
@@ -72,24 +71,20 @@ func switchParse(homedir string, flags *switchFlags) (*api.IstioDistribution, er
 		}
 		return d, nil
 	}
-	fetched, err := manifest.FetchManifest()
-	if err != nil {
-		return nil, fmt.Errorf("cannot fetch istio manifest")
-	}
 
+	// assumption there exists at least one distribution, thus currDistro cannot be nil
 	currDistro, _ := istioctl.GetCurrentExecutable(homedir)
-	return switchHandleDistro(currDistro, fetched.IstioDistributions[0].Version, flags)
+	return switchHandleDistro(currDistro, flags)
 }
 
-func switchHandleDistro(curr *api.IstioDistribution, latestVersion string, flags *switchFlags) (*api.IstioDistribution, error) {
+func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.IstioDistribution, error) {
 	var version, flavor string
 	var flavorVersion int64
 
 	if curr == nil {
-		version, flavor, flavorVersion = latestVersion, api.IstioDistributionFlavorTetrate, 0
-	} else {
-		version, flavor, flavorVersion = curr.Version, curr.Flavor, curr.FlavorVersion
+		return nil, fmt.Errorf("cannot infer the target version, no active distribution exists")
 	}
+	version, flavor, flavorVersion = curr.Version, curr.Flavor, curr.FlavorVersion
 
 	if len(flags.version) != 0 {
 		version = flags.version

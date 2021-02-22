@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -38,36 +37,6 @@ func Test_switchParse(t *testing.T) {
 	manifest.GlobalManifestURLMux.Lock()
 	defer manifest.GlobalManifestURLMux.Unlock()
 
-	m := &api.Manifest{
-		IstioDistributions: []*api.IstioDistribution{
-			{
-				Version:       "1.7.6",
-				Flavor:        api.IstioDistributionFlavorTetrate,
-				FlavorVersion: 0,
-			},
-			{
-				Version:       "1.8.3",
-				Flavor:        api.IstioDistributionFlavorIstio,
-				FlavorVersion: 0,
-			},
-		},
-	}
-
-	raw, err := json.Marshal(m)
-	require.NoError(t, err)
-
-	f, err := ioutil.TempFile("", "")
-	require.NoError(t, err)
-	defer f.Close()
-
-	_, err = f.Write(raw)
-	require.NoError(t, err)
-
-	require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", f.Name()))
-	defer func() {
-		require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", ""))
-	}()
-
 	// set up active distro
 	d := &api.IstioDistribution{
 		Version:       "1.7.6",
@@ -79,7 +48,7 @@ func Test_switchParse(t *testing.T) {
 	require.NoError(t,
 		os.MkdirAll(strings.TrimSuffix(istioctl.GetIstioctlPath(home, d), "/istioctl"), 0755))
 
-	f, err = os.Create(istioctl.GetIstioctlPath(home, d))
+	f, err := os.Create(istioctl.GetIstioctlPath(home, d))
 	require.NoError(t, err)
 	defer f.Close()
 
@@ -101,62 +70,32 @@ func Test_switchParse(t *testing.T) {
 
 func Test_switchHandleDistro(t *testing.T) {
 	for _, c := range []struct {
-		curr   *api.IstioDistribution
-		latest string
-		flags  *switchFlags
-		exp    *api.IstioDistribution
+		curr  *api.IstioDistribution
+		flags *switchFlags
+		exp   *api.IstioDistribution
 	}{
 		{
-			curr:   nil,
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "1.8.3", flavor: "istio", flavorVersion: 1},
-			exp:    &api.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 1},
+			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			flags: &switchFlags{version: "1.8.3", flavor: "istio", flavorVersion: 1},
+			exp:   &api.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 1},
 		},
 		{
-			curr:   nil,
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "", flavor: "istio", flavorVersion: 1},
-			exp:    &api.IstioDistribution{Version: "1.9.0", Flavor: "istio", FlavorVersion: 1},
+			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			flags: &switchFlags{version: "", flavor: "istio", flavorVersion: 1},
+			exp:   &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 1},
 		},
 		{
-			curr:   nil,
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "1.8.3", flavor: "", flavorVersion: -1},
-			exp:    &api.IstioDistribution{Version: "1.8.3", Flavor: "tetrate", FlavorVersion: 0},
+			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			flags: &switchFlags{version: "1.8.3", flavor: "", flavorVersion: -1},
+			exp:   &api.IstioDistribution{Version: "1.8.3", Flavor: "tetratefips", FlavorVersion: 0},
 		},
 		{
-			curr:   nil,
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "", flavor: "", flavorVersion: -1},
-			exp:    &api.IstioDistribution{Version: "1.9.0", Flavor: "tetrate", FlavorVersion: 0},
-		},
-
-		{
-			curr:   &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "1.8.3", flavor: "istio", flavorVersion: 1},
-			exp:    &api.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 1},
-		},
-		{
-			curr:   &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "", flavor: "istio", flavorVersion: 1},
-			exp:    &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 1},
-		},
-		{
-			curr:   &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "1.8.3", flavor: "", flavorVersion: -1},
-			exp:    &api.IstioDistribution{Version: "1.8.3", Flavor: "tetratefips", FlavorVersion: 0},
-		},
-		{
-			curr:   &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
-			latest: "1.9.0",
-			flags:  &switchFlags{version: "", flavor: "", flavorVersion: -1},
-			exp:    &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			flags: &switchFlags{version: "", flavor: "", flavorVersion: -1},
+			exp:   &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
 		},
 	} {
-		v, err := switchHandleDistro(c.curr, c.latest, c.flags)
+		v, err := switchHandleDistro(c.curr, c.flags)
 		require.NoError(t, err)
 		assert.Equal(t, c.exp, v)
 	}
