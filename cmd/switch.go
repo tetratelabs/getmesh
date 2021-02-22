@@ -26,8 +26,8 @@ import (
 )
 
 type switchFlags struct {
-    name, version, flavor string
-    flavorVersion int64
+	name, version, flavor string
+	flavorVersion         int64
 }
 
 func newSwitchCmd(homedir string) *cobra.Command {
@@ -68,13 +68,13 @@ func switchParse(homedir string, flags *switchFlags) (*api.IstioDistribution, er
 	if len(flags.name) != 0 {
 		d, err := api.IstioDistributionFromString(flags.name)
 		if err != nil {
-			return nil, fmt.Errorf("cannot parse given name to %s istio distribution\n", flags.name)
+			return nil, fmt.Errorf("cannot parse given name to %s istio distribution", flags.name)
 		}
 		return d, nil
 	}
 	fetched, err := manifest.FetchManifest()
 	if err != nil {
-		return nil, fmt.Errorf("cannot fetch istio manifest\n")
+		return nil, fmt.Errorf("cannot fetch istio manifest")
 	}
 
 	currDistro, _ := istioctl.GetCurrentExecutable(homedir)
