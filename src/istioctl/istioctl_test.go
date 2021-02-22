@@ -466,6 +466,28 @@ func Test_processFetchParams(t *testing.T) {
 			exp: &api.IstioDistribution{Version: "1.7.3", FlavorVersion: 50, Flavor: api.IstioDistributionFlavorTetrateFIPS},
 		},
 		{
+			//  version not given -> choose the latest version given flavor in manifest
+			flavor: api.IstioDistributionFlavorIstio, flavorVersion: 0,
+			mf: &api.Manifest{
+				IstioDistributions: []*api.IstioDistribution{
+					{Version: "1.7.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorTetrateFIPS},
+					{Version: "1.8.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorIstio},
+				},
+			},
+			exp: &api.IstioDistribution{Version: "1.8.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorIstio},
+		},
+		{
+			//  version and flavor version  not given -> choose the latest version given flavor in manifest
+			flavor: api.IstioDistributionFlavorIstio, flavorVersion: -1,
+			mf: &api.Manifest{
+				IstioDistributions: []*api.IstioDistribution{
+					{Version: "1.7.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorTetrateFIPS},
+					{Version: "1.8.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorIstio},
+				},
+			},
+			exp: &api.IstioDistribution{Version: "1.8.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorIstio},
+		},
+		{
 			//  flavorVersion not given -> not found error
 			version: "1.7.3", flavor: api.IstioDistributionFlavorTetrateFIPS, flavorVersion: -1,
 			mf: &api.Manifest{
