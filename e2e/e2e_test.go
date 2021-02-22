@@ -492,6 +492,18 @@ func version(t *testing.T) {
 		assert.NotContains(t, actual, "data plane version")
 		fmt.Println(actual)
 	})
+	t.Run("unknown cluster", func(t *testing.T) {
+		cmd := exec.Command("./getistio", "version", "-c", "unknown.yaml")
+		buf := new(bytes.Buffer)
+		cmd.Stdout = buf
+		cmd.Stderr = os.Stderr
+		require.NoError(t, cmd.Run())
+		actual := buf.String()
+		assert.Contains(t, actual, "getistio version: dev")
+		assert.Contains(t, actual, "active istioctl")
+		assert.Contains(t, actual, "no active Kubernetes clusters found")
+		fmt.Println(actual)
+	})
 }
 
 func checkUpgrade(t *testing.T) {
