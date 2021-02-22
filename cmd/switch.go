@@ -15,20 +15,23 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/tetratelabs/getistio/api"
 	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/manifest"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
+type switchFlags struct {
+    name, version, flavor string
+    flavorVersion int64
+}
+
 func newSwitchCmd(homedir string) *cobra.Command {
-	var (
-		flagName          string
-		flagVersion       string
-		flagFlavor        string
-		flagFlavorVersion int
-	)
+	var flag switchFlags
 
 	cmd := &cobra.Command{
 		Use:   "switch <istio version>",
@@ -37,7 +40,7 @@ func newSwitchCmd(homedir string) *cobra.Command {
 		Example: `# switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
 $ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			d, err := switchParse(homedir, flagName, flagVersion, flagFlavor, flagFlavorVersion)
+			d, err := switchParse(homedir, &flag)
 			if err != nil {
 				return err
 			}
@@ -47,10 +50,10 @@ $ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1`,
 
 	flags := cmd.Flags()
 	flags.SortFlags = false
-	flags.StringVarP(&flagName, "name", "", "", "Name of istioctl, e.g. 1.9.0-istio-v0")
-	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl, e.g. 1.7.4")
-	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"tetrate\" or \"tetratefips\" or \"istio\"")
-	flags.IntVarP(&flagFlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. 1")
+	flags.StringVarP(&flag.name, "name", "", "", "Name of istioctl, e.g. 1.9.0-istio-v0")
+	flags.StringVarP(&flag.version, "version", "", "", "Version of istioctl, e.g. 1.7.4")
+	flags.StringVarP(&flag.flavor, "flavor", "", "", "Flavor of istioctl, e.g. \"tetrate\" or \"tetratefips\" or \"istio\"")
+	flags.Int64VarP(&flag.flavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. 1")
 
 	return cmd
 }
@@ -61,55 +64,47 @@ $ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1`,
 // if there are no active distro exists, switch with only one or two command will use the default distro setting for unset command
 // if all commands are not set, use active setting if there has otherwise use default version
 // default version: latest version, default flavor: tetrate, default flavorversion: 0
-func switchParse(homedir, flagName, flagVersion, flagFlavor string, flagFlavorVersion int) (*api.IstioDistribution, error) {
-	if len(flagName) != 0 {
-		d, err := api.IstioDistributionFromString(flagName)
+func switchParse(homedir string, flags *switchFlags) (*api.IstioDistribution, error) {
+	if len(flags.name) != 0 {
+		d, err := api.IstioDistributionFromString(flags.name)
 		if err != nil {
-			logger.Infof("cannot parse given name to %s istio distribution\n", flagName)
-			return nil, err
+			return nil, fmt.Errorf("cannot parse given name to %s istio distribution\n", flags.name)
 		}
-		return d, err
+		return d, nil
 	}
-	fetched, err := istioctl.GetFetchedVersions(homedir)
+	fetched, err := manifest.FetchManifest()
 	if err != nil {
-		logger.Infof("cannot fetch istio manifest\n")
-		return nil, err
+		return nil, fmt.Errorf("cannot fetch istio manifest\n")
 	}
 
-	currDistro, err := istioctl.GetCurrentExecutable(homedir)
-	if err != nil {
-		return switchHandleDistro(nil, fetched[0].Version, flagVersion, flagFlavor, flagFlavorVersion)
-	}
-	return switchHandleDistro(currDistro, fetched[0].Version, flagVersion, flagFlavor, flagFlavorVersion)
+	currDistro, _ := istioctl.GetCurrentExecutable(homedir)
+	return switchHandleDistro(currDistro, fetched.IstioDistributions[0].Version, flags)
 }
 
-func switchHandleDistro(curr *api.IstioDistribution, latestVersion, flagVersion, flagFlavor string,
-	flagFlavorVersion int) (*api.IstioDistribution, error) {
-	var defaultVersion, defaultFlavor string
-	var defaultFlavorVersion int64
+func switchHandleDistro(curr *api.IstioDistribution, latestVersion string, flags *switchFlags) (*api.IstioDistribution, error) {
+	var version, flavor string
+	var flavorVersion int64
 
 	if curr == nil {
-		defaultVersion, defaultFlavor, defaultFlavorVersion = latestVersion, api.IstioDistributionFlavorTetrate, 0
+		version, flavor, flavorVersion = latestVersion, api.IstioDistributionFlavorTetrate, 0
 	} else {
-		defaultVersion, defaultFlavor, defaultFlavorVersion = curr.Version, curr.Flavor, curr.FlavorVersion
+		version, flavor, flavorVersion = curr.Version, curr.Flavor, curr.FlavorVersion
 	}
 
-	d := &api.IstioDistribution{
-		Version:       defaultVersion,
-		Flavor:        defaultFlavor,
-		FlavorVersion: defaultFlavorVersion,
+	if len(flags.version) != 0 {
+		version = flags.version
 	}
-
-	if len(flagVersion) != 0 {
-		d.Version = flagVersion
+	if len(flags.flavor) != 0 {
+		flavor = flags.flavor
 	}
-	if len(flagFlavor) != 0 {
-		d.Flavor = flagFlavor
+	if flags.flavorVersion != -1 {
+		flavorVersion = flags.flavorVersion
 	}
-	if flagFlavorVersion != -1 {
-		d.FlavorVersion = int64(flagFlavorVersion)
-	}
-	return d, nil
+	return &api.IstioDistribution{
+		Version:       version,
+		Flavor:        flavor,
+		FlavorVersion: flavorVersion,
+	}, nil
 }
 
 func switchExec(homedir string, distribution *api.IstioDistribution) error {
