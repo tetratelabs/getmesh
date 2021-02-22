@@ -54,7 +54,7 @@ func newVersionCmd(homedir, getIstioVersion string) *cobra.Command {
 			if err != nil {
 				logger.Infof("no active Kubernetes clusters found\n")
 			} else {
-				_, err := k8sCLient.ServerVersion()
+				_, err = k8sCLient.ServerVersion()
 				if err != nil {
 					logger.Infof("cannot retrieve Kubernetes cluster server information\n")
 				}
