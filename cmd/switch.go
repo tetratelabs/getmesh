@@ -33,13 +33,21 @@ func newSwitchCmd(homedir string) *cobra.Command {
 	var flag switchFlags
 
 	cmd := &cobra.Command{
-		Use:   "switch <istio version | flavor | flavor-version>|<istio version full name>",
+		Use:   "switch",
 		Short: "Switch the active istioctl to a specified version",
 		Long:  `Switch the active istioctl to a specified version`,
-		Example: `# switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
+		Example: `# Switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
 $ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1, 
-$ getistio switch --name 1.7.4-tetrate-v1
-switch also supports to change only one version|flavor|flavorVersion flag and follow the rest settings in active version`,
+Switch to version=1.8.3, flavor=istio and flavor-version=0 using name flag
+$ getistio switch --name 1.8.3-istio-v0
+Switch from active version=1.8.3 to version 1.9.0 with the same flavor and flavor-version
+$ getistio switch --version 1.9.0
+Switch from active "tetrate flavored" version to "istio flavored" version with the same version and flavor-version
+$ getistio switch --flavor istio
+Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version 1.9.0, flavor=tetrate and flavor-version=0
+$ getistio switch --version 1.9.0 --flavor=tetrate
+Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version=1.8.3, flavor=tetrate, flavor-version=1
+$ getistio switch --flavor tetrate --flavor-version=1`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := switchParse(homedir, &flag)
 			if err != nil {
@@ -51,10 +59,10 @@ switch also supports to change only one version|flavor|flavorVersion flag and fo
 
 	flags := cmd.Flags()
 	flags.SortFlags = false
-	flags.StringVarP(&flag.name, "name", "", "", "Name of istioctl, e.g. 1.9.0-istio-v0")
-	flags.StringVarP(&flag.version, "version", "", "", "Version of istioctl, e.g. 1.7.4")
-	flags.StringVarP(&flag.flavor, "flavor", "", "", "Flavor of istioctl, e.g. \"tetrate\" or \"tetratefips\" or \"istio\"")
-	flags.Int64VarP(&flag.flavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. 1")
+	flags.StringVarP(&flag.name, "name", "", "", "Name of istioctl, , e.g. 1.9.0-istio-v0")
+	flags.StringVarP(&flag.version, "version", "", "", "Version of istioctl, when name is set, version flag will not be used, e.g. 1.7.4")
+	flags.StringVarP(&flag.flavor, "flavor", "", "", "Flavor of istioctl, when name is set, flavor flag will not be used,e.g. \"tetrate\" or \"tetratefips\" or \"istio\"")
+	flags.Int64VarP(&flag.flavorVersion, "flavor-version", "", -1, "Version of the flavor, when name is set, flavor-version flag will not be used, e.g. 1")
 
 	return cmd
 }
