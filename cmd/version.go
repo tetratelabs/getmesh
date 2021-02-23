@@ -25,6 +25,7 @@ import (
 
 	"github.com/tetratelabs/getistio/src/getistio"
 	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/util"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
@@ -49,8 +50,17 @@ func newVersionCmd(homedir, getIstioVersion string) *cobra.Command {
 			}
 
 			logger.Infof("getistio version: %s\nactive istioctl: %s\n", getIstioVersion, cur.ToString())
+			k8sCLient, err := util.GetK8sClient()
+			if err != nil {
+				logger.Infof("no active Kubernetes clusters found\n")
+			} else {
+				_, err = k8sCLient.ServerVersion()
+				if err != nil {
+					logger.Infof("cannot retrieve Kubernetes cluster server information\n")
+				}
+			}
 
-			if remote {
+			if err == nil && remote {
 				w := new(bytes.Buffer)
 				as := []string{"version", "--remote=true"}
 				if err := istioctl.ExecWithWriters(homedir, as, w, nil); err != nil {
