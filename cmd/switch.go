@@ -33,11 +33,13 @@ func newSwitchCmd(homedir string) *cobra.Command {
 	var flag switchFlags
 
 	cmd := &cobra.Command{
-		Use:   "switch <istio version>",
+		Use:   "switch <istio version | flavor | flavor-version>|<istio version full name>",
 		Short: "Switch the active istioctl to a specified version",
 		Long:  `Switch the active istioctl to a specified version`,
 		Example: `# switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
-$ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1`,
+$ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1, 
+$ getistio switch --name 1.7.4-tetrate-v1
+switch also supports to change only one version|flavor|flavorVersion flag and follow the rest settings in active version`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := switchParse(homedir, &flag)
 			if err != nil {
@@ -81,10 +83,9 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 	var version, flavor string
 	var flavorVersion int64
 
-	if curr == nil {
-		return nil, fmt.Errorf("cannot infer the target version, no active distribution exists")
+	if curr != nil {
+		version, flavor, flavorVersion = curr.Version, curr.Flavor, curr.FlavorVersion
 	}
-	version, flavor, flavorVersion = curr.Version, curr.Flavor, curr.FlavorVersion
 
 	if len(flags.version) != 0 {
 		version = flags.version
@@ -95,6 +96,11 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 	if flags.flavorVersion != -1 {
 		flavorVersion = flags.flavorVersion
 	}
+
+	if curr == nil && (len(flags.version) == 0 || len(flags.flavor) == 0 || flags.flavorVersion == -1){
+		return nil, fmt.Errorf("cannot infer the target version, no active distribution exists")
+	}
+	
 	return &api.IstioDistribution{
 		Version:       version,
 		Flavor:        flavor,
