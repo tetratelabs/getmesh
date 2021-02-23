@@ -12,8 +12,8 @@ getistio switch [flags]
 #### Examples
 
 ```
-# Switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
-$ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1, 
+# Switch the active istioctl version to version=1.7.7, flavor=tetrate and flavor-version=0
+$ getistio switch --version 1.7.7 --flavor tetrate --flavor-version=0, 
 
 # Switch to version=1.8.3, flavor=istio and flavor-version=0 using name flag
 $ getistio switch --name 1.8.3-istio-v0
@@ -35,10 +35,10 @@ $ getistio switch --flavor tetrate --flavor-version=1
 #### Options
 
 ```
-      --name string          Name of istioctl, , e.g. 1.9.0-istio-v0
-      --version string       Version of istioctl, when name is set, version flag will not be used, e.g. 1.7.4
-      --flavor string        Flavor of istioctl, when name is set, flavor flag will not be used,e.g. "tetrate" or "tetratefips" or "istio"
-      --flavor-version int   Version of the flavor, when name is set, flavor-version flag will not be used, e.g. 1 (default -1)
+      --name string          Name of distribution, e.g. 1.9.0-istio-v0
+      --version string       Version of istioctl, e.g. 1.7.4. When --name flag is set, this will not be used.
+      --flavor string        Flavor of istioctl, e.g. "tetrate" or "tetratefips" or "istio". When --name flag is set, this will not be used.
+      --flavor-version int   Version of the flavor, e.g. 1. When --name flag is set, this will not be used (default -1)
   -h, --help                 help for switch
 ```
 
