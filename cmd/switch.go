@@ -36,8 +36,8 @@ func newSwitchCmd(homedir string) *cobra.Command {
 		Use:   "switch",
 		Short: "Switch the active istioctl to a specified version",
 		Long:  `Switch the active istioctl to a specified version`,
-		Example: `# Switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
-$ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1, 
+		Example: `# Switch the active istioctl version to version=1.7.7, flavor=tetrate and flavor-version=0
+$ getistio switch --version 1.7.7 --flavor tetrate --flavor-version=0, 
 
 # Switch to version=1.8.3, flavor=istio and flavor-version=0 using name flag
 $ getistio switch --name 1.8.3-istio-v0
@@ -65,10 +65,10 @@ $ getistio switch --flavor tetrate --flavor-version=1
 
 	flags := cmd.Flags()
 	flags.SortFlags = false
-	flags.StringVarP(&flag.name, "name", "", "", "Name of istioctl, , e.g. 1.9.0-istio-v0")
-	flags.StringVarP(&flag.version, "version", "", "", "Version of istioctl, when name is set, version flag will not be used, e.g. 1.7.4")
-	flags.StringVarP(&flag.flavor, "flavor", "", "", "Flavor of istioctl, when name is set, flavor flag will not be used,e.g. \"tetrate\" or \"tetratefips\" or \"istio\"")
-	flags.Int64VarP(&flag.flavorVersion, "flavor-version", "", -1, "Version of the flavor, when name is set, flavor-version flag will not be used, e.g. 1")
+	flags.StringVarP(&flag.name, "name", "", "", "Name of distribution, e.g. 1.9.0-istio-v0")
+	flags.StringVarP(&flag.version, "version", "", "", "Version of istioctl, e.g. 1.7.4. When --name flag is set, this will not be used.")
+	flags.StringVarP(&flag.flavor, "flavor", "", "", "Flavor of istioctl, e.g. \"tetrate\" or \"tetratefips\" or \"istio\". When --name flag is set, this will not be used.")
+	flags.Int64VarP(&flag.flavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. 1. When --name flag is set, this will not be used")
 
 	return cmd
 }
