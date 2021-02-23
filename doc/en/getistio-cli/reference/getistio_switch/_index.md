@@ -14,16 +14,22 @@ getistio switch [flags]
 ```
 # Switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
 $ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1, 
+
 Switch to version=1.8.3, flavor=istio and flavor-version=0 using name flag
 $ getistio switch --name 1.8.3-istio-v0
+
 Switch from active version=1.8.3 to version 1.9.0 with the same flavor and flavor-version
 $ getistio switch --version 1.9.0
+
 Switch from active "tetrate flavored" version to "istio flavored" version with the same version and flavor-version
 $ getistio switch --flavor istio
+
 Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version 1.9.0, flavor=tetrate and flavor-version=0
 $ getistio switch --version 1.9.0 --flavor=tetrate
+
 Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version=1.8.3, flavor=tetrate, flavor-version=1
 $ getistio switch --flavor tetrate --flavor-version=1
+
 ```
 
 #### Options
