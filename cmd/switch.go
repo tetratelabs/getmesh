@@ -97,10 +97,10 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 		flavorVersion = flags.flavorVersion
 	}
 
-	if curr == nil && (len(flags.version) == 0 || len(flags.flavor) == 0 || flags.flavorVersion == -1){
+	if curr == nil && (len(flags.version) == 0 || len(flags.flavor) == 0 || flags.flavorVersion == -1) {
 		return nil, fmt.Errorf("cannot infer the target version, no active distribution exists")
 	}
-	
+
 	return &api.IstioDistribution{
 		Version:       version,
 		Flavor:        flavor,

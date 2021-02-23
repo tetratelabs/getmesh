@@ -6,14 +6,16 @@ url: /getistio-cli/reference/getistio_switch/
 Switch the active istioctl to a specified version
 
 ```
-getistio switch <istio version> [flags]
+getistio switch <istio version | flavor | flavor-version>|<istio version full name> [flags]
 ```
 
 #### Examples
 
 ```
 # switch the active istioctl version to version=1.7.4, flavor=tetrate and flavor-version=1
-$ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1
+$ getistio switch --version 1.7.4 --flavor tetrate --flavor-version=1, 
+$ getistio switch --name 1.7.4-tetrate-v1
+switch also supports to change only one version|flavor|flavorVersion flag and follow the rest settings in active version
 ```
 
 #### Options
