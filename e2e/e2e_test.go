@@ -147,7 +147,7 @@ func update(t *testing.T) {
 	cmd.Env = env
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.2!")
+	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.3!")
 	t.Log(actual)
 }
 
@@ -203,8 +203,10 @@ func list(t *testing.T) {
 
 	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	 K8S VERSIONS  
    *1.9.0    	  tetrate  	      0       	1.17,1.18,1.19	
+    1.9.0    	tetratefips	      0       	1.17,1.18,1.19	
     1.9.0    	   istio   	      0       	1.17,1.18,1.19	
     1.8.3    	  tetrate  	      0       	1.16,1.17,1.18	
+    1.8.3    	tetratefips	      0       	1.16,1.17,1.18	
     1.8.3    	   istio   	      0       	1.16,1.17,1.18	
     1.8.2    	  tetrate  	      0       	1.16,1.17,1.18	
     1.8.2    	tetratefips	      0       	1.16,1.17,1.18	
