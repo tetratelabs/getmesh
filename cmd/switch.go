@@ -16,11 +16,13 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/tetratelabs/getistio/api"
 	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/manifest"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
@@ -115,11 +117,31 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 		return nil, fmt.Errorf("cannot infer the target version, no active distribution exists")
 	}
 
-	return &api.IstioDistribution{
+	d := &api.IstioDistribution{
 		Version:       version,
 		Flavor:        flavor,
 		FlavorVersion: flavorVersion,
-	}, nil
+	}
+
+	vs := strings.Split(version, ".")
+	if len(vs) != 2 && len(vs) != 3 {
+		return nil, fmt.Errorf("cannot infer the target version, the version %s is invalid", version)
+	}
+
+	if len(vs) == 2 {
+		vs = append(vs, "0")
+		d.Version = strings.Join(vs, ".")
+		manifest, err := manifest.FetchManifest()
+		if err != nil {
+			return nil, err
+		}
+		latest, _, err := api.GetLatestDistribution(d, manifest)
+		if err != nil {
+			return nil, err
+		}
+		d.Version = latest.Version
+	}
+	return d, nil
 }
 
 func switchExec(homedir string, distribution *api.IstioDistribution) error {
