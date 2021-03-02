@@ -30,6 +30,9 @@ $ getistio switch --version 1.9.0 --flavor=tetrate
 # Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version=1.8.3, flavor=tetrate, flavor-version=1
 $ getistio switch --flavor tetrate --flavor-version=1
 
+# Switch from active version=1.8.3, flavor=istio and flavor-version=0 to the latest 1.9.x version, flavor=istio and flavor-version=0
+$ getistio switch --version 1.9
+
 ```
 
 #### Options
