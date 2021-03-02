@@ -56,6 +56,14 @@ case ${LOCAL_ARCH} in
     LOCAL_ARCH=amd64
     ;;
   *)
+  armv7l)
+    LOCAL_ARCH=armv7
+    ;;
+  *)
+  arm64)
+    LOCAL_ARCH=arm64
+    ;;
+  *)
     echo "This system's architecture, ${LOCAL_ARCH}, isn't supported"
     exit 1
     ;;

@@ -8,6 +8,10 @@ builds:
       - darwin
     goarch:
       - amd64
+      - arm64
+      - arm
+    goarm:
+      - 7
 archives:
   - format: tar.gz
     name_template: '{{ .Binary }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}'
