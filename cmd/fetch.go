@@ -27,15 +27,13 @@ import (
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
-type FetchFlags struct {
-	Name, Version, Flavor string
-	FlavorVersion         int64
+type fetchFlags struct {
+	name, version, flavor string
+	flavorVersion         int64
 }
 
 func newFetchCmd(homedir string) *cobra.Command {
-	var (
-		flag FetchFlags
-	)
+	var flag fetchFlags
 
 	cmd := &cobra.Command{
 		Use:   "fetch",
@@ -110,37 +108,41 @@ For more information, please refer to "getistio list --help" command.
 
 	flags := cmd.Flags()
 	flags.SortFlags = false
-	flags.StringVarP(&flag.Name, "name", "", "", "Name of distribution, e.g. 1.9.0-istio-v0")
-	flags.StringVarP(&flag.Version, "version", "", "", "Version of istioctl e.g. \"--version 1.7.4\". When --name flag is set, this will not be used.")
-	flags.StringVarP(&flag.Flavor, "flavor", "", "", "Flavor of istioctl, e.g. \"--flavor tetrate\" or --flavor tetratefips\" or --flavor istio\". When --name flag is set, this will not be used.")
-	flags.Int64VarP(&flag.FlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. \"--version 1\". When --name flag is set, this will not be used.")
+	flags.StringVarP(&flag.name, "name", "", "", "Name of distribution, e.g. 1.9.0-istio-v0")
+	flags.StringVarP(&flag.version, "version", "", "", "Version of istioctl e.g. \"--version 1.7.4\". When --name flag is set, this will not be used.")
+	flags.StringVarP(&flag.flavor, "flavor", "", "",
+		"Flavor of istioctl, e.g. \"--flavor tetrate\" or --flavor tetratefips\" or --flavor istio\". When --name flag is set, this will not be used.")
+	flags.Int64VarP(&flag.flavorVersion, "flavor-version", "", -1,
+		"Version of the flavor, e.g. \"--version 1\". When --name flag is set, this will not be used.")
 	return cmd
 }
 
-func fetchParams(flags *FetchFlags,
+func fetchParams(flags *fetchFlags,
 	ms *api.Manifest) (*api.IstioDistribution, error) {
-	if len(flags.Name) != 0 {
-		d, err := api.IstioDistributionFromString(flags.Name)
+	if len(flags.name) != 0 {
+		d, err := api.IstioDistributionFromString(flags.name)
 		if err != nil {
-			return nil, fmt.Errorf("cannot parse given name %s to istio distribution", flags.Name)
+			return nil, fmt.Errorf("cannot parse given name %s to istio distribution", flags.name)
 		}
 		return d, nil
 	}
-	if flags.Flavor != api.IstioDistributionFlavorTetrate && flags.Flavor != api.IstioDistributionFlavorTetrateFIPS && flags.Flavor != api.IstioDistributionFlavorIstio {
-		flags.Flavor = api.IstioDistributionFlavorTetrate
-		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flags.Flavor)
+	if flags.flavor != api.IstioDistributionFlavorTetrate &&
+		flags.flavor != api.IstioDistributionFlavorTetrateFIPS &&
+		flags.flavor != api.IstioDistributionFlavorIstio {
+		flags.flavor = api.IstioDistributionFlavorTetrate
+		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flags.flavor)
 	}
-	if len(flags.Version) == 0 {
+	if len(flags.version) == 0 {
 		for _, m := range ms.IstioDistributions {
-			if m.Flavor == flags.Flavor {
+			if m.Flavor == flags.flavor {
 				return m, nil
 			}
 		}
 	}
 
-	ret := &api.IstioDistribution{Version: flags.Version, Flavor: flags.Flavor, FlavorVersion: flags.FlavorVersion}
+	ret := &api.IstioDistribution{Version: flags.version, Flavor: flags.flavor, FlavorVersion: flags.flavorVersion}
 
-	if strings.Count(flags.Version, ".") == 1 {
+	if strings.Count(flags.version, ".") == 1 {
 		// In the case where patch version is not given,
 		// we find the latest patch version
 		var (
@@ -148,7 +150,7 @@ func fetchParams(flags *FetchFlags,
 			prev   *semver.Version
 		)
 
-		v, err := semver.NewVersion(flags.Version)
+		v, err := semver.NewVersion(flags.version)
 		if err != nil {
 			return nil, err
 		}
@@ -170,7 +172,8 @@ func fetchParams(flags *FetchFlags,
 		}
 
 		ret.Version = latest.Version
-		logger.Infof("fallback to %s which is the latest patch version in the given verion minor %s\n", ret.Version, flags.Version)
+		logger.Infof("fallback to %s which is the latest patch version in the given verion minor %s\n",
+			ret.Version, flags.version)
 	}
 
 	if ret.FlavorVersion < 0 {

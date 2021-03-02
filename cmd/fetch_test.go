@@ -25,7 +25,7 @@ import (
 
 func Test_fetchParams(t *testing.T) {
 	type tc struct {
-		flag *FetchFlags
+		flag *fetchFlags
 		mf   *api.Manifest
 		exp  *api.IstioDistribution
 	}
@@ -33,7 +33,7 @@ func Test_fetchParams(t *testing.T) {
 	for i, c := range []tc{
 		{
 			// no args -> fall back to the latest tetrate flavor
-			flag: &FetchFlags{FlavorVersion: -1},
+			flag: &fetchFlags{flavorVersion: -1},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorTetrate},
@@ -43,22 +43,22 @@ func Test_fetchParams(t *testing.T) {
 		},
 		{
 			// all given
-			flag: &FetchFlags{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
+			flag: &fetchFlags{version: "1.7.3", flavorVersion: 100, flavor: api.IstioDistributionFlavorTetrate},
 			exp:  &api.IstioDistribution{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
 		},
 		{
 			// given name
-			flag: &FetchFlags{Name: "1.7.3-tetrate-v100"},
+			flag: &fetchFlags{name: "1.7.3-tetrate-v100"},
 			exp:  &api.IstioDistribution{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
 		},
 		{
 			// flavor not given
-			flag: &FetchFlags{Version: "1.7.3", FlavorVersion: 100},
+			flag: &fetchFlags{version: "1.7.3", flavorVersion: 100},
 			exp:  &api.IstioDistribution{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
 		},
 		{
 			//  flavorVersion not given -> fall back to the latest flavor version
-			flag: &FetchFlags{Version: "1.7.3", Flavor: api.IstioDistributionFlavorTetrateFIPS, FlavorVersion: -1},
+			flag: &fetchFlags{version: "1.7.3", flavor: api.IstioDistributionFlavorTetrateFIPS, flavorVersion: -1},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.3", FlavorVersion: 50, Flavor: api.IstioDistributionFlavorTetrateFIPS},
@@ -69,7 +69,7 @@ func Test_fetchParams(t *testing.T) {
 		},
 		{
 			//  version not given -> choose the latest version given flavor in manifest
-			flag: &FetchFlags{Flavor: api.IstioDistributionFlavorIstio, FlavorVersion: 0},
+			flag: &fetchFlags{flavor: api.IstioDistributionFlavorIstio, flavorVersion: 0},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorTetrateFIPS},
@@ -80,7 +80,7 @@ func Test_fetchParams(t *testing.T) {
 		},
 		{
 			//  version and flavor version  not given -> choose the latest version given flavor in manifest
-			flag: &FetchFlags{Flavor: api.IstioDistributionFlavorIstio, FlavorVersion: -1},
+			flag: &fetchFlags{flavor: api.IstioDistributionFlavorIstio, flavorVersion: -1},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorTetrateFIPS},
@@ -91,7 +91,7 @@ func Test_fetchParams(t *testing.T) {
 		},
 		{
 			//  flavorVersion not given -> not found error
-			flag: &FetchFlags{Version: "1.7.3", Flavor: api.IstioDistributionFlavorTetrateFIPS, FlavorVersion: -1},
+			flag: &fetchFlags{version: "1.7.3", flavor: api.IstioDistributionFlavorTetrateFIPS, flavorVersion: -1},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.3", FlavorVersion: 50, Flavor: api.IstioDistributionFlavorTetrate},
@@ -100,7 +100,7 @@ func Test_fetchParams(t *testing.T) {
 		},
 		{
 			// flavor, flavorVersion not given -> fall back to the latest tetrate flavor
-			flag: &FetchFlags{Version: "1.7.3", FlavorVersion: -1},
+			flag: &fetchFlags{version: "1.7.3", flavorVersion: -1},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrateFIPS},
@@ -111,7 +111,7 @@ func Test_fetchParams(t *testing.T) {
 		},
 		{
 			// patch version is not given in 'version', so should fallback to the latest patch version in the minor version
-			flag: &FetchFlags{Version: "1.7", Flavor: api.IstioDistributionFlavorTetrateFIPS, FlavorVersion: -1},
+			flag: &fetchFlags{version: "1.7", flavor: api.IstioDistributionFlavorTetrateFIPS, flavorVersion: -1},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
@@ -123,7 +123,7 @@ func Test_fetchParams(t *testing.T) {
 		},
 		{
 			// patch version is not given in 'version', so should fallback to the latest patch version in the minor version
-			flag: &FetchFlags{Version: "1.7", FlavorVersion: 0},
+			flag: &fetchFlags{version: "1.7", flavorVersion: 0},
 			mf: &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{
 					{Version: "1.7.100", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
