@@ -419,7 +419,7 @@ func TestFetch(t *testing.T) {
 		for _, c := range []tc{
 			{version: "1.7.5", flavor: api.IstioDistributionFlavorTetrate, flavorVersion: 0},
 			{version: "1.7.6", flavor: api.IstioDistributionFlavorTetrate, flavorVersion: 0},
-			{name: "1.7.6-tetratefips-v0"},
+			{name: "1.7.6-tetrate-v0"},
 		} {
 			_, err = Fetch(dir, c.name, c.version, c.flavor, c.flavorVersion, ms)
 			require.NoError(t, err)
