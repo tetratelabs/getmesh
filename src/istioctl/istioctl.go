@@ -221,7 +221,7 @@ func processFetchParams(flags *FetchFlags,
 	if len(flags.Name) != 0 {
 		d, err := api.IstioDistributionFromString(flags.Name)
 		if err != nil {
-			return nil, fmt.Errorf("cannot parse given name to %s istio distribution", flags.Name)
+			return nil, fmt.Errorf("cannot parse given name %s to istio distribution", flags.Name)
 		}
 		return d, nil
 	}
@@ -231,7 +231,7 @@ func processFetchParams(flags *FetchFlags,
 	}
 	if len(flags.Version) == 0 {
 		for _, m := range ms.IstioDistributions {
-			if m.Flavor == flags.Version {
+			if m.Flavor == flags.Flavor {
 				return m, nil
 			}
 		}
