@@ -89,7 +89,7 @@ For more information, please refer to "getistio list --help" command.
 				return err
 			}
 
-			d, err = istioctl.Fetch(homedir, d, ms)
+			err = istioctl.Fetch(homedir, d, ms)
 			if err != nil {
 				return err
 			}

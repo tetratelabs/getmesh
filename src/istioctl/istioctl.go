@@ -201,32 +201,28 @@ func ExecWithWriters(homeDir string, args []string, stdout, stderr io.Writer) er
 	return cmd.Run()
 }
 
-func Fetch(homeDir string, d *api.IstioDistribution, ms *api.Manifest) (*api.IstioDistribution, error) {
-	return d, fetch(homeDir, d, ms)
-}
-
-func fetch(homeDir string, targetDistribution *api.IstioDistribution, ms *api.Manifest) error {
+func Fetch(homeDir string, target *api.IstioDistribution, ms *api.Manifest) error {
 	var found bool
 	for _, m := range ms.IstioDistributions {
-		found = m.Equal(targetDistribution)
+		found = m.Equal(target)
 		if found {
-			targetDistribution.ReleaseNotes = m.ReleaseNotes
+			target.ReleaseNotes = m.ReleaseNotes
 			break
 		}
 	}
 
-	if err := checkExist(homeDir, targetDistribution); err == nil {
-		logger.Infof("%s already fetched: download skipped\n", targetDistribution.ToString())
+	if err := checkExist(homeDir, target); err == nil {
+		logger.Infof("%s already fetched: download skipped\n", target.ToString())
 		return nil
 	}
 
 	if !found {
 		return fmt.Errorf("manifest not found for istioctl %s."+
 			" Please check the supported istio versions and flavors by `getistio list`",
-			targetDistribution.ToString())
+			target.ToString())
 	}
 
-	return fetchIstioctl(homeDir, targetDistribution)
+	return fetchIstioctl(homeDir, target)
 }
 
 func fetchIstioctl(homeDir string, targetDistribution *api.IstioDistribution) error {
