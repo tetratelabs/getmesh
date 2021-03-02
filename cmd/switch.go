@@ -16,11 +16,13 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/tetratelabs/getistio/api"
 	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/manifest"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
@@ -53,6 +55,9 @@ $ getistio switch --version 1.9.0 --flavor=tetrate
 
 # Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version=1.8.3, flavor=tetrate, flavor-version=1
 $ getistio switch --flavor tetrate --flavor-version=1
+
+# Switch from active version=1.8.3, flavor=istio and flavor-version=0 to the latest 1.9.x version, flavor=istio and flavor-version=0
+$ getistio switch --version 1.9
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := switchParse(homedir, &flag)
@@ -115,11 +120,31 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 		return nil, fmt.Errorf("cannot infer the target version, no active distribution exists")
 	}
 
-	return &api.IstioDistribution{
+	d := &api.IstioDistribution{
 		Version:       version,
 		Flavor:        flavor,
 		FlavorVersion: flavorVersion,
-	}, nil
+	}
+
+	vs := strings.Split(version, ".")
+	if len(vs) != 2 && len(vs) != 3 {
+		return nil, fmt.Errorf("cannot infer the target version, the version %s is invalid", version)
+	}
+
+	if len(vs) == 2 {
+		vs = append(vs, "0")
+		d.Version = strings.Join(vs, ".")
+		manifest, err := manifest.FetchManifest()
+		if err != nil {
+			return nil, err
+		}
+		latest, _, err := api.GetLatestDistribution(d, manifest)
+		if err != nil {
+			return nil, err
+		}
+		d.Version = latest.Version
+	}
+	return d, nil
 }
 
 func switchExec(homedir string, distribution *api.IstioDistribution) error {

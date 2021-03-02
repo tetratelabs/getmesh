@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -37,6 +38,36 @@ func Test_switchParse(t *testing.T) {
 	manifest.GlobalManifestURLMux.Lock()
 	defer manifest.GlobalManifestURLMux.Unlock()
 
+	m := &api.Manifest{
+		IstioDistributions: []*api.IstioDistribution{
+			{
+				Version:       "1.7.6",
+				Flavor:        api.IstioDistributionFlavorIstio,
+				FlavorVersion: 0,
+			},
+			{
+				Version:       "1.7.5",
+				Flavor:        api.IstioDistributionFlavorIstio,
+				FlavorVersion: 0,
+			},
+		},
+	}
+
+	raw, err := json.Marshal(m)
+	require.NoError(t, err)
+
+	f, err := ioutil.TempFile("", "")
+	require.NoError(t, err)
+	defer f.Close()
+
+	_, err = f.Write(raw)
+	require.NoError(t, err)
+
+	require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", f.Name()))
+	defer func() {
+		require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", ""))
+	}()
+
 	// set up active distro
 	d := &api.IstioDistribution{
 		Version:       "1.7.6",
@@ -48,7 +79,7 @@ func Test_switchParse(t *testing.T) {
 	require.NoError(t,
 		os.MkdirAll(strings.TrimSuffix(istioctl.GetIstioctlPath(home, d), "/istioctl"), 0755))
 
-	f, err := os.Create(istioctl.GetIstioctlPath(home, d))
+	f, err = os.Create(istioctl.GetIstioctlPath(home, d))
 	require.NoError(t, err)
 	defer f.Close()
 
@@ -64,6 +95,13 @@ func Test_switchParse(t *testing.T) {
 		distro, err := switchParse(home, flag)
 		require.NoError(t, err)
 		exp := &api.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 0}
+		assert.Equal(t, distro, exp)
+	})
+	t.Run("group", func(t *testing.T) {
+		flag := &switchFlags{version: "1.7", flavor: "istio", flavorVersion: 0}
+		distro, err := switchParse(home, flag)
+		require.NoError(t, err)
+		exp := &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 0}
 		assert.Equal(t, distro, exp)
 	})
 }
