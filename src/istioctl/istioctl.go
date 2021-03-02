@@ -26,11 +26,15 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
-
 	"github.com/tetratelabs/getistio/api"
 	"github.com/tetratelabs/getistio/src/getistio"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
+
+type FetchFlags struct {
+	Name, Version, Flavor string
+	FlavorVersion         int64
+}
 
 // This is the message put into stdout of "istioctl version" command when there are no istiod running in istio-system,
 // i.e. the case where istio is not installed.
@@ -203,8 +207,8 @@ func ExecWithWriters(homeDir string, args []string, stdout, stderr io.Writer) er
 	return cmd.Run()
 }
 
-func Fetch(homeDir string, name, version, flavor string, flavorVersion int, ms *api.Manifest) (*api.IstioDistribution, error) {
-	d, err := processFetchParams(name, version, flavor, flavorVersion, ms)
+func Fetch(homeDir string, flags *FetchFlags, ms *api.Manifest) (*api.IstioDistribution, error) {
+	d, err := processFetchParams(flags, ms)
 	if err != nil {
 		return nil, err
 	}
@@ -212,30 +216,30 @@ func Fetch(homeDir string, name, version, flavor string, flavorVersion int, ms *
 	return d, fetch(homeDir, d, ms)
 }
 
-func processFetchParams(name, version, flavor string, flavorVersion int,
+func processFetchParams(flags *FetchFlags,
 	ms *api.Manifest) (*api.IstioDistribution, error) {
-	if len(name) != 0 {
-		d, err := api.IstioDistributionFromString(name)
+	if len(flags.Name) != 0 {
+		d, err := api.IstioDistributionFromString(flags.Name)
 		if err != nil {
-			return nil, fmt.Errorf("cannot parse given name to %s istio distribution", name)
+			return nil, fmt.Errorf("cannot parse given name to %s istio distribution", flags.Name)
 		}
 		return d, nil
 	}
-	if flavor != api.IstioDistributionFlavorTetrate && flavor != api.IstioDistributionFlavorTetrateFIPS && flavor != api.IstioDistributionFlavorIstio {
-		flavor = api.IstioDistributionFlavorTetrate
-		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flavor)
+	if flags.Flavor != api.IstioDistributionFlavorTetrate && flags.Flavor != api.IstioDistributionFlavorTetrateFIPS && flags.Flavor != api.IstioDistributionFlavorIstio {
+		flags.Flavor = api.IstioDistributionFlavorTetrate
+		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flags.Flavor)
 	}
-	if len(version) == 0 {
+	if len(flags.Version) == 0 {
 		for _, m := range ms.IstioDistributions {
-			if m.Flavor == flavor {
+			if m.Flavor == flags.Version {
 				return m, nil
 			}
 		}
 	}
 
-	ret := &api.IstioDistribution{Version: version, Flavor: flavor, FlavorVersion: int64(flavorVersion)}
+	ret := &api.IstioDistribution{Version: flags.Version, Flavor: flags.Flavor, FlavorVersion: flags.FlavorVersion}
 
-	if strings.Count(version, ".") == 1 {
+	if strings.Count(flags.Version, ".") == 1 {
 		// In the case where patch version is not given,
 		// we find the latest patch version
 		var (
@@ -243,7 +247,7 @@ func processFetchParams(name, version, flavor string, flavorVersion int,
 			prev   *semver.Version
 		)
 
-		v, err := semver.NewVersion(version)
+		v, err := semver.NewVersion(flags.Version)
 		if err != nil {
 			return nil, err
 		}
@@ -265,7 +269,7 @@ func processFetchParams(name, version, flavor string, flavorVersion int,
 		}
 
 		ret.Version = latest.Version
-		logger.Infof("fallback to %s which is the latest patch version in the given verion minor %s\n", ret.Version, version)
+		logger.Infof("fallback to %s which is the latest patch version in the given verion minor %s\n", ret.Version, flags.Version)
 	}
 
 	if ret.FlavorVersion < 0 {

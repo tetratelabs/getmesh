@@ -26,10 +26,11 @@ import (
 
 func newFetchCmd(homedir string) *cobra.Command {
 	var (
-		flagName          string
-		flagVersion       string
-		flagFlavor        string
-		flagFlavorVersion int
+		flag istioctl.FetchFlags
+		// flagName          string
+		// flagVersion       string
+		// flagFlavor        string
+		// flagFlavorVersion int
 	)
 
 	cmd := &cobra.Command{
@@ -80,7 +81,7 @@ For more information, please refer to "getistio list --help" command.
 				return fmt.Errorf("error fetching manifest: %v", err)
 			}
 
-			d, err := istioctl.Fetch(homedir, flagName, flagVersion, flagFlavor, flagFlavorVersion, ms)
+			d, err := istioctl.Fetch(homedir, &flag, ms)
 			if err != nil {
 				return err
 			}
@@ -101,9 +102,9 @@ For more information, please refer to "getistio list --help" command.
 
 	flags := cmd.Flags()
 	flags.SortFlags = false
-	flags.StringVarP(&flagName, "name", "", "", "Name of distribution, e.g. 1.9.0-istio-v0")
-	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl e.g. \"--version 1.7.4\". When --name flag is set, this will not be used.")
-	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"--flavor tetrate\" or --flavor tetratefips\" or --flavor istio\". When --name flag is set, this will not be used.")
-	flags.IntVarP(&flagFlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. \"--version 1\". When --name flag is set, this will not be used.")
+	flags.StringVarP(&flag.Name, "name", "", "", "Name of distribution, e.g. 1.9.0-istio-v0")
+	flags.StringVarP(&flag.Version, "version", "", "", "Version of istioctl e.g. \"--version 1.7.4\". When --name flag is set, this will not be used.")
+	flags.StringVarP(&flag.Flavor, "flavor", "", "", "Flavor of istioctl, e.g. \"--flavor tetrate\" or --flavor tetratefips\" or --flavor istio\". When --name flag is set, this will not be used.")
+	flags.Int64VarP(&flag.FlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. \"--version 1\". When --name flag is set, this will not be used.")
 	return cmd
 }
