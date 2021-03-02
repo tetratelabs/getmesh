@@ -400,8 +400,8 @@ func TestFetch(t *testing.T) {
 	}
 
 	type tc struct {
-		version, flavor string
-		flavorVersion   int
+		name, version, flavor string
+		flavorVersion         int
 	}
 
 	t.Run("not-supported", func(t *testing.T) {
@@ -410,7 +410,7 @@ func TestFetch(t *testing.T) {
 			{version: "1.7.5", flavor: api.IstioDistributionFlavorTetrateFIPS},
 			{version: "1.7.5", flavor: api.IstioDistributionFlavorTetrate, flavorVersion: 1},
 		} {
-			_, err = Fetch(dir, c.version, c.flavor, c.flavorVersion, ms)
+			_, err = Fetch(dir, c.name, c.version, c.flavor, c.flavorVersion, ms)
 			require.Error(t, err)
 		}
 	})
@@ -419,8 +419,9 @@ func TestFetch(t *testing.T) {
 		for _, c := range []tc{
 			{version: "1.7.5", flavor: api.IstioDistributionFlavorTetrate, flavorVersion: 0},
 			{version: "1.7.6", flavor: api.IstioDistributionFlavorTetrate, flavorVersion: 0},
+			{name: "1.7.6-tetratefips-v0"},
 		} {
-			_, err = Fetch(dir, c.version, c.flavor, c.flavorVersion, ms)
+			_, err = Fetch(dir, c.name, c.version, c.flavor, c.flavorVersion, ms)
 			require.NoError(t, err)
 		}
 	})
@@ -428,10 +429,10 @@ func TestFetch(t *testing.T) {
 
 func Test_processFetchParams(t *testing.T) {
 	type tc struct {
-		version, flavor string
-		flavorVersion   int
-		mf              *api.Manifest
-		exp             *api.IstioDistribution
+		name, version, flavor string
+		flavorVersion         int
+		mf                    *api.Manifest
+		exp                   *api.IstioDistribution
 	}
 
 	for i, c := range []tc{
@@ -448,6 +449,11 @@ func Test_processFetchParams(t *testing.T) {
 			// all given
 			version: "1.7.3", flavorVersion: 100, flavor: api.IstioDistributionFlavorTetrate,
 			exp: &api.IstioDistribution{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
+		},
+		{
+			// given name
+			name: "1.7.3-tetrate-v100",
+			exp:  &api.IstioDistribution{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrate},
 		},
 		{
 			// flavor not given
@@ -535,7 +541,7 @@ func Test_processFetchParams(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%d-th case", i), func(t *testing.T) {
-			actual, err := processFetchParams(c.version, c.flavor, c.flavorVersion, c.mf)
+			actual, err := processFetchParams(c.name, c.version, c.flavor, c.flavorVersion, c.mf)
 			if c.exp == nil {
 				assert.Error(t, err)
 			} else {

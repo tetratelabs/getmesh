@@ -26,6 +26,7 @@ import (
 
 func newFetchCmd(homedir string) *cobra.Command {
 	var (
+		flagName          string
 		flagVersion       string
 		flagFlavor        string
 		flagFlavorVersion int
@@ -46,6 +47,9 @@ $ getistio fetch --version 1.7 --flavor tetrate --flavor-version 0
 
 # Fetch the istioctl of version=1.7.4 flavor=tetrate flavor-version=0
 $ getistio fetch --version 1.7.4 --flavor tetrate --flavor-version 0
+
+# Fetch the istioctl of version=1.7.4 flavor=tetrate flavor-version=0 using name
+$ getistio fetch --name 1.7.4-tetrate-v0
 
 # Fetch the latest istioctl of version=1.7.4 and flavor=tetratefips
 $ getistio fetch --version 1.7.4 --flavor tetratefips
@@ -76,7 +80,7 @@ For more information, please refer to "getistio list --help" command.
 				return fmt.Errorf("error fetching manifest: %v", err)
 			}
 
-			d, err := istioctl.Fetch(homedir, flagVersion, flagFlavor, flagFlavorVersion, ms)
+			d, err := istioctl.Fetch(homedir, flagName, flagVersion, flagFlavor, flagFlavorVersion, ms)
 			if err != nil {
 				return err
 			}
@@ -97,8 +101,9 @@ For more information, please refer to "getistio list --help" command.
 
 	flags := cmd.Flags()
 	flags.SortFlags = false
-	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl e.g. \"--version 1.7.4\"")
-	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"--flavor tetrate\" or --flavor tetratefips\" or --flavor istio\"")
-	flags.IntVarP(&flagFlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. \"--version 1\"")
+	flags.StringVarP(&flagName, "name", "", "", "Name of distribution, e.g. 1.9.0-istio-v0")
+	flags.StringVarP(&flagVersion, "version", "", "", "Version of istioctl e.g. \"--version 1.7.4\". When --name flag is set, this will not be used.")
+	flags.StringVarP(&flagFlavor, "flavor", "", "", "Flavor of istioctl, e.g. \"--flavor tetrate\" or --flavor tetratefips\" or --flavor istio\". When --name flag is set, this will not be used.")
+	flags.IntVarP(&flagFlavorVersion, "flavor-version", "", -1, "Version of the flavor, e.g. \"--version 1\". When --name flag is set, this will not be used.")
 	return cmd
 }

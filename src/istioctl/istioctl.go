@@ -203,8 +203,8 @@ func ExecWithWriters(homeDir string, args []string, stdout, stderr io.Writer) er
 	return cmd.Run()
 }
 
-func Fetch(homeDir string, version, flavor string, flavorVersion int, ms *api.Manifest) (*api.IstioDistribution, error) {
-	d, err := processFetchParams(version, flavor, flavorVersion, ms)
+func Fetch(homeDir string, name, version, flavor string, flavorVersion int, ms *api.Manifest) (*api.IstioDistribution, error) {
+	d, err := processFetchParams(name, version, flavor, flavorVersion, ms)
 	if err != nil {
 		return nil, err
 	}
@@ -212,8 +212,15 @@ func Fetch(homeDir string, version, flavor string, flavorVersion int, ms *api.Ma
 	return d, fetch(homeDir, d, ms)
 }
 
-func processFetchParams(version, flavor string, flavorVersion int,
+func processFetchParams(name, version, flavor string, flavorVersion int,
 	ms *api.Manifest) (*api.IstioDistribution, error) {
+	if len(name) != 0 {
+		d, err := api.IstioDistributionFromString(name)
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse given name to %s istio distribution", name)
+		}
+		return d, nil
+	}
 	if flavor != api.IstioDistributionFlavorTetrate && flavor != api.IstioDistributionFlavorTetrateFIPS && flavor != api.IstioDistributionFlavorIstio {
 		flavor = api.IstioDistributionFlavorTetrate
 		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flavor)
