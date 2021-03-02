@@ -25,8 +25,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Masterminds/semver"
-
 	"github.com/tetratelabs/getistio/api"
 	"github.com/tetratelabs/getistio/src/getistio"
 	"github.com/tetratelabs/getistio/src/util/logger"
@@ -203,106 +201,28 @@ func ExecWithWriters(homeDir string, args []string, stdout, stderr io.Writer) er
 	return cmd.Run()
 }
 
-func Fetch(homeDir string, version, flavor string, flavorVersion int, ms *api.Manifest) (*api.IstioDistribution, error) {
-	d, err := processFetchParams(version, flavor, flavorVersion, ms)
-	if err != nil {
-		return nil, err
-	}
-
-	return d, fetch(homeDir, d, ms)
-}
-
-func processFetchParams(version, flavor string, flavorVersion int,
-	ms *api.Manifest) (*api.IstioDistribution, error) {
-	if flavor != api.IstioDistributionFlavorTetrate && flavor != api.IstioDistributionFlavorTetrateFIPS && flavor != api.IstioDistributionFlavorIstio {
-		flavor = api.IstioDistributionFlavorTetrate
-		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flavor)
-	}
-	if len(version) == 0 {
-		for _, m := range ms.IstioDistributions {
-			if m.Flavor == flavor {
-				return m, nil
-			}
-		}
-	}
-
-	ret := &api.IstioDistribution{Version: version, Flavor: flavor, FlavorVersion: int64(flavorVersion)}
-
-	if strings.Count(version, ".") == 1 {
-		// In the case where patch version is not given,
-		// we find the latest patch version
-		var (
-			latest *api.IstioDistribution
-			prev   *semver.Version
-		)
-
-		v, err := semver.NewVersion(version)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, d := range ms.IstioDistributions {
-			cur, err := semver.NewVersion(d.Version)
-			if err != nil {
-				return nil, err
-			}
-
-			if d.Flavor == ret.Flavor && cur.Minor() == v.Minor() && (prev == nil || cur.GreaterThan(prev)) {
-				prev = cur
-				latest = d
-			}
-		}
-
-		if latest == nil {
-			return nil, fmt.Errorf("invalid version %s", ret.Version)
-		}
-
-		ret.Version = latest.Version
-		logger.Infof("fallback to %s which is the latest patch version in the given verion minor %s\n", ret.Version, version)
-	}
-
-	if ret.FlavorVersion < 0 {
-		// search the latest flavor version in this flavor
-		var found bool
-		for _, m := range ms.IstioDistributions {
-			if m.Version == ret.Version && m.Flavor == ret.Flavor {
-				ret.FlavorVersion = m.FlavorVersion
-				found = true
-				break
-			}
-		}
-		if !found {
-			return nil, fmt.Errorf("unsupported version=%s and flavor=%s", ret.Version, ret.Flavor)
-		}
-		logger.Infof("fallback to the flavor %d version which is the latest one in %s-%s\n",
-			ret.FlavorVersion, ret.Version, ret.Flavor)
-	}
-
-	return ret, nil
-}
-
-func fetch(homeDir string, targetDistribution *api.IstioDistribution, ms *api.Manifest) error {
+func Fetch(homeDir string, target *api.IstioDistribution, ms *api.Manifest) error {
 	var found bool
 	for _, m := range ms.IstioDistributions {
-		found = m.Equal(targetDistribution)
+		found = m.Equal(target)
 		if found {
-			targetDistribution.ReleaseNotes = m.ReleaseNotes
+			target.ReleaseNotes = m.ReleaseNotes
 			break
 		}
 	}
 
-	if err := checkExist(homeDir, targetDistribution); err == nil {
-		logger.Infof("%s already fetched: download skipped\n", targetDistribution.ToString())
+	if err := checkExist(homeDir, target); err == nil {
+		logger.Infof("%s already fetched: download skipped\n", target.ToString())
 		return nil
 	}
 
 	if !found {
 		return fmt.Errorf("manifest not found for istioctl %s."+
 			" Please check the supported istio versions and flavors by `getistio list`",
-			targetDistribution.ToString())
+			target.ToString())
 	}
 
-	return fetchIstioctl(homeDir, targetDistribution)
+	return fetchIstioctl(homeDir, target)
 }
 
 func fetchIstioctl(homeDir string, targetDistribution *api.IstioDistribution) error {
