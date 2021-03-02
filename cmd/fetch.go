@@ -84,7 +84,7 @@ For more information, please refer to "getistio list --help" command.
 			if err != nil {
 				return fmt.Errorf("error fetching manifest: %v", err)
 			}
-			d, err := processFetchParams(&flag, ms)
+			d, err := fetchParams(&flag, ms)
 			if err != nil {
 				return err
 			}
@@ -117,7 +117,7 @@ For more information, please refer to "getistio list --help" command.
 	return cmd
 }
 
-func processFetchParams(flags *FetchFlags,
+func fetchParams(flags *FetchFlags,
 	ms *api.Manifest) (*api.IstioDistribution, error) {
 	if len(flags.Name) != 0 {
 		d, err := api.IstioDistributionFromString(flags.Name)

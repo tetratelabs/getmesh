@@ -23,7 +23,7 @@ import (
 	"github.com/tetratelabs/getistio/api"
 )
 
-func Test_processFetchParams(t *testing.T) {
+func Test_fetchParams(t *testing.T) {
 	type tc struct {
 		flag *FetchFlags
 		mf   *api.Manifest
@@ -137,7 +137,7 @@ func Test_processFetchParams(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%d-th case", i), func(t *testing.T) {
-			actual, err := processFetchParams(c.flag, c.mf)
+			actual, err := fetchParams(c.flag, c.mf)
 			if c.exp == nil {
 				assert.Error(t, err)
 			} else {
