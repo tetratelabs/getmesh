@@ -55,11 +55,9 @@ case ${LOCAL_ARCH} in
   x86_64)
     LOCAL_ARCH=amd64
     ;;
-  *)
   armv7l)
     LOCAL_ARCH=armv7
     ;;
-  *)
   arm64)
     LOCAL_ARCH=arm64
     ;;
