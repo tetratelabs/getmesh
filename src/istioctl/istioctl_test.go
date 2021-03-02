@@ -377,6 +377,45 @@ func TestFetch(t *testing.T) {
 	dir, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
 	defer os.RemoveAll(dir)
+	ms := &api.Manifest{
+		IstioDistributions: []*api.IstioDistribution{
+			{
+				Version:       "1.7.6",
+				Flavor:        api.IstioDistributionFlavorTetrate,
+				FlavorVersion: 0,
+			},
+			{
+				Version:       "1.7.6",
+				Flavor:        api.IstioDistributionFlavorTetrateFIPS,
+				FlavorVersion: 0,
+			},
+			{
+				Version:       "1.7.5",
+				Flavor:        api.IstioDistributionFlavorTetrate,
+				FlavorVersion: 0,
+			},
+		},
+	}
+	t.Run("not-supported", func(t *testing.T) {
+		for _, c := range []*api.IstioDistribution{
+			{Version: "1000.7.4", Flavor: api.IstioDistributionFlavorTetrate},
+			{Version: "1.7.5", Flavor: api.IstioDistributionFlavorTetrateFIPS},
+			{Version: "1.7.5", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 1},
+		} {
+			err = Fetch(dir, c, ms)
+			require.Error(t, err)
+		}
+	})
+
+	t.Run("supported", func(t *testing.T) {
+		for _, c := range []*api.IstioDistribution{
+			{Version: "1.7.5", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			{Version: "1.7.6", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+		} {
+			err = Fetch(dir, c, ms)
+			require.NoError(t, err)
+		}
+	})
 
 	t.Run("already exist", func(t *testing.T) {
 		target := &api.IstioDistribution{
