@@ -94,10 +94,12 @@ jobs:
   unittests-armv7:
     strategy:
       matrix:
+        os: [ ubuntu-latest ]
         include:
           - arch: armv7
             distro: ubuntu18.04
     name: unittests on armv7
+    runs-on: ${{ matrix.os }}
     steps:
       - name: checkout
         uses: actions/checkout@v2
