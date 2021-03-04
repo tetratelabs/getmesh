@@ -94,7 +94,7 @@ jobs:
   unittests-armv7:
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-latest ] # TODO add macos to testing env
         include:
           - arch: armv7
             distro: ubuntu18.04
@@ -120,6 +120,7 @@ jobs:
                 apt-get update -q -y
                 apt-get install -q -y git
                 apt-get install -q -y wget
+                apt-get install -q -y make
                 ;;
               fedora*)
                 dnf -y update
