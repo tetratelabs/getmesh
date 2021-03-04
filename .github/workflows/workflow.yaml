@@ -123,14 +123,6 @@ jobs:
                 apt-get install -q -y make
                 apt-get install -q -y build-essential
                 ;;
-              fedora*)
-                dnf -y update
-                dnf -y install git which
-                ;;
-              alpine*)
-                apk update
-                apk add git
-                ;;
             esac
           run: |
             wget -q https://golang.org/dl/go1.15.linux-armv6l.tar.gz
