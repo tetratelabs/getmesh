@@ -135,26 +135,6 @@ jobs:
             go mod download
             make unit-test
             go build .
-      - name: set up go 1.15
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.15
-
-      - uses: actions/cache@v2.1.3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - name: download dependencies
-        run: go mod download
-
-      - name: run
-        run: make unit-test
-
-      - name: build
-        run: go build .
   e2e-test:
     strategy:
       matrix:
