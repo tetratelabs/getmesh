@@ -120,6 +120,7 @@ jobs:
                 apt-get update -q -y
                 apt-get install -q -y git
                 apt-get install -q -y wget
+                apt-get install -q -y curl
                 apt-get install -q -y make
                 apt-get install -q -y build-essential
                 ;;
