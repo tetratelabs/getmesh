@@ -18,6 +18,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -35,6 +36,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tetratelabs/getistio/api"
 	"github.com/tetratelabs/getistio/src/getistio"
@@ -748,5 +750,13 @@ func configValidate(t *testing.T) {
 			require.Contains(t, out, exp, exp)
 		}
 		fmt.Println(out)
+	})
+	t.Run("cleanup", func(t *testing.T) {
+		client, err := util.GetK8sClient()
+		assert.NoError(t, err)
+		err = client.CoreV1().Namespaces().Delete(context.TODO(), "healthy", v1.DeleteOptions{})
+		assert.NoError(t, err)
+		err = client.CoreV1().Namespaces().Delete(context.TODO(), "invalid", v1.DeleteOptions{})
+		assert.NoError(t, err)
 	})
 }
