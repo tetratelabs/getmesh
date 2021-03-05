@@ -104,6 +104,7 @@ func Test_E2E(t *testing.T) {
 	t.Run("version", version)
 	t.Run("check-upgrade", checkUpgrade)
 	t.Run("config-validate", configValidate)
+	t.Run("clean up", cleanup)
 }
 
 func securityPatchChecker(t *testing.T) {
@@ -620,15 +621,6 @@ func configValidate(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
 	time.Sleep(time.Second * 6)
-	//cleanup, should delete unneeded ns after all tests got finished
-	defer func() {
-		client, err := util.GetK8sClient()
-		assert.NoError(t, err)
-		err = client.CoreV1().Namespaces().Delete(context.TODO(), "healthy", v1.DeleteOptions{})
-		assert.NoError(t, err)
-		err = client.CoreV1().Namespaces().Delete(context.TODO(), "invalid", v1.DeleteOptions{})
-		assert.NoError(t, err)
-	}()
 	t.Run("all namespaces", func(t *testing.T) {
 		t.Parallel()
 		cmd := exec.Command("./getistio", "config-validate")
@@ -759,4 +751,15 @@ func configValidate(t *testing.T) {
 		}
 		fmt.Println(out)
 	})
+}
+
+func cleanup(t *testing.T) {
+	client, err := util.GetK8sClient()
+	assert.NoError(t, err)
+	err = client.CoreV1().Namespaces().Delete(context.TODO(), "healthy", v1.DeleteOptions{})
+	assert.NoError(t, err)
+	err = client.CoreV1().Namespaces().Delete(context.TODO(), "invalid", v1.DeleteOptions{})
+	assert.NoError(t, err)
+	err = client.CoreV1().Namespaces().Delete(context.TODO(), "bookinfo", v1.DeleteOptions{})
+	assert.NoError(t, err)
 }
