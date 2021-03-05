@@ -147,7 +147,7 @@ func update(t *testing.T) {
 	cmd.Env = env
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.3!")
+	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.4!")
 	t.Log(actual)
 }
 
@@ -201,21 +201,20 @@ func list(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
 
-	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	 K8S VERSIONS  
-   *1.9.0    	  tetrate  	      0       	1.17,1.18,1.19	
-    1.9.0    	tetratefips	      0       	1.17,1.18,1.19	
-    1.9.0    	   istio   	      0       	1.17,1.18,1.19	
-    1.8.3    	  tetrate  	      0       	1.16,1.17,1.18	
-    1.8.3    	tetratefips	      0       	1.16,1.17,1.18	
-    1.8.3    	   istio   	      0       	1.16,1.17,1.18	
-    1.8.2    	  tetrate  	      0       	1.16,1.17,1.18	
-    1.8.2    	tetratefips	      0       	1.16,1.17,1.18	
-    1.8.1    	  tetrate  	      0       	1.16,1.17,1.18	
-    1.8.0    	  tetrate  	      0       	1.16,1.17,1.18	
-    1.7.7    	  tetrate  	      0       	1.16,1.17,1.18	
-    1.7.6    	  tetrate  	      0       	1.16,1.17,1.18	
-    1.7.5    	  tetrate  	      0       	1.16,1.17,1.18	
-    1.7.4    	  tetrate  	      0       	1.16,1.17,1.18`
+	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	   K8S VERSIONS     
+   *1.9.0    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
+    1.9.0    	tetratefips	      1       	1.17,1.18,1.19,1.20	
+    1.9.0    	   istio   	      0       	1.17,1.18,1.19,1.20	
+    1.8.3    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
+    1.8.3    	tetratefips	      1       	1.16,1.17,1.18,1.19	
+    1.8.3    	   istio   	      0       	1.16,1.17,1.18,1.19	
+    1.8.2    	  tetrate  	      0       	  1.16,1.17,1.18   	
+    1.8.1    	  tetrate  	      0       	  1.16,1.17,1.18   	
+    1.8.0    	  tetrate  	      0       	  1.16,1.17,1.18   	
+    1.7.7    	  tetrate  	      0       	  1.16,1.17,1.18   	
+    1.7.6    	  tetrate  	      0       	  1.16,1.17,1.18   	
+    1.7.5    	  tetrate  	      0       	  1.16,1.17,1.18   	
+    1.7.4    	  tetrate  	      0       	  1.16,1.17,1.18`
 	assert.Contains(t, buf.String(), exp)
 	fmt.Println(buf.String())
 }
