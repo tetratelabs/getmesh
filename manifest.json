@@ -13,26 +13,26 @@
       "k8s_versions": [
         "1.17",
         "1.18",
-		"1.19",
-		"1.20"
+        "1.19",
+        "1.20"
       ],
       "release_notes": [
-		"https://istio.io/latest/news/releases/1.9.x/announcing-1.9/"
+        "https://istio.io/latest/news/releases/1.9.x/announcing-1.9/"
       ],
       "is_security_patch": false
     },
-	{
+    {
       "version": "1.9.0",
       "flavor": "tetratefips",
       "flavor_version": 1,
       "k8s_versions": [
         "1.17",
         "1.18",
-		"1.19",
-		"1.20"
+        "1.19",
+        "1.20"
       ],
       "release_notes": [
-		"https://istio.io/latest/news/releases/1.9.x/announcing-1.9/"
+        "https://istio.io/latest/news/releases/1.9.x/announcing-1.9/"
       ],
       "is_security_patch": false
     },
@@ -43,11 +43,11 @@
       "k8s_versions": [
         "1.17",
         "1.18",
-		"1.19",
-		"1.20"
+        "1.19",
+        "1.20"
       ],
       "release_notes": [
-		"https://istio.io/latest/news/releases/1.9.x/announcing-1.9/"
+        "https://istio.io/latest/news/releases/1.9.x/announcing-1.9/"
       ],
       "is_security_patch": false
     },
@@ -66,7 +66,7 @@
       ],
       "is_security_patch": false
     },
-	{
+    {
       "version": "1.8.3",
       "flavor": "tetratefips",
       "flavor_version": 1,
@@ -81,7 +81,7 @@
       ],
       "is_security_patch": false
     },
-	{
+    {
       "version": "1.8.3",
       "flavor": "istio",
       "flavor_version": 0,
@@ -152,7 +152,7 @@
       ],
       "is_security_patch": false
     },
-	{
+    {
       "version": "1.7.6",
       "flavor": "tetrate",
       "flavor_version": 0,
