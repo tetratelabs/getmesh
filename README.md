@@ -36,7 +36,7 @@ in addition GetIstio validates the manifest yaml files (that are not applied yet
 GetIstio can be obtained by issuing the following command:
 
 ```sh
-curl -sL https://tetrate.bintray.com/getistio/download.sh | bash
+curl -sL https://dl.cloudsmith.io/public/tetrate/getistio/raw/files/download.sh | bash
 ```
 
 This, by default, downloads the latest version of GetIstio and certified Istio. To check if the download was successful, run the [version command](/doc/en/getistio-cli/reference/getistio_version/_index.md):
@@ -77,7 +77,7 @@ While we recommend always using the latest GetIstio, if the user wants to downlo
 
 ```sh
 export GETISTIO_VERSION=<your_version> ##say 0.5.0 for example
-curl -sL https://tetrate.bintray.com/getistio/download.sh | bash
+curl -sL https://dl.cloudsmith.io/public/tetrate/getistio/raw/files/download.sh | bash
 ```
 This would overwrite the existing version of GetIstio to the one just downloaded.
 
