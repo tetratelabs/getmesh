@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	manifestURL = "https://dl.cloudsmith.io/public/tetrate/getistio/raw/files/manifest.json"
+	manifestURL = "https://dl.getistio.io/public/tetrate/getistio/raw/files/manifest.json"
 )
 
 // functions invoked when anytime we access to the remote manifest.json

@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	downloadShellURL           = "https://dl.cloudsmith.io/public/tetrate/getistio/raw/files/download.sh"
+	downloadShellURL           = "https://dl.getistio.io/public/tetrate/getistio/raw/files/download.sh"
 	downloadShellTestURLEnvKey = "GETISTIO_TEST_DOWNLOAD_SHELL_URL"
 )
 

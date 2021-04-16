@@ -61,7 +61,7 @@ case ${LOCAL_ARCH} in
     ;;
 esac
 
-URL="https://dl.cloudsmith.io/public/tetrate/getistio/raw/files/getistio_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
+URL="https://dl.getistio.io/public/tetrate/getistio/raw/files/getistio_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
 
 if [[ -n "${GETISTIO_TEST_BINRAY_URL}" ]]; then
     URL=${GETISTIO_TEST_BINRAY_URL}

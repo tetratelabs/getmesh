@@ -129,7 +129,7 @@ Or, you can sign off the whole PR via `git rebase --signoff main`.
 
 On any new release tag on this repository, our release workflow defined in `.github/workflows/release.yaml` 
 will be triggered to push the built binaries, `manifest.json`, and `download.sh` to
-[GetIstio's repository on Cloudsmith](https://dl.cloudsmith.io/public/tetrate/getistio/raw/). Please note that `manifest.json` and `download.sh`
+[GetIstio's repository on Cloudsmith](https://dl.getistio.io/public/tetrate/getistio/raw/). Please note that `manifest.json` and `download.sh`
 are not tagged at Cloudsmith level, so they are overwritten by the new revision. The reason for that is because it is convenient to have "static" URLs for these two resources.
 
 In order to cut a new release tag and release the new version from the main branch, you should create a PR 
