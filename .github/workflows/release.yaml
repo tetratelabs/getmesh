@@ -31,28 +31,63 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UPLOAD_BINTRAY_SECRET: ${{ secrets.BINTRAY_API_KEY }}
 
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      - name: Put binaries to Bintray
+      - name: Push Mac binaries to Cloudsmith
         working-directory: dist
-        run: |
-          BINTRAY_PATH=https://api.bintray.com/content/tetrate/getistio/getistio/${{ env.RELEASE_VERSION }}
-          curl -T ./getistio_darwin_amd64.tar.gz -ugetistio-bot:${{ secrets.BINTRAY_API_KEY }} ${BINTRAY_PATH}/getistio_darwin_amd64_${{ env.RELEASE_VERSION }}.tar.gz
-          curl -T ./getistio_linux_amd64.tar.gz -ugetistio-bot:${{ secrets.BINTRAY_API_KEY }} ${BINTRAY_PATH}/getistio_linux_amd64_${{ env.RELEASE_VERSION }}.tar.gz
-          curl -ugetistio-bot:${{ secrets.BINTRAY_API_KEY }} -XPOST ${BINTRAY_PATH}/publish
+        id: push-mac
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "raw"
+          owner: "tetrate"
+          repo: "getistio"
+          file: "getistio_darwin_amd64.tar.gz"
+          name: "getistio_darwin_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
 
-      - name: Push manifest
-        run: |
-          BINTRAY_PATH=https://api.bintray.com/content/tetrate/getistio/manifest/latest
-          curl -T manifest.json -ugetistio-bot:${{ secrets.BINTRAY_API_KEY }} "${BINTRAY_PATH}/manifest.json?override=1&publish=1"
+      - name: Push Linux binaries to Cloudsmith
+        working-directory: dist
+        id: push-linux
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "raw"
+          owner: "tetrate"
+          repo: "getistio"
+          file: "getistio_linux_amd64.tar.gz"
+          name: "getistio_linux_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
 
-      - name: Push download script
-        run: |
-          BINTRAY_PATH=https://api.bintray.com/content/tetrate/getistio/download/latest
-          curl -T download.sh -ugetistio-bot:${{ secrets.BINTRAY_API_KEY }} "${BINTRAY_PATH}/download.sh?override=1&publish=1"
+      - name: Push Manifest
+        working-directory: dist
+        id: push-manifest
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "raw"
+          owner: "tetrate"
+          repo: "getistio"
+          file: "manifest.json"
+          republish: "true"
+          name: "manifest.json"
+
+      - name: Push Download Script
+        working-directory: dist
+        id: push-script
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "raw"
+          owner: "tetrate"
+          repo: "getistio"
+          file: "download.sh"
+          republish: "true"
+          name: "download.sh"
 
   post-release-check:
     needs: [release-binary]
@@ -63,7 +98,7 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Download the latest getistio
-        run: curl -sL https://tetrate.bintray.com/getistio/download.sh | bash
+        run: curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
 
       - name: Check version
         run: |

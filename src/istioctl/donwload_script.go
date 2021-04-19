@@ -15,7 +15,7 @@
 package istioctl
 
 // copied from https://github.com/istio/istio/blob/984704533cc356908f7f56323e50f7f840c4cdc3/release/downloadIstioCandidate.sh
-// with changing the download url to Tetrate's bintray
+// with changing the download url to Tetrate's cloudsmith
 
 const downloadScript = `
 set -e
@@ -55,8 +55,8 @@ case "${LOCAL_ARCH}" in
     ;;
 esac
 
-URL="https://tetrate.bintray.com/getistio/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}.tar.gz"
-ARCH_URL="https://tetrate.bintray.com/getistio/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}-${ISTIO_ARCH}.tar.gz"
+URL="https://dl.getistio.io/public/raw/files/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}.tar.gz"
+ARCH_URL="https://dl.getistio.io/public/raw/files/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}-${ISTIO_ARCH}.tar.gz"
 
 with_arch() {
   printf "\nDownloading %s from %s ...\n" "$DISTRIBUTION_IDENTIFIER" "$ARCH_URL"

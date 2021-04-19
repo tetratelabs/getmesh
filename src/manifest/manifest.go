@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	manifestURL = "https://tetrate.bintray.com/getistio/manifest.json"
+	manifestURL = "https://dl.getistio.io/public/raw/files/manifest.json"
 )
 
 // functions invoked when anytime we access to the remote manifest.json

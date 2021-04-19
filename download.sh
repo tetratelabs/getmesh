@@ -2,7 +2,7 @@
 
 # originally copied from https://wasmtime.dev/install.sh with some modifications
 
-GETISTIO_LATEST_VERSION="1.0.5"
+GETISTIO_LATEST_VERSION="1.0.6"
 
 if [[ -z "${GETISTIO_VERSION}" ]]; then
   VERSION="${GETISTIO_LATEST_VERSION}"
@@ -61,7 +61,7 @@ case ${LOCAL_ARCH} in
     ;;
 esac
 
-URL="https://tetrate.bintray.com/getistio/getistio_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
+URL="https://dl.getistio.io/public/raw/files/getistio_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
 
 if [[ -n "${GETISTIO_TEST_BINRAY_URL}" ]]; then
     URL=${GETISTIO_TEST_BINRAY_URL}

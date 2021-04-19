@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	downloadShellURL           = "https://tetrate.bintray.com/getistio/download.sh"
+	downloadShellURL           = "https://dl.getistio.io/public/raw/files/download.sh"
 	downloadShellTestURLEnvKey = "GETISTIO_TEST_DOWNLOAD_SHELL_URL"
 )
 
