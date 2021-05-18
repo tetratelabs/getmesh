@@ -68,18 +68,34 @@ func TestIstioctl_istioctlArgChecks(t *testing.T) {
 	}()
 
 	t.Run("ok", func(t *testing.T) {
-		require.NoError(t, istioctlArgChecks([]string{"analyze"}, nil))
-		require.NoError(t, istioctlArgChecks([]string{"install"}, m.IstioDistributions[0]))
+		out, err := istioctlArgChecks([]string{"analyze"}, nil, "")
+		require.NoError(t, err)
+		require.Equal(t, out, []string{"analyze"})
+
+		// Default hub is given but should not affect commands other than "install".
+		out, err = istioctlArgChecks([]string{"analyze"}, nil, "gcr.io/istio")
+		require.NoError(t, err)
+		require.Equal(t, out, []string{"analyze"})
+
+		out, err = istioctlArgChecks([]string{"install"}, m.IstioDistributions[0], "")
+		require.NoError(t, err)
+		require.Equal(t, out, []string{"install"})
+
+		// Default hub is given and should be set to output args.
+		out, err = istioctlArgChecks([]string{"install"}, m.IstioDistributions[0], "gcr.io/istio")
+		require.NoError(t, err)
+		require.Equal(t, out, []string{"install", "--set", "hub=gcr.io/istio"})
 	})
 
 	t.Run("warning", func(t *testing.T) {
 		buf := logger.ExecuteWithLock(func() {
 			// confirmation failed so error must be returned
-			require.Error(t, istioctlArgChecks([]string{"install"}, &api.IstioDistribution{
+			_, err := istioctlArgChecks([]string{"install"}, &api.IstioDistribution{
 				Version:       "1.7.4",
 				Flavor:        api.IstioDistributionFlavorTetrateFIPS,
 				FlavorVersion: 0,
-			}))
+			}, "")
+			require.Error(t, err)
 		})
 
 		assert.Contains(t, buf.String(), "Your active istioctl of version 1.7.4-tetratefips-v0 is deprecated.")
