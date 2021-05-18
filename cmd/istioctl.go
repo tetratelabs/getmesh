@@ -244,7 +244,7 @@ func istioctlPreProcessArgs(args []string) []string {
 	ret := []string{}
 	// match string in format like --manifests=testfile -f=a --set=profile=demo -s=profile=demo
 	// and supports to match with dir/ or values.value
-	valid := regexp.MustCompile(`^((((\-\-|\-)([\w./]+))(=)([\w./]+))|(((\-\-set=)|(\-s=))([\w./]+=)([\w./]+)))$`)
+	valid := regexp.MustCompile(`^((((\-\-|\-)([\w./]+))(=)([\w./]+))|(((\-\-set=)|(\-s=))([\w./]+=)([\w./\-]+)))$`)
 	var prev string
 	for _, arg := range args {
 		if prev != "--set" && prev != "-s" && valid.MatchString(arg) {

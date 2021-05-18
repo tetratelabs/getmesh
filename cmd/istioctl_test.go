@@ -70,21 +70,26 @@ func TestIstioctl_istioctlArgChecks(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		out, err := istioctlArgChecks([]string{"analyze"}, nil, "")
 		require.NoError(t, err)
-		require.Equal(t, out, []string{"analyze"})
+		require.Equal(t, []string{"analyze"}, out)
 
 		// Default hub is given but should not affect commands other than "install".
 		out, err = istioctlArgChecks([]string{"analyze"}, nil, "gcr.io/istio")
 		require.NoError(t, err)
-		require.Equal(t, out, []string{"analyze"})
+		require.Equal(t, []string{"analyze"}, out)
 
 		out, err = istioctlArgChecks([]string{"install"}, m.IstioDistributions[0], "")
 		require.NoError(t, err)
-		require.Equal(t, out, []string{"install"})
+		require.Equal(t, []string{"install"}, out)
 
 		// Default hub is given and should be set to output args.
 		out, err = istioctlArgChecks([]string{"install"}, m.IstioDistributions[0], "gcr.io/istio")
 		require.NoError(t, err)
-		require.Equal(t, out, []string{"install", "--set", "hub=gcr.io/istio"})
+		require.Equal(t, []string{"install", "--set", "hub=gcr.io/istio"}, out)
+
+		// Default hub is given but it should not affect the explicitly given hub arg
+		out, err = istioctlArgChecks([]string{"install", "--set=hub=my-space.com/istio"}, m.IstioDistributions[0], "gcr.io/istio")
+		require.NoError(t, err)
+		require.Equal(t, []string{"install", "--set", "hub=my-space.com/istio"}, out)
 	})
 
 	t.Run("warning", func(t *testing.T) {
@@ -329,6 +334,11 @@ func TestIstioctl_istioctlPreProcessArgs(t *testing.T) {
 			name:  "complex --set",
 			args:  []string{"--set=profile=demo"},
 			wants: []string{"--set", "profile=demo"},
+		},
+		{
+			name:  "complex --set2",
+			args:  []string{"--set=hub=docker-hub.io/istio"},
+			wants: []string{"--set", "hub=docker-hub.io/istio"},
 		},
 		{
 			name:  "with -s",
