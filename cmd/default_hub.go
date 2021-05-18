@@ -18,6 +18,7 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
+
 	"github.com/tetratelabs/getistio/src/getistio"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )

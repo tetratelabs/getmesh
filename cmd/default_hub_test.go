@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
 	"github.com/tetratelabs/getistio/src/getistio"
 	"github.com/tetratelabs/getistio/src/util/logger"
 )
