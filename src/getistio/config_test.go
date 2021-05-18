@@ -49,6 +49,22 @@ func TestSetIstioVersion(t *testing.T) {
 	assert.Equal(t, d, actual.IstioDistribution)
 }
 
+func TestSetDefaultHub(t *testing.T) {
+	GlobalConfigMux.Lock()
+	defer GlobalConfigMux.Unlock()
+	home, err := ioutil.TempDir("", "")
+	require.NoError(t, err)
+	defer os.RemoveAll(home)
+
+	hub := "gcr.io/istio-testing"
+	require.NoError(t, SetDefaultHub(home, hub))
+	b, err := ioutil.ReadFile(getConfigPath(home))
+	require.NoError(t, err)
+	var actual Config
+	require.NoError(t, json.Unmarshal(b, &actual))
+	assert.Equal(t, hub, actual.DefaultHub)
+}
+
 func TestInitConfig(t *testing.T) {
 	GlobalConfigMux.Lock()
 	defer GlobalConfigMux.Unlock()

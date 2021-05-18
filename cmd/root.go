@@ -91,6 +91,7 @@ func NewRoot(version, homeDir string) *cobra.Command {
 	cmd.AddCommand(newGenCACmd())
 	cmd.AddCommand(newUpgradeCmd(version))
 	cmd.AddCommand(newPruneCmd(homeDir))
+	cmd.AddCommand(newSetDefaultHubCmd(homeDir))
 
 	cmd.PersistentFlags().StringVarP(&util.KubeConfig, "kubeconfig", "c", "", "Kubernetes configuration file")
 	return cmd
