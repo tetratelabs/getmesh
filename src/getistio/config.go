@@ -30,6 +30,7 @@ var GlobalConfigMux sync.Mutex
 
 type Config struct {
 	IstioDistribution *api.IstioDistribution `json:"istio_distribution"`
+	DefaultHub        string                 `json:"default_hub,omitempty"`
 }
 
 var currentConfig Config
@@ -38,6 +39,20 @@ var currentConfig Config
 func SetIstioVersion(homedir string, d *api.IstioDistribution) error {
 	configPath := getConfigPath(homedir)
 	currentConfig.IstioDistribution = d
+	raw, err := json.Marshal(currentConfig)
+	if err != nil {
+		return fmt.Errorf("error marshaling config: %v", err)
+	}
+	if err := ioutil.WriteFile(configPath, raw, 0644); err != nil {
+		return fmt.Errorf("error writing configuration at %s: %v", configPath, err)
+	}
+	return nil
+}
+
+// for default-hub
+func SetDefaultHub(homedir, hub string) error {
+	configPath := getConfigPath(homedir)
+	currentConfig.DefaultHub = hub
 	raw, err := json.Marshal(currentConfig)
 	if err != nil {
 		return fmt.Errorf("error marshaling config: %v", err)
