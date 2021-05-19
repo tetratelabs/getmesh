@@ -34,6 +34,7 @@ import (
 )
 
 func newIstioCmd(homedir string) *cobra.Command {
+	var processedArgs []string
 	return &cobra.Command{
 		Use:   "istioctl <args...>",
 		Short: "Execute istioctl with given arguments",
@@ -48,16 +49,17 @@ getistio istioctl version`,
 			if cur == nil {
 				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
 			}
-			newArgs, err := istioctlArgChecks(args, cur, getistio.GetActiveConfig().DefaultHub)
+			var err error
+			processedArgs, err = istioctlArgChecks(args, cur, getistio.GetActiveConfig().DefaultHub)
 			if err != nil {
 				return err
 			}
 			// precheck inspects a Kubernetes cluster for istio
-			return istioK8scompatibilityCheck(homedir, newArgs)
+			return istioK8scompatibilityCheck(homedir, processedArgs)
 		},
 
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := istioctl.Exec(homedir, args); err != nil {
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			if err := istioctl.Exec(homedir, processedArgs); err != nil {
 				return fmt.Errorf("error executing istioctl: %v", err)
 			}
 			return nil
