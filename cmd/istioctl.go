@@ -34,10 +34,11 @@ import (
 )
 
 func newIstioCmd(homedir string) *cobra.Command {
+	var processedArgs []string
 	return &cobra.Command{
 		Use:   "istioctl <args...>",
 		Short: "Execute istioctl with given arguments",
-		Long:  `Execute istioctl with given arguments where the version of istioctl is specified at ~/.getistio/config.json.`,
+		Long:  `Execute istioctl with given arguments where the version of istioctl is set by "getsitio fetch or switch"`,
 		Example: `# install Istio with the default profile
 getistio istioctl install --set profile=default
 
@@ -48,16 +49,17 @@ getistio istioctl version`,
 			if cur == nil {
 				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
 			}
-
-			if err := istioctlArgChecks(args, cur); err != nil {
+			var err error
+			processedArgs, err = istioctlArgChecks(args, cur, getistio.GetActiveConfig().DefaultHub)
+			if err != nil {
 				return err
 			}
 			// precheck inspects a Kubernetes cluster for istio
-			return istioK8scompatibilityCheck(homedir, args)
+			return istioK8scompatibilityCheck(homedir, processedArgs)
 		},
 
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := istioctl.Exec(homedir, args); err != nil {
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			if err := istioctl.Exec(homedir, processedArgs); err != nil {
 				return fmt.Errorf("error executing istioctl: %v", err)
 			}
 			return nil
@@ -78,36 +80,61 @@ getistio istioctl version`,
 	}
 }
 
-func istioctlArgChecks(args []string, current *api.IstioDistribution) error {
-	for _, a := range args {
+func istioctlArgChecks(args []string, currentDistro *api.IstioDistribution, defaultHub string) ([]string, error) {
+	// Sanitize args.
+	out := istioctlPreProcessArgs(args)
+
+	// Walk thourgh args and search if it has 1) install command, 2) "--set hub=..." parameter.
+	var (
+		prev            string
+		hasInstallCMD   bool
+		hasHubParameter bool
+	)
+	for _, a := range out {
 		if a == "install" {
+			hasInstallCMD = true
 			m, err := manifest.FetchManifest()
 			if err != nil {
-				return err
+				return nil, err
 			}
-			ok, err := current.ExistInManifest(m)
+			ok, err := currentDistro.ExistInManifest(m)
 			if err != nil {
-				return err
+				return nil, err
 			} else if !ok {
 				logger.Warnf("Your active istioctl of version %s is deprecated. "+
-					"We recommend you use the supported distribution listed in \"getistio list\" command. \n", current.ToString())
+					"We recommend you use the supported distribution listed in \"getistio list\" command. \n", currentDistro.ToString())
 				p := promptui.Prompt{
 					Label:     "Proceed",
 					IsConfirm: true,
 				}
 				if _, err := p.Run(); err != nil {
 					// error returned when it's not confirmed
-					return err
+					return nil, err
 				}
 			}
 
-			err = istioctlPatchVersionCheck(current, m)
+			err = istioctlPatchVersionCheck(currentDistro, m)
 			if err != nil {
-				return err
+				return nil, err
 			}
 		}
+
+		// Search "--set hub=..." args.
+		if prev == "--set" || prev == "-s" {
+			if kv := strings.SplitN(a, "=", 2); len(kv) == 2 && kv[0] == "hub" {
+				hasHubParameter = true
+			}
+		}
+		prev = a
 	}
-	return nil
+
+	// Insert the default hub set by "getistio default-hub --set".
+	if hasInstallCMD && !hasHubParameter {
+		if defaultHub != "" {
+			out = append(out, "--set", fmt.Sprintf("hub=%s", defaultHub))
+		}
+	}
+	return out, nil
 }
 
 // check on whether the current version is the latest patch given current group version
@@ -219,7 +246,7 @@ func istioctlPreProcessArgs(args []string) []string {
 	ret := []string{}
 	// match string in format like --manifests=testfile -f=a --set=profile=demo -s=profile=demo
 	// and supports to match with dir/ or values.value
-	valid := regexp.MustCompile(`^((((\-\-|\-)([\w./]+))(=)([\w./]+))|(((\-\-set=)|(\-s=))([\w./]+=)([\w./]+)))$`)
+	valid := regexp.MustCompile(`^((((\-\-|\-)([\w./]+))(=)([\w./]+))|(((\-\-set=)|(\-s=))([\w./]+=)([\w./\-]+)))$`)
 	var prev string
 	for _, arg := range args {
 		if prev != "--set" && prev != "-s" && valid.MatchString(arg) {
