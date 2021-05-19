@@ -3,7 +3,7 @@ title: "getistio istioctl"
 url: /getistio-cli/reference/getistio_istioctl/
 ---
 
-Execute istioctl with given arguments where the version of istioctl is specified at ~/.getistio/config.json.
+Execute istioctl with given arguments where the version of istioctl is set by "getsitio fetch or switch"
 
 ```
 getistio istioctl <args...> [flags]
