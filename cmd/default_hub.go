@@ -47,7 +47,7 @@ $ getistio default-hub --show
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&setFlag, "set", "", "pass the URL of hub, e.g. --set gcr.io/istio-testing")
+	cmd.Flags().StringVar(&setFlag, "set", "", "pass the location of hub, e.g. --set gcr.io/istio-testing")
 	cmd.Flags().BoolVar(&showFlag, "show", false, "set to show the current default hub value")
 	return cmd
 }
