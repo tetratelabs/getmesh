@@ -24,7 +24,7 @@ $ getistio default-hub --show
 
 ```
   -h, --help         help for default-hub
-      --set string   pass the URL of hub, e.g. --set gcr.io/istio-testing
+      --set string   pass the location of hub, e.g. --set gcr.io/istio-testing
       --show         set to show the current default hub value
 ```
 
