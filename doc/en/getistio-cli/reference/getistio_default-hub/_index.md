@@ -15,8 +15,11 @@ getistio default-hub [flags]
 # Set the default hub to docker.io/istio
 $ getistio default-hub --set docker.io/istio
 
-# Show the current default hub
+# Show the configured default hub
 $ getistio default-hub --show
+
+# Remove the configured default hub
+$ getistio default-hub --remove
 
 ```
 
@@ -24,6 +27,7 @@ $ getistio default-hub --show
 
 ```
   -h, --help         help for default-hub
+      --remove       remove the configured default hub
       --set string   pass the location of hub, e.g. --set gcr.io/istio-testing
       --show         set to show the current default hub value
 ```
