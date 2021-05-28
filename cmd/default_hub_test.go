@@ -27,16 +27,21 @@ import (
 
 func Test_defaultHubCheckFlags(t *testing.T) {
 	for _, c := range []struct {
+		remove   bool
 		setValue string
 		show     bool
 		expErr   bool
 	}{
-		{setValue: "gcr.io", show: false, expErr: false},
-		{setValue: "", show: true, expErr: false},
-		{setValue: "gcr.io", show: true, expErr: true},
-		{setValue: "", show: false, expErr: true},
+		{remove: false, setValue: "gcr.io", show: false, expErr: false},
+		{remove: false, setValue: "", show: true, expErr: false},
+		{remove: false, setValue: "gcr.io", show: true, expErr: true},
+		{remove: false, setValue: "", show: false, expErr: true},
+		{remove: true, setValue: "gcr.io", show: false, expErr: true},
+		{remove: true, setValue: "", show: true, expErr: true},
+		{remove: true, setValue: "gcr.io", show: true, expErr: true},
+		{remove: true, setValue: "", show: false, expErr: false},
 	} {
-		actual := defaultHubCheckFlags(c.setValue, c.show)
+		actual := defaultHubCheckFlags(c.remove, c.setValue, c.show)
 		if c.expErr {
 			require.Error(t, actual)
 		} else {
@@ -75,4 +80,20 @@ func Test_defaultHubHandleShow(t *testing.T) {
 		})
 		require.Contains(t, buf.String(), "The current default hub is set to myhub.com")
 	})
+}
+
+func Test_defaultHubHandleRemove(t *testing.T) {
+	getistio.GlobalConfigMux.Lock()
+	defer getistio.GlobalConfigMux.Unlock()
+	home, err := ioutil.TempDir("", "")
+	require.NoError(t, err)
+	defer os.RemoveAll(home)
+
+	value := "myhub.com"
+	require.NoError(t, defaultHubHandleSet(home, value))
+
+	buf := logger.ExecuteWithLock(func() {
+		require.NoError(t, defaultHubHandleRemove(home))
+	})
+	require.Contains(t, buf.String(), "The default hub is removed. Now Istioctl's default value is used for \"getistio istioctl install\"")
 }

@@ -25,8 +25,9 @@ import (
 
 func newSetDefaultHubCmd(homedir string) *cobra.Command {
 	var (
-		setFlag  string
-		showFlag bool
+		removeFlag bool
+		setFlag    string
+		showFlag   bool
 	)
 	cmd := &cobra.Command{
 		Use:   "default-hub",
@@ -35,26 +36,51 @@ func newSetDefaultHubCmd(homedir string) *cobra.Command {
 		Example: `# Set the default hub to docker.io/istio
 $ getistio default-hub --set docker.io/istio
 
-# Show the current default hub
+# Show the configured default hub
 $ getistio default-hub --show
+
+# Remove the configured default hub
+$ getistio default-hub --remove
 `,
-		PreRunE: func(cmd *cobra.Command, args []string) error { return defaultHubCheckFlags(setFlag, showFlag) },
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return defaultHubCheckFlags(removeFlag, setFlag, showFlag)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if setFlag != "" {
 				return defaultHubHandleSet(homedir, setFlag)
+			} else if removeFlag {
+				return defaultHubHandleRemove(homedir)
+			} else if showFlag {
+				defaultHubHandleShow(getistio.GetActiveConfig().DefaultHub)
 			}
-			defaultHubHandleShow(getistio.GetActiveConfig().DefaultHub)
 			return nil
 		},
 	}
+	cmd.Flags().BoolVar(&removeFlag, "remove", false, "remove the configured default hub")
 	cmd.Flags().StringVar(&setFlag, "set", "", "pass the location of hub, e.g. --set gcr.io/istio-testing")
 	cmd.Flags().BoolVar(&showFlag, "show", false, "set to show the current default hub value")
 	return cmd
 }
 
-func defaultHubCheckFlags(setValue string, show bool) error {
-	if (setValue != "" && show) || (setValue == "" && !show) {
-		return errors.New("please provide exactly one of --set or --show flags for \"getistio default-hub\" command")
+var errDefaultHubArgCheck = errors.New("please provide exactly one of --remove, --set and --show flags for \"getistio default-hub\" command")
+
+func defaultHubCheckFlags(remove bool, setValue string, show bool) error {
+	if setValue != "" {
+		if remove || show {
+			return errDefaultHubArgCheck
+		}
+		return nil
+	}
+
+	if remove {
+		if show {
+			return errDefaultHubArgCheck
+		}
+		return nil
+	}
+
+	if !show {
+		return errDefaultHubArgCheck
 	}
 	return nil
 }
@@ -73,4 +99,12 @@ func defaultHubHandleShow(current string) {
 	} else {
 		logger.Infof("The current default hub is set to %s\n", current)
 	}
+}
+
+func defaultHubHandleRemove(homdir string) error {
+	if err := getistio.SetDefaultHub(homdir, ""); err != nil {
+		return err
+	}
+	logger.Infof("The default hub is removed. Now Istioctl's default value is used for \"getistio istioctl install\" command\n")
+	return nil
 }
