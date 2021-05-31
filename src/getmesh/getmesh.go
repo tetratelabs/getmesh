@@ -60,7 +60,7 @@ func LatestVersion() (string, error) {
 
 	var ret string
 	r := bufio.NewScanner(bytes.NewReader(raw))
-	for r.Scan() || ret == "" {
+	for r.Scan() && ret == "" {
 		for _, prefix := range latestVersionPrefixes {
 			if line := r.Text(); strings.Contains(line, prefix) {
 				ret = strings.TrimPrefix(line, prefix)
