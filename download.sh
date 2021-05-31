@@ -2,12 +2,12 @@
 
 # originally copied from https://wasmtime.dev/install.sh with some modifications
 
-getmesh_LATEST_VERSION="1.0.6"
+GETMESH_LATEST_VERSION="1.0.6"
 
-if [[ -z "${getmesh_VERSION}" ]]; then
-  VERSION="${getmesh_LATEST_VERSION}"
+if [[ -z "${GETMESH_VERSION}" ]]; then
+  VERSION="${GETMESH_LATEST_VERSION}"
 else
-  VERSION="${getmesh_VERSION}"
+  VERSION="${GETMESH_VERSION}"
 fi
 
 if [[ -z "${FETCH_LATEST_ISTIOCTL}" ]]; then
@@ -18,11 +18,11 @@ fi
 
 OS="$(uname)"
 LOCAL_ARCH="$(uname -m)"
-getmesh_HOME=${HOME}/.getmesh
-getmesh_BIN_DIR="${getmesh_HOME}"/bin
-mkdir -p "${getmesh_BIN_DIR}"
-mkdir -p "${getmesh_HOME}"/istio
-EXECUTABLE_OUT="${getmesh_BIN_DIR}"/getmesh
+GETMESH_HOME=${HOME}/.getmesh
+GETMESH_BIN_DIR="${GETMESH_HOME}"/bin
+mkdir -p "${GETMESH_BIN_DIR}"
+mkdir -p "${GETMESH_HOME}"/istio
+EXECUTABLE_OUT="${GETMESH_BIN_DIR}"/getmesh
 
 error() {
   command printf '\033[1;31mError\033[0m: %s\n\n' "$1" 1>&2
@@ -61,10 +61,10 @@ case ${LOCAL_ARCH} in
     ;;
 esac
 
-URL="https://dl.getmesh.io/public/raw/files/getmesh_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
+URL="https://dl.getistio.io/public/raw/files/GETMESH_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
 
-if [[ -n "${getmesh_TEST_BINRAY_URL}" ]]; then
-    URL=${getmesh_TEST_BINRAY_URL}
+if [[ -n "${GETMESH_TEST_BINRAY_URL}" ]]; then
+    URL=${GETMESH_TEST_BINRAY_URL}
 fi
 
 printf "\nDownloading getmesh from %s ...\n" "$URL"
@@ -74,7 +74,7 @@ if ! curl -o /dev/null -sIf "$URL"; then
 fi
 
 curl -fsL "$URL" -o getmesh.tar.gz
-tar -zxf getmesh.tar.gz -C"${getmesh_BIN_DIR}"
+tar -zxf getmesh.tar.gz -C"${GETMESH_BIN_DIR}"
 chmod u+x "${EXECUTABLE_OUT}"
 rm getmesh.tar.gz
 
@@ -129,15 +129,15 @@ build_path_str() {
     # fish uses a little different syntax to modify the PATH
     cat <<END_FISH_SCRIPT
 
-set -gx getmesh_HOME "$profile_install_dir"
-string match -r ".getmesh" "\$PATH" > /dev/null; or set -gx PATH "\$getmesh_HOME/bin" \$PATH
+set -gx GETMESH_HOME "$profile_install_dir"
+string match -r ".getmesh" "\$PATH" > /dev/null; or set -gx PATH "\$GETMESH_HOME/bin" \$PATH
 END_FISH_SCRIPT
   else
     # bash and zsh
     cat <<END_BASH_SCRIPT
 
-export getmesh_HOME="$profile_install_dir"
-export PATH="\$getmesh_HOME/bin:\$PATH"
+export GETMESH_HOME="$profile_install_dir"
+export PATH="\$GETMESH_HOME/bin:\$PATH"
 END_BASH_SCRIPT
   fi
 }
@@ -157,7 +157,7 @@ update_profile() {
     eprintf "$path_str"
     return 1
   else
-    if ! command grep -qc 'getmesh_HOME' "$detected_profile"; then
+    if ! command grep -qc 'GETMESH_HOME' "$detected_profile"; then
       echo 'Updating' "user profile ($detected_profile)..."
       printf "The following two lines are added into your profile (%s):\n" $detected_profile
       printf "$path_str\n\n"
@@ -166,7 +166,7 @@ update_profile() {
   fi
 }
 
-update_profile "${getmesh_HOME}"
+update_profile "${GETMESH_HOME}"
 
 if [ "${FETCH_LATEST_ISTIOCTL}" = "true" ]; then
   printf "Downloading latest istio ...\n"

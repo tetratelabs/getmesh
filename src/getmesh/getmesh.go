@@ -29,7 +29,7 @@ import (
 
 const (
 	downloadShellURL           = "https://dl.getistio.io/public/raw/files/download.sh"
-	downloadShellTestURLEnvKey = "GETISTIO_TEST_DOWNLOAD_SHELL_URL"
+	downloadShellTestURLEnvKey = "GETMESH_TEST_DOWNLOAD_SHELL_URL"
 )
 
 func getDownloadShellURL() string {
@@ -54,7 +54,7 @@ func LatestVersion() (string, error) {
 
 	var ret string
 	r := bufio.NewScanner(bytes.NewReader(raw))
-	const prefix = "GETISTIO_LATEST_VERSION=\""
+	const prefix = "GETMESH_LATEST_VERSION=\""
 	for r.Scan() {
 		if line := r.Text(); strings.Contains(line, prefix) {
 			ret = strings.TrimPrefix(line, prefix)
@@ -64,7 +64,7 @@ func LatestVersion() (string, error) {
 	}
 
 	if len(ret) == 0 {
-		return "", fmt.Errorf("not found GETISTIO_LATEST_VERSION in donwload script. This is a bug in GetIstio")
+		return "", fmt.Errorf("not found GETMESH_LATEST_VERSION in donwload script. This is a bug in GetMesh")
 	}
 	return ret, nil
 }
@@ -72,11 +72,11 @@ func LatestVersion() (string, error) {
 func Update(currentVersion string) error {
 	l, err := LatestVersion()
 	if err != nil {
-		return fmt.Errorf("failed to get the latest version of getistio: %w", err)
+		return fmt.Errorf("failed to get the latest version of getmesh: %w", err)
 	}
 
 	if l == currentVersion {
-		logger.Infof("Your getistio version is up-to-date: %s\n", currentVersion)
+		logger.Infof("Your getmesh version is up-to-date: %s\n", currentVersion)
 		return nil
 	}
 
@@ -96,6 +96,6 @@ func Update(currentVersion string) error {
 		return fmt.Errorf("installation failed: %w", err)
 	}
 
-	logger.Infof("\ngetistio successfully updated from %s to %s!\n", currentVersion, l)
+	logger.Infof("\ngetmesh successfully updated from %s to %s!\n", currentVersion, l)
 	return nil
 }

@@ -36,7 +36,7 @@ in addition getmesh validates the manifest yaml files (that are not applied yet 
 getmesh can be obtained by issuing the following command:
 
 ```sh
-curl -sL https://dl.getmesh.io/public/raw/files/download.sh | bash
+curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
 ```
 
 This, by default, downloads the latest version of getmesh and certified Istio. To check if the download was successful, run the [version command](/doc/en/getmesh-cli/reference/getmesh_version/_index.md):
@@ -77,7 +77,7 @@ While we recommend always using the latest getmesh, if the user wants to downloa
 
 ```sh
 export getmesh_VERSION=<your_version> ##say 0.5.0 for example
-curl -sL https://dl.getmesh.io/public/raw/files/download.sh | bash
+curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
 ```
 This would overwrite the existing version of getmesh to the one just downloaded.
 

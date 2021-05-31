@@ -34,7 +34,7 @@ func TestLatestVersion(t *testing.T) {
 aaa=aa
 1+1
 echo "hello world"
-GETISTIO_LATEST_VERSION="1.1.1"
+GETMESH_LATEST_VERSION="1.1.1"
 `))
 		}))
 		defer ts.Close()
@@ -64,7 +64,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("up-to-date", func(t *testing.T) {
 		v := "1.1.1"
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(fmt.Sprintf(`GETISTIO_LATEST_VERSION="%s"`, v)))
+			_, _ = w.Write([]byte(fmt.Sprintf(`GETMESH_LATEST_VERSION="%s"`, v)))
 		}))
 		defer ts.Close()
 		require.NoError(t, os.Setenv(downloadShellTestURLEnvKey, ts.URL))
@@ -74,7 +74,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		actual := buf.String()
-		assert.Contains(t, actual, fmt.Sprintf("Your getistio version is up-to-date: %s", v))
+		assert.Contains(t, actual, fmt.Sprintf("Your getmesh version is up-to-date: %s", v))
 		t.Log(actual)
 	})
 
@@ -82,7 +82,7 @@ func TestUpdate(t *testing.T) {
 		msg := "download script executed"
 		current, latest := "0.0.0", "0.0.1"
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(fmt.Sprintf(`GETISTIO_LATEST_VERSION="%s"
+			_, _ = w.Write([]byte(fmt.Sprintf(`GETMESH_LATEST_VERSION="%s"
 echo "%s"`, latest, msg)))
 		}))
 		defer ts.Close()
@@ -94,7 +94,7 @@ echo "%s"`, latest, msg)))
 
 		actual := buf.String()
 		assert.Contains(t, actual, msg)
-		assert.Contains(t, actual, fmt.Sprintf("getistio successfully updated from %s to %s!", current, latest))
+		assert.Contains(t, actual, fmt.Sprintf("getmesh successfully updated from %s to %s!", current, latest))
 		t.Log(actual)
 	})
 }

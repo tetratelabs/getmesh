@@ -106,6 +106,6 @@ func defaultHubHandleRemove(homdir string) error {
 	if err := getmesh.SetDefaultHub(homdir, ""); err != nil {
 		return err
 	}
-	logger.Infof("The default hub is removed. Now Istioctl's default value is used for \"getistio istioctl install\" command\n")
+	logger.Infof("The default hub is removed. Now Istioctl's default value is used for \"getmesh istioctl install\" command\n")
 	return nil
 }

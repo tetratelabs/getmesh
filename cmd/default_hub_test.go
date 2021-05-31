@@ -83,8 +83,8 @@ func Test_defaultHubHandleShow(t *testing.T) {
 }
 
 func Test_defaultHubHandleRemove(t *testing.T) {
-	getistio.GlobalConfigMux.Lock()
-	defer getistio.GlobalConfigMux.Unlock()
+	getmesh.GlobalConfigMux.Lock()
+	defer getmesh.GlobalConfigMux.Unlock()
 	home, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
@@ -95,5 +95,5 @@ func Test_defaultHubHandleRemove(t *testing.T) {
 	buf := logger.ExecuteWithLock(func() {
 		require.NoError(t, defaultHubHandleRemove(home))
 	})
-	require.Contains(t, buf.String(), "The default hub is removed. Now Istioctl's default value is used for \"getistio istioctl install\"")
+	require.Contains(t, buf.String(), "The default hub is removed. Now Istioctl's default value is used for \"getmesh istioctl install\"")
 }
