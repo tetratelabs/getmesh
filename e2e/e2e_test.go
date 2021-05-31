@@ -587,7 +587,7 @@ func checkUpgrade(t *testing.T) {
 	fmt.Println(actual)
 
 	// change image to 1.8.1-tetrate-v0
-	image := "tetrate-docker-getmesh-docker.bintray.io/pilot:1.8.1-tetrate-v0"
+	image := "tetrate-docker-getistio-docker.bintray.io/pilot:1.8.1-tetrate-v0"
 	patch := fmt.Sprintf(`{"spec":{"template":{"spec":{"containers":[{"name":"discovery","image":"%s"}]}}}}`,
 		image)
 	cmd = exec.Command("kubectl", "patch", "deployment",
