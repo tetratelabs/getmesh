@@ -44,7 +44,7 @@ var manifestCheckers = map[string]func(*api.Manifest) error{
 var GlobalManifestURLMux sync.Mutex
 
 func FetchManifest() (ret *api.Manifest, err error) {
-	if p := os.Getenv("getmesh_TEST_MANIFEST_PATH"); len(p) != 0 {
+	if p := os.Getenv("GETMESH_TEST_MANIFEST_PATH"); len(p) != 0 {
 		raw, err := ioutil.ReadFile(p)
 		if err != nil {
 			return nil, err

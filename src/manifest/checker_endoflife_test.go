@@ -59,7 +59,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 
 	_, err = f.Write(raw)
 	require.NoError(t, err)
-	require.NoError(t, os.Setenv("getmesh_TEST_MANIFEST_PATH", f.Name()))
+	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
 
 	t.Run("ok version", func(t *testing.T) {
 		require.NoError(t, getmesh.SetIstioVersion(home, &api.IstioDistribution{Version: "1.8.1"}))

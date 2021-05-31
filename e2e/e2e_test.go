@@ -56,12 +56,12 @@ func TestMain(m *testing.M) {
 		_, _ = w.Write(downloadShell)
 	}))
 	defer ts.Close()
-	if err := os.Setenv("getmesh_TEST_DOWNLOAD_SHELL_URL", ts.URL); err != nil {
+	if err := os.Setenv("GETMESH_TEST_DOWNLOAD_SHELL_URL", ts.URL); err != nil {
 		log.Fatal(err)
 	}
 
 	// set up manifest
-	if err := os.Setenv("getmesh_TEST_MANIFEST_PATH", "./manifest.json"); err != nil {
+	if err := os.Setenv("GETMESH_TEST_MANIFEST_PATH", "./manifest.json"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -130,7 +130,7 @@ func securityPatchChecker(t *testing.T) {
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(), fmt.Sprintf("getmesh_TEST_MANIFEST_PATH=%s", f.Name()))
+	cmd.Env = append(os.Environ(), fmt.Sprintf("GETMESH_TEST_MANIFEST_PATH=%s", f.Name()))
 	require.NoError(t, cmd.Run())
 	assert.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.9-tetrate has a latest version 1.9.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.9.1000000000000-tetrate-v0 by "getmesh fetch".`)
 }

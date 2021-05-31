@@ -62,9 +62,9 @@ func TestIstioctl_istioctlArgChecks(t *testing.T) {
 	_, err = f.Write(raw)
 	require.NoError(t, err)
 
-	require.NoError(t, os.Setenv("getmesh_TEST_MANIFEST_PATH", f.Name()))
+	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
 	defer func() {
-		require.NoError(t, os.Setenv("getmesh_TEST_MANIFEST_PATH", ""))
+		require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", ""))
 	}()
 
 	t.Run("ok", func(t *testing.T) {
