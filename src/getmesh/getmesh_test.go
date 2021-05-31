@@ -61,7 +61,24 @@ aaa=aa
 }
 
 func TestUpdate(t *testing.T) {
-	t.Run("up-to-date", func(t *testing.T) {
+	t.Run("up-to-date with getistio prefix", func(t *testing.T) {
+		v := "1.1.1"
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(fmt.Sprintf(`GETISTIO_LATEST_VERSION="%s"`, v)))
+		}))
+		defer ts.Close()
+		require.NoError(t, os.Setenv(downloadShellTestURLEnvKey, ts.URL))
+
+		buf := logger.ExecuteWithLock(func() {
+			require.NoError(t, Update(v))
+		})
+
+		actual := buf.String()
+		assert.Contains(t, actual, fmt.Sprintf("Your getmesh version is up-to-date: %s", v))
+		t.Log(actual)
+	})
+
+	t.Run("up-to-date with getmesh prefix", func(t *testing.T) {
 		v := "1.1.1"
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte(fmt.Sprintf(`GETMESH_LATEST_VERSION="%s"`, v)))
@@ -78,7 +95,27 @@ func TestUpdate(t *testing.T) {
 		t.Log(actual)
 	})
 
-	t.Run("download", func(t *testing.T) {
+	t.Run("download with getistio prefix", func(t *testing.T) {
+		msg := "download script executed"
+		current, latest := "0.0.0", "0.0.1"
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(fmt.Sprintf(`GETISTIO_LATEST_VERSION="%s"
+echo "%s"`, latest, msg)))
+		}))
+		defer ts.Close()
+		require.NoError(t, os.Setenv(downloadShellTestURLEnvKey, ts.URL))
+
+		buf := logger.ExecuteWithLock(func() {
+			require.NoError(t, Update(current))
+		})
+
+		actual := buf.String()
+		assert.Contains(t, actual, msg)
+		assert.Contains(t, actual, fmt.Sprintf("getmesh successfully updated from %s to %s!", current, latest))
+		t.Log(actual)
+	})
+
+	t.Run("download with getmesh prefix", func(t *testing.T) {
 		msg := "download script executed"
 		current, latest := "0.0.0", "0.0.1"
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

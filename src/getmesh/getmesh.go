@@ -40,9 +40,9 @@ func getDownloadShellURL() string {
 }
 
 var latestVersionPrefixes = []string{
-	"GETMESH_LATEST_VERSION",
+	"GETMESH_LATEST_VERSION=\"",
 	// TODO: delete after the next release.
-	"GETISTIO_LATEST_VERSION",
+	"GETISTIO_LATEST_VERSION=\"",
 }
 
 func LatestVersion() (string, error) {
@@ -60,7 +60,7 @@ func LatestVersion() (string, error) {
 
 	var ret string
 	r := bufio.NewScanner(bytes.NewReader(raw))
-	for r.Scan() && ret != "" {
+	for r.Scan() || ret == "" {
 		for _, prefix := range latestVersionPrefixes {
 			if line := r.Text(); strings.Contains(line, prefix) {
 				ret = strings.TrimPrefix(line, prefix)
@@ -71,7 +71,7 @@ func LatestVersion() (string, error) {
 	}
 
 	if len(ret) == 0 {
-		return "", fmt.Errorf("latet version not found in donwload script. This is a bug in GetMesh")
+		return "", fmt.Errorf("latest version not found in donwload script. This is a bug in GetMesh")
 	}
 	return ret, nil
 }
