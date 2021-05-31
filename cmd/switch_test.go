@@ -26,6 +26,7 @@ import (
 
 	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/istioctl"
 	"github.com/tetratelabs/getmesh/src/manifest"
 )
 
@@ -76,9 +77,9 @@ func Test_switchParse(t *testing.T) {
 
 	require.NoError(t, getmesh.SetIstioVersion(home, d))
 	require.NoError(t,
-		os.MkdirAll(strings.TrimSuffix(istioctl.getmeshctlPath(home, d), "/istioctl"), 0755))
+		os.MkdirAll(strings.TrimSuffix(istioctl.GetIstioctlPath(home, d), "/istioctl"), 0755))
 
-	f, err = os.Create(istioctl.getmeshctlPath(home, d))
+	f, err = os.Create(istioctl.GetIstioctlPath(home, d))
 	require.NoError(t, err)
 	defer f.Close()
 

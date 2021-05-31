@@ -24,6 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/istioctl"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -56,7 +57,7 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 	}
 
 	for _, d := range locals {
-		ctlPath := istioctl.getmeshctlPath(dir, d)
+		ctlPath := istioctl.GetIstioctlPath(dir, d)
 		suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)

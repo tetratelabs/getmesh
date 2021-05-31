@@ -41,7 +41,7 @@ var (
 	istioctlPathFormat = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
 )
 
-func getIstioctlPath(homeDir string, distribution *api.IstioDistribution) string {
+func GetIstioctlPath(homeDir string, distribution *api.IstioDistribution) string {
 	path := fmt.Sprintf(istioctlPathFormat, distribution.ToString())
 	return filepath.Join(homeDir, path)
 }
@@ -146,7 +146,7 @@ func Remove(homeDir string, target, current *api.IstioDistribution) error {
 
 func checkExist(homeDir string, distribution *api.IstioDistribution) error {
 	// check if the istio version already fetched
-	path := getIstioctlPath(homeDir, distribution)
+	path := GetIstioctlPath(homeDir, distribution)
 	_, err := os.Stat(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -183,7 +183,7 @@ func ExecWithWriters(homeDir string, args []string, stdout, stderr io.Writer) er
 	if err := checkExist(homeDir, conf.IstioDistribution); err != nil {
 		return err
 	}
-	path := getIstioctlPath(homeDir, conf.IstioDistribution)
+	path := GetIstioctlPath(homeDir, conf.IstioDistribution)
 	cmd := exec.Command(path, args...)
 
 	if stdout != nil {

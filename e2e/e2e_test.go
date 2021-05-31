@@ -38,6 +38,8 @@ import (
 
 	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/util"
 )
 
 func TestMain(m *testing.M) {
@@ -180,7 +182,7 @@ func getmeshInstall(t *testing.T) {
 }
 
 func enfOfLife(t *testing.T) {
-	h, err := util.getmeshHomeDir()
+	h, err := util.GetmeshHomeDir()
 	require.NoError(t, err)
 	require.NoError(t, getmesh.SetIstioVersion(h, &api.IstioDistribution{Version: "1.6.2"}))
 
@@ -288,7 +290,7 @@ istioctl switched to 1.8.1-tetrate-v0 now
 }
 
 func prune(t *testing.T) {
-	home, err := util.getmeshHomeDir()
+	home, err := util.GetmeshHomeDir()
 	require.NoError(t, err)
 
 	// note that this prune test depends on the abovefetch test,
@@ -302,7 +304,7 @@ func prune(t *testing.T) {
 		}
 
 		// should exist
-		_, err = os.Stat(istioctl.getmeshctlPath(home, target))
+		_, err = os.Stat(istioctl.GetIstioctlPath(home, target))
 		require.NoError(t, err)
 
 		// prune
@@ -313,7 +315,7 @@ func prune(t *testing.T) {
 		require.NoError(t, cmd.Run())
 
 		// should not exist
-		_, err = os.Stat(istioctl.getmeshctlPath(home, target))
+		_, err = os.Stat(istioctl.GetIstioctlPath(home, target))
 		require.Error(t, err)
 
 		// restore the version
@@ -344,7 +346,7 @@ func prune(t *testing.T) {
 		}
 		for _, d := range distros {
 			// should exist
-			_, err = os.Stat(istioctl.getmeshctlPath(home, d))
+			_, err = os.Stat(istioctl.GetIstioctlPath(home, d))
 			require.NoError(t, err)
 		}
 
@@ -357,11 +359,11 @@ func prune(t *testing.T) {
 		for i, d := range distros {
 			if i == 0 {
 				// should exist
-				_, err = os.Stat(istioctl.getmeshctlPath(home, d))
+				_, err = os.Stat(istioctl.GetIstioctlPath(home, d))
 				require.NoError(t, err)
 			} else {
 				// should not exist
-				_, err = os.Stat(istioctl.getmeshctlPath(home, d))
+				_, err = os.Stat(istioctl.GetIstioctlPath(home, d))
 				require.Error(t, err)
 
 				// restore the version
