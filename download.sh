@@ -2,7 +2,8 @@
 
 # originally copied from https://wasmtime.dev/install.sh with some modifications
 
-GETISTIO_LATEST_VERSION="1.0.6" # TODO: delete after the next release.
+# TODO: delete after the next release.
+GETISTIO_LATEST_VERSION="1.0.6"
 GETMESH_LATEST_VERSION="1.0.6"
 
 if [[ -z "${GETMESH_VERSION}" ]]; then
