@@ -2,6 +2,7 @@
 
 # originally copied from https://wasmtime.dev/install.sh with some modifications
 
+GETISTIO_LATEST_VERSION="1.0.6" # TODO: delete after the next release.
 GETMESH_LATEST_VERSION="1.0.6"
 
 if [[ -z "${GETMESH_VERSION}" ]]; then
@@ -78,7 +79,7 @@ tar -zxf getmesh.tar.gz -C"${GETMESH_BIN_DIR}"
 chmod u+x "${EXECUTABLE_OUT}"
 rm getmesh.tar.gz
 
-printf "getmesh Download Complete!\n\n"
+printf "GetMesh Download Complete!\n\n"
 
 detect_profile() {
   local shellname="$1"

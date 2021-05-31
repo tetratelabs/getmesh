@@ -34,7 +34,7 @@ var ErrIssueFound = errors.New("version issue found")
 func IstioVersion(iv istioversion.Version, manifest *api.Manifest) error {
 	logger.Infof("[Summary of your Istio mesh]\n")
 	printSummary(iv)
-	logger.Infof("[getmesh Check]\n")
+	logger.Infof("[GetMesh Check]\n")
 	return printgetmeshCheck(iv, manifest)
 }
 

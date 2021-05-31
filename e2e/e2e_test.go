@@ -138,7 +138,7 @@ func securityPatchChecker(t *testing.T) {
 func update(t *testing.T) {
 	ts := getTestBinaryServer(t)
 	defer ts.Close()
-	env := append(os.Environ(), fmt.Sprintf("getmesh_TEST_BINRAY_URL=%s", ts.URL))
+	env := append(os.Environ(), fmt.Sprintf("GETMESH_TEST_BINRAY_URL=%s", ts.URL))
 
 	cmd := exec.Command("./getmesh", "update")
 	buf := new(bytes.Buffer)
@@ -154,7 +154,7 @@ func update(t *testing.T) {
 func getmeshInstall(t *testing.T) {
 	ts := getTestBinaryServer(t)
 	defer ts.Close()
-	env := append(os.Environ(), fmt.Sprintf("getmesh_TEST_BINRAY_URL=%s", ts.URL))
+	env := append(os.Environ(), fmt.Sprintf("GETMESH_TEST_BINRAY_URL=%s", ts.URL))
 
 	cmd := exec.Command("bash", "./download.sh")
 	cmd.Stdout = os.Stdout
