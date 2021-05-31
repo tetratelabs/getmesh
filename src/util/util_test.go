@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestgetmeshHomeDir(t *testing.T) {
+func TestGetIstioHomeDir(t *testing.T) {
 	t.Run("not created", func(t *testing.T) {
 		dir, err := ioutil.TempDir("", "")
 		require.NoError(t, err)
