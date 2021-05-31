@@ -1,18 +1,18 @@
 ---
-title: "getistio list"
-url: /getistio-cli/reference/getistio_list/
+title: "getmesh list"
+url: /getmesh-cli/reference/getmesh_list/
 ---
 
 List available Istio distributions built by Tetrate
 
 ```
-getistio list [flags]
+getmesh list [flags]
 ```
 
 #### Examples
 
 ```
-$ getistio list
+$ getmesh list
 
 ISTIO VERSION	FLAVOR 	FLAVOR VERSION	 K8S VERSIONS
    *1.8.2    	tetrate	      0       	1.16,1.17,1.18
@@ -59,5 +59,5 @@ Supported k8s versions for the distribution
 
 #### SEE ALSO
 
-* [getistio](/getistio-cli/reference/getistio/)	 - GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
+* [getmesh](/getmesh-cli/reference/getmesh/)	 - getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
 

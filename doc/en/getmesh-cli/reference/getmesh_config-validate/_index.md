@@ -1,29 +1,29 @@
 ---
-title: "getistio config-validate"
-url: /getistio-cli/reference/getistio_config-validate/
+title: "getmesh config-validate"
+url: /getmesh-cli/reference/getmesh_config-validate/
 ---
 
 Validate the current Istio configurations in your cluster just like 'istioctl analyze'. Inspect all namespaces by default.
 If the <file/directory> is specified, we analyze the effect of applying these yaml files against the current cluster.
 
 ```
-getistio config-validate <file/directory>... [flags]
+getmesh config-validate <file/directory>... [flags]
 ```
 
 #### Examples
 
 ```
 # validating a local manifest against the current cluster
-$ getistio config-validate my-app.yaml another-app.yaml
+$ getmesh config-validate my-app.yaml another-app.yaml
 
 # validating local manifests in a directory against the current cluster in a specific namespace
-$ getistio config-validate -n bookinfo my-manifest-dir/
+$ getmesh config-validate -n bookinfo my-manifest-dir/
 
 NAME                        	RESOURCE TYPE 	ERROR CODE	SEVERITY	MESSAGE
 httpbin                     	Service       	IST0108   	Warning 	[my-manifest-dir/service.yaml:1] Unknown annotation: networking.istio.io/non-exist
 
 # for all namespaces
-$ getistio config-validate
+$ getmesh config-validate
 
 NAMESPACE               NAME                    RESOURCE TYPE           ERROR CODE      SEVERITY        MESSAGE
 default                 bookinfo-gateway        Gateway                 IST0101         Error           Referenced selector not found: "app=nonexisting"
@@ -31,14 +31,14 @@ bookinfo                default                 Peerauthentication      KIA0505 
 bookinfo                bookinfo-gateway        Gateway                 KIA0302         Warning         No matching workload found for gateway selector in this namespace
 
 # for a specific namespace
-$ getistio config-validate -n bookinfo
+$ getmesh config-validate -n bookinfo
 
 NAME                    RESOURCE TYPE           ERROR CODE      SEVERITY        MESSAGE
 bookinfo-gateway        Gateway                 IST0101         Error           Referenced selector not found: "app=nonexisting"
 bookinfo-gateway        Gateway                 KIA0302         Warning         No matching workload found for gateway selector in this namespace
 
 # for a specific namespace with Error as threshold for validation
-$ getistio config-validate -n bookinfo --output-threshold Error
+$ getmesh config-validate -n bookinfo --output-threshold Error
 
 NAME                    RESOURCE TYPE           ERROR CODE      SEVERITY        MESSAGE
 bookinfo-gateway        Gateway                 IST0101         Error           Referenced selector not found: "app=nonexisting"
@@ -79,5 +79,5 @@ The error code of the found issue which is prefixed by 'IST' or 'KIA'. Please re
 
 #### SEE ALSO
 
-* [getistio](/getistio-cli/reference/getistio/)	 - GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
+* [getmesh](/getmesh-cli/reference/getmesh/)	 - getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
 

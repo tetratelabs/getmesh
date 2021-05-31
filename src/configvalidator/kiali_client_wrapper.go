@@ -38,13 +38,13 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
-	"github.com/tetratelabs/getistio/src/util"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 // There are two reasons for having kialiClientWrapper:
 //
-// 1) kialiClientWrapper overrides the original GetIstioObjects method. This is necessary because
+// 1) kialiClientWrapper overrides the original getmeshObjects method. This is necessary because
 // 	Kiali somehow re-creates Kubeconfig from the original one which results in the `system:anonoymous` user error.
 // 	See https://github.com/kiali/kiali/blob/6ec37a53ddbcc88ee55959aeeac7114b33f893aa/kubernetes/client.go#L286-L315.
 //
@@ -246,8 +246,8 @@ func (c *kialiClientWrapper) getAPIClientVersion(apiGroup string) (*rest.RESTCli
 	return nil, ""
 }
 
-// override the original "dead" GetIstioObjects
-func (c *kialiClientWrapper) GetIstioObjects(namespace, resourceType, labelSelector string) ([]kiali_kubernetes.IstioObject, error) {
+// override the original "dead" getmeshObjects
+func (c *kialiClientWrapper) getmeshObjects(namespace, resourceType, labelSelector string) ([]kiali_kubernetes.IstioObject, error) {
 	kind := kiali_kubernetes.PluralType[resourceType]
 	key := kialiObjectListKey(namespace, kind)
 	raw, err, _ := c.sf.Do(key, func() (interface{}, error) {
@@ -275,7 +275,7 @@ func (c *kialiClientWrapper) GetIstioObjects(namespace, resourceType, labelSelec
 			if ss, ok := err.(errors.APIStatus); ok && ss.Status().Code == http.StatusNotFound {
 				logger.Infof("Resource %s not found in the cluster."+
 					" Maybe Istio has not been installed in your cluster."+
-					" Please make sure Istio is installed before execute \"getistio config-validate\"\n", kind)
+					" Please make sure Istio is installed before execute \"getmesh config-validate\"\n", kind)
 				os.Exit(1)
 			}
 			return nil, err

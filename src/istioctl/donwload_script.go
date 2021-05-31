@@ -55,8 +55,8 @@ case "${LOCAL_ARCH}" in
     ;;
 esac
 
-URL="https://dl.getistio.io/public/raw/files/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}.tar.gz"
-ARCH_URL="https://dl.getistio.io/public/raw/files/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}-${ISTIO_ARCH}.tar.gz"
+URL="https://dl.getmesh.io/public/raw/files/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}.tar.gz"
+ARCH_URL="https://dl.getmesh.io/public/raw/files/istio-${DISTRIBUTION_IDENTIFIER}-${OSEXT}-${ISTIO_ARCH}.tar.gz"
 
 with_arch() {
   printf "\nDownloading %s from %s ...\n" "$DISTRIBUTION_IDENTIFIER" "$ARCH_URL"

@@ -19,9 +19,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/api"
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/istioctl"
 )
 
 func newPruneCmd(homedir string) *cobra.Command {
@@ -36,17 +36,17 @@ func newPruneCmd(homedir string) *cobra.Command {
 		Short: "Remove specific istioctl installed, or all, except the active one",
 		Long:  "Remove specific istioctl installed, or all, except the active one",
 		Example: `# remove all the installed
-$ getistio prune
+$ getmesh prune
 
 # remove the specific distribution
-$ getistio prune --version 1.7.4 --flavor tetrate --flavor-version 0
+$ getmesh prune --version 1.7.4 --flavor tetrate --flavor-version 0
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			target, err := pruneCheckFlags(flagVersion, flagFlavor, flagFlavorVersion)
 			if err != nil {
 				return err
 			}
-			return istioctl.Remove(homedir, target, getistio.GetActiveConfig().IstioDistribution)
+			return istioctl.Remove(homedir, target, getmesh.GetActiveConfig().IstioDistribution)
 		},
 	}
 

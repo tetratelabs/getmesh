@@ -26,9 +26,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getistio/api"
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func TestGetFetchedVersions(t *testing.T) {
@@ -45,7 +45,7 @@ func TestGetFetchedVersions(t *testing.T) {
 			Flavor:        api.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
-		ctlPath := GetIstioctlPath(dir, d)
+		ctlPath := getmeshctlPath(dir, d)
 		exp[d.ToString()] = struct{}{}
 
 		suffix := strings.TrimSuffix(ctlPath, "/istioctl")
@@ -65,8 +65,8 @@ func TestGetFetchedVersions(t *testing.T) {
 }
 
 func TestPrintFetchedVersions(t *testing.T) {
-	getistio.GlobalConfigMux.Lock()
-	defer getistio.GlobalConfigMux.Unlock()
+	getmesh.GlobalConfigMux.Lock()
+	defer getmesh.GlobalConfigMux.Unlock()
 
 	t.Run("ok", func(t *testing.T) {
 		dir, err := ioutil.TempDir("", "")
@@ -79,11 +79,11 @@ func TestPrintFetchedVersions(t *testing.T) {
 			FlavorVersion: 0,
 		}
 
-		require.NoError(t, getistio.SetIstioVersion(dir, d))
+		require.NoError(t, getmesh.SetIstioVersion(dir, d))
 		for _, v := range []string{
 			"20.1.1", "1.2.4", "1.7.3",
 		} {
-			ctlPath := GetIstioctlPath(dir, &api.IstioDistribution{
+			ctlPath := getmeshctlPath(dir, &api.IstioDistribution{
 				Version:       v,
 				Flavor:        api.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
@@ -108,8 +108,8 @@ func TestPrintFetchedVersions(t *testing.T) {
 
 func TestGetCurrentExecutable(t *testing.T) {
 	t.Run("non exist", func(t *testing.T) {
-		getistio.GlobalConfigMux.Lock()
-		defer getistio.GlobalConfigMux.Unlock()
+		getmesh.GlobalConfigMux.Lock()
+		defer getmesh.GlobalConfigMux.Unlock()
 		d := &api.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        api.IstioDistributionFlavorTetrate,
@@ -119,14 +119,14 @@ func TestGetCurrentExecutable(t *testing.T) {
 		dir, err := ioutil.TempDir("", "")
 		require.NoError(t, err)
 		defer os.RemoveAll(dir)
-		require.NoError(t, getistio.SetIstioVersion(dir, d))
+		require.NoError(t, getmesh.SetIstioVersion(dir, d))
 		_, err = GetCurrentExecutable(dir)
 		assert.Error(t, err)
 	})
 
 	t.Run("ok", func(t *testing.T) {
-		getistio.GlobalConfigMux.Lock()
-		defer getistio.GlobalConfigMux.Unlock()
+		getmesh.GlobalConfigMux.Lock()
+		defer getmesh.GlobalConfigMux.Unlock()
 
 		dir, err := ioutil.TempDir("", "")
 		require.NoError(t, err)
@@ -138,11 +138,11 @@ func TestGetCurrentExecutable(t *testing.T) {
 			FlavorVersion: 0,
 		}
 
-		require.NoError(t, getistio.SetIstioVersion(dir, d))
+		require.NoError(t, getmesh.SetIstioVersion(dir, d))
 		require.NoError(t,
-			os.MkdirAll(strings.TrimSuffix(GetIstioctlPath(dir, d), "/istioctl"), 0755))
+			os.MkdirAll(strings.TrimSuffix(getmeshctlPath(dir, d), "/istioctl"), 0755))
 
-		f, err := os.Create(GetIstioctlPath(dir, d))
+		f, err := os.Create(getmeshctlPath(dir, d))
 		require.NoError(t, err)
 		defer f.Close()
 
@@ -152,14 +152,14 @@ func TestGetCurrentExecutable(t *testing.T) {
 	})
 }
 
-func Test_GetIstioctlPath(t *testing.T) {
+func Test_getmeshctlPath(t *testing.T) {
 	d := &api.IstioDistribution{
 		Version:       "1.7.3",
 		Flavor:        api.IstioDistributionFlavorTetrate,
 		FlavorVersion: 0,
 	}
 	assert.Equal(t, "tmpdir/istio/1.7.3-tetrate-v0/bin/istioctl",
-		GetIstioctlPath("tmpdir", d))
+		getmeshctlPath("tmpdir", d))
 }
 
 func Test_removeAll(t *testing.T) {
@@ -180,7 +180,7 @@ func Test_removeAll(t *testing.T) {
 
 		// create dirs
 		for _, d := range distros {
-			ctlPath := GetIstioctlPath(dir, d)
+			ctlPath := getmeshctlPath(dir, d)
 			suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 			require.NoError(t, os.MkdirAll(suffix, 0755))
 			f, err := os.Create(ctlPath)
@@ -238,7 +238,7 @@ func TestRemove(t *testing.T) {
 			Flavor:        "exist",
 			FlavorVersion: 1,
 		}
-		ctlPath := GetIstioctlPath(dir, target)
+		ctlPath := getmeshctlPath(dir, target)
 		suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
@@ -275,7 +275,7 @@ func Test_checkExists(t *testing.T) {
 			FlavorVersion: 0,
 		}
 
-		ctlPath := GetIstioctlPath(dir, d)
+		ctlPath := getmeshctlPath(dir, d)
 		suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
@@ -294,8 +294,8 @@ func Test_checkExists(t *testing.T) {
 }
 
 func TestSwitch(t *testing.T) {
-	getistio.GlobalConfigMux.Lock()
-	defer getistio.GlobalConfigMux.Unlock()
+	getmesh.GlobalConfigMux.Lock()
+	defer getmesh.GlobalConfigMux.Unlock()
 
 	dir, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
@@ -311,7 +311,7 @@ func TestSwitch(t *testing.T) {
 			"20.1.1", "1.7.3",
 		} {
 			d.Version = v
-			ctlPath := GetIstioctlPath(dir, d)
+			ctlPath := getmeshctlPath(dir, d)
 			suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 			require.NoError(t, os.MkdirAll(suffix, 0755))
 			f, err := os.Create(ctlPath)
@@ -320,10 +320,10 @@ func TestSwitch(t *testing.T) {
 		}
 
 		d.Version = "1.7.3"
-		require.NoError(t, getistio.SetIstioVersion(dir, d))
+		require.NoError(t, getmesh.SetIstioVersion(dir, d))
 		d.Version = "20.1.1"
 		assert.NoError(t, Switch(dir, d))
-		assert.Equal(t, d, getistio.GetActiveConfig().IstioDistribution)
+		assert.Equal(t, d, getmesh.GetActiveConfig().IstioDistribution)
 	})
 
 	t.Run("non-exist", func(t *testing.T) {
@@ -341,8 +341,8 @@ func TestSwitch(t *testing.T) {
 }
 
 func TestExec(t *testing.T) {
-	getistio.GlobalConfigMux.Lock()
-	defer getistio.GlobalConfigMux.Unlock()
+	getmesh.GlobalConfigMux.Lock()
+	defer getmesh.GlobalConfigMux.Unlock()
 
 	dir, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
@@ -354,9 +354,9 @@ func TestExec(t *testing.T) {
 		FlavorVersion: 0,
 	}
 
-	ctlPath := GetIstioctlPath(dir, d)
+	ctlPath := getmeshctlPath(dir, d)
 	suffix := strings.TrimSuffix(ctlPath, "/istioctl")
-	require.NoError(t, getistio.SetIstioVersion(dir, d))
+	require.NoError(t, getmesh.SetIstioVersion(dir, d))
 	require.NoError(t, os.MkdirAll(suffix, 0755))
 	f, err := os.Create(ctlPath + ".go")
 	require.NoError(t, err)
@@ -423,7 +423,7 @@ func TestFetch(t *testing.T) {
 			Flavor:        "noooooo",
 			FlavorVersion: 1000,
 		}
-		ctlPath := GetIstioctlPath(dir, target)
+		ctlPath := getmeshctlPath(dir, target)
 		suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
@@ -476,7 +476,7 @@ func Test_fetchIstioctl(t *testing.T) {
 
 	for _, d := range m.IstioDistributions {
 		require.NoError(t, fetchIstioctl(dir, d))
-		ctlPath := GetIstioctlPath(dir, d)
+		ctlPath := getmeshctlPath(dir, d)
 		_, err = os.Stat(ctlPath)
 		require.NoError(t, err)
 		t.Log(ctlPath)

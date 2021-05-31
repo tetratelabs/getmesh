@@ -30,7 +30,7 @@ func TestAWSProviderValidityDaysExceedC(t *testing.T) {
 	rootCAIdentifier := os.Getenv("ROOT_CA_ARN")
 	templateArn := os.Getenv("TEMPLATE_ARN")
 
-	cmd := exec.Command("../getistio", "gen-ca", "--provider=aws",
+	cmd := exec.Command("../getmesh", "gen-ca", "--provider=aws",
 		fmt.Sprintf("--signing-ca=%s", rootCAIdentifier),
 		fmt.Sprintf("--template-arn=%s", templateArn),
 		"--validity-days=100000",
@@ -49,7 +49,7 @@ func TestAWSProvider(t *testing.T) {
 	rootCAIdentifier := os.Getenv("ROOT_CA_ARN")
 	templateArn := os.Getenv("TEMPLATE_ARN")
 
-	cmd := exec.Command("../getistio", "gen-ca", "--provider=aws",
+	cmd := exec.Command("../getmesh", "gen-ca", "--provider=aws",
 		fmt.Sprintf("--signing-ca=%s", rootCAIdentifier),
 		fmt.Sprintf("--template-arn=%s", templateArn),
 		"--validity-days=100",

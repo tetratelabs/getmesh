@@ -20,7 +20,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getmesh/api"
 )
 
 func Test_fetchParams(t *testing.T) {

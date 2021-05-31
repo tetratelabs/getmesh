@@ -91,14 +91,14 @@ func (x *Manifest) GetManifestVersion() string {
 	return ""
 }
 
-func (x *Manifest) GetIstioDistributions() []*IstioDistribution {
+func (x *Manifest) getmeshDistributions() []*IstioDistribution {
 	if x != nil {
 		return x.IstioDistributions
 	}
 	return nil
 }
 
-func (x *Manifest) GetIstioMinorVersionsEolDates() map[string]string {
+func (x *Manifest) getmeshMinorVersionsEolDates() map[string]string {
 	if x != nil {
 		return x.IstioMinorVersionsEolDates
 	}

@@ -25,8 +25,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	ops "github.com/tetratelabs/getistio/src/cacerts/providers"
-	"github.com/tetratelabs/getistio/src/cacerts/providers/models"
+	ops "github.com/tetratelabs/getmesh/src/cacerts/providers"
+	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
 )
 
 var (
@@ -40,7 +40,7 @@ var (
 	errUnmarshalConfig      = errors.New("unable to unmarshal config file contents")
 )
 
-// Config represent a structure used to accept request for `getistio`
+// Config represent a structure used to accept request for `getmesh`
 // from a config file.
 // Sample Config for AWS:
 // providerName: "aws"
@@ -54,7 +54,7 @@ var (
 // certificateParameters:
 //   secretOptions:
 //     istioCANamespace: "istio-system"
-//     secretFilePath: "/tmp/getistio/secret.yaml"
+//     secretFilePath: "/tmp/getmesh/secret.yaml"
 //   caOptions:
 //     validityDays: 3650
 //     keyLength: 2048
@@ -166,7 +166,7 @@ func (c *Config) ValidationsForConfig() error {
 var defaultCertParams = models.IssueCAOptions{
 	SecretOptions: models.SecretOptions{
 		IstioNamespace:               "istio-system",
-		SecretFilePath:               "~/.getistio/secret/",
+		SecretFilePath:               "~/.getmesh/secret/",
 		OverrideExistingCACertSecret: false,
 	},
 	CAOptions: models.CAOptions{

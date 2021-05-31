@@ -23,23 +23,23 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/istioctl"
-	"github.com/tetratelabs/getistio/src/util"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
-func newVersionCmd(homedir, getIstioVersion string) *cobra.Command {
+func newVersionCmd(homedir, getmeshVersion string) *cobra.Command {
 	var remote bool
 	sanitizer := regexp.MustCompile("(?m)[\r\n]+^.*client\\sversion.*$")
 
 	cmd := &cobra.Command{
 		Use:   "version",
-		Short: "Show the versions of GetIstio cli, running Istiod, Envoy, and the active istioctl",
-		Long:  `Show the versions of GetIstio cli, running Istiod, Envoy, and the active istioctl`,
+		Short: "Show the versions of getmesh cli, running Istiod, Envoy, and the active istioctl",
+		Long:  `Show the versions of getmesh cli, running Istiod, Envoy, and the active istioctl`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if getistio.GetActiveConfig().IstioDistribution == nil {
-				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
+			if getmesh.GetActiveConfig().IstioDistribution == nil {
+				return errors.New("please fetch Istioctl by `getmesh fetch` beforehand")
 			}
 			return nil
 		},
@@ -49,7 +49,7 @@ func newVersionCmd(homedir, getIstioVersion string) *cobra.Command {
 				return err
 			}
 
-			logger.Infof("getistio version: %s\nactive istioctl: %s\n", getIstioVersion, cur.ToString())
+			logger.Infof("getmesh version: %s\nactive istioctl: %s\n", getmeshVersion, cur.ToString())
 			k8sCLient, err := util.GetK8sClient()
 			if err != nil {
 				logger.Infof("no active Kubernetes clusters found\n")
@@ -75,14 +75,14 @@ func newVersionCmd(homedir, getIstioVersion string) *cobra.Command {
 				}
 			}
 
-			latest, err := getistio.LatestVersion()
+			latest, err := getmesh.LatestVersion()
 			if err != nil {
-				return fmt.Errorf("failed to check GetIstio's latest version: %v", err)
+				return fmt.Errorf("failed to check getmesh's latest version: %v", err)
 			}
 
-			if latest != getIstioVersion {
+			if latest != getmeshVersion {
 				logger.Infof(
-					"\nThe latest GetIstio of version %s is available. Please run 'getistio update' to install %s\n",
+					"\nThe latest getmesh of version %s is available. Please run 'getmesh update' to install %s\n",
 					latest, latest)
 			}
 

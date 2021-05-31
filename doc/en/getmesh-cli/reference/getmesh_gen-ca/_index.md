@@ -1,12 +1,12 @@
 ---
-title: "getistio gen-ca"
-url: /getistio-cli/reference/getistio_gen-ca/
+title: "getmesh gen-ca"
+url: /getmesh-cli/reference/getmesh_gen-ca/
 ---
 
 Generates intermediate CA from different managed services such as AWS ACMPCA, GCP CAS
 
 ```
-getistio gen-ca [flags]
+getmesh gen-ca [flags]
 ```
 
 #### Examples
@@ -25,7 +25,7 @@ providerConfig:
 certificateParameters:
   secretOptions:
     istioCANamespace: istio-system
-    secretFilePath: ~/.getistio/secret/
+    secretFilePath: ~/.getmesh/secret/
     overrideExistingCACertsSecret: false
   caOptions:
     certSigningRequestParams:
@@ -66,7 +66,7 @@ certificateParameters:
     keyLength: 2048
 
 EOF
-getistio gen-ca --config-file aws.yaml
+getmesh gen-ca --config-file aws.yaml
 
 
 - GCP:
@@ -81,7 +81,7 @@ providerConfig:
 certificateParameters:
   secretOptions:
     istioCANamespace: istio-system
-    secretFilePath: ~/.getistio/secret/
+    secretFilePath: ~/.getmesh/secret/
     overrideExistingCACertsSecret: false
   caOptions:
     certSigningRequestParams:
@@ -122,7 +122,7 @@ certificateParameters:
     keyLength: 2048
 
 EOF
-getistio gen-ca --config-file gcp.yaml
+getmesh gen-ca --config-file gcp.yaml
 ```
 
 #### Options
@@ -159,5 +159,5 @@ getistio gen-ca --config-file gcp.yaml
 
 #### SEE ALSO
 
-* [getistio](/getistio-cli/reference/getistio/)	 - GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
+* [getmesh](/getmesh-cli/reference/getmesh/)	 - getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
 

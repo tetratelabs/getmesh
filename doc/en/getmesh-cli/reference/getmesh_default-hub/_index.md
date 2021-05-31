@@ -1,25 +1,25 @@
 ---
-title: "getistio default-hub"
-url: /getistio-cli/reference/getistio_default-hub/
+title: "getmesh default-hub"
+url: /getmesh-cli/reference/getmesh_default-hub/
 ---
 
-Set or Show the default hub (root for Istio docker image paths) passed to "getistio istioctl install" via "--set hub="  e.g. docker.io/istio
+Set or Show the default hub (root for Istio docker image paths) passed to "getmesh istioctl install" via "--set hub="  e.g. docker.io/istio
 
 ```
-getistio default-hub [flags]
+getmesh default-hub [flags]
 ```
 
 #### Examples
 
 ```
 # Set the default hub to docker.io/istio
-$ getistio default-hub --set docker.io/istio
+$ getmesh default-hub --set docker.io/istio
 
 # Show the configured default hub
-$ getistio default-hub --show
+$ getmesh default-hub --show
 
 # Remove the configured default hub
-$ getistio default-hub --remove
+$ getmesh default-hub --remove
 
 ```
 
@@ -40,5 +40,5 @@ $ getistio default-hub --remove
 
 #### SEE ALSO
 
-* [getistio](/getistio-cli/reference/getistio/)	 - GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
+* [getmesh](/getmesh-cli/reference/getmesh/)	 - getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
 

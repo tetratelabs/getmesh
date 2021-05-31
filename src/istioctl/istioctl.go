@@ -25,14 +25,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tetratelabs/getistio/api"
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 // This is the message put into stdout of "istioctl version" command when there are no istiod running in istio-system,
 // i.e. the case where istio is not installed.
-// And this is used for handling that case in "getistio version" and "getistio check-upgrade" commands.
+// And this is used for handling that case in "getmesh version" and "getmesh check-upgrade" commands.
 // https://github.com/istio/istio/blob/593b8777047af29ed1307a8a0a96aa6481fb2664/pkg/kube/client.go#L698
 const IstioVersionNoPodRunningMsg = "no running Istio pods in \"istio-system\""
 
@@ -41,7 +41,7 @@ var (
 	istioctlPathFormat = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
 )
 
-func GetIstioctlPath(homeDir string, distribution *api.IstioDistribution) string {
+func getIstioctlPath(homeDir string, distribution *api.IstioDistribution) string {
 	path := fmt.Sprintf(istioctlPathFormat, distribution.ToString())
 	return filepath.Join(homeDir, path)
 }
@@ -146,11 +146,11 @@ func Remove(homeDir string, target, current *api.IstioDistribution) error {
 
 func checkExist(homeDir string, distribution *api.IstioDistribution) error {
 	// check if the istio version already fetched
-	path := GetIstioctlPath(homeDir, distribution)
+	path := getIstioctlPath(homeDir, distribution)
 	_, err := os.Stat(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("istioctl not fetched for %s. Please run `getistio fetch`: %w",
+			return fmt.Errorf("istioctl not fetched for %s. Please run `getmesh fetch`: %w",
 				distribution.ToString(), os.ErrNotExist)
 		}
 		return fmt.Errorf("error checking istioctl: %v", err)
@@ -159,7 +159,7 @@ func checkExist(homeDir string, distribution *api.IstioDistribution) error {
 }
 
 func GetCurrentExecutable(homeDir string) (*api.IstioDistribution, error) {
-	conf := getistio.GetActiveConfig()
+	conf := getmesh.GetActiveConfig()
 	if err := checkExist(homeDir, conf.IstioDistribution); err != nil {
 		return nil, fmt.Errorf("check exist failed: %w", err)
 	}
@@ -170,20 +170,20 @@ func Switch(homeDir string, distribution *api.IstioDistribution) error {
 	if err := checkExist(homeDir, distribution); err != nil {
 		return err
 	}
-	return getistio.SetIstioVersion(homeDir, distribution)
+	return getmesh.SetIstioVersion(homeDir, distribution)
 }
 
-// getistio istioctl
+// getmesh istioctl
 func Exec(homeDir string, args []string) error {
 	return ExecWithWriters(homeDir, args, nil, nil)
 }
 
 func ExecWithWriters(homeDir string, args []string, stdout, stderr io.Writer) error {
-	conf := getistio.GetActiveConfig()
+	conf := getmesh.GetActiveConfig()
 	if err := checkExist(homeDir, conf.IstioDistribution); err != nil {
 		return err
 	}
-	path := GetIstioctlPath(homeDir, conf.IstioDistribution)
+	path := getIstioctlPath(homeDir, conf.IstioDistribution)
 	cmd := exec.Command(path, args...)
 
 	if stdout != nil {
@@ -218,7 +218,7 @@ func Fetch(homeDir string, target *api.IstioDistribution, ms *api.Manifest) erro
 
 	if !found {
 		return fmt.Errorf("manifest not found for istioctl %s."+
-			" Please check the supported istio versions and flavors by `getistio list`",
+			" Please check the supported istio versions and flavors by `getmesh list`",
 			target.ToString())
 	}
 
@@ -244,8 +244,8 @@ func fetchIstioctl(homeDir string, targetDistribution *api.IstioDistribution) er
 		return fmt.Errorf("error while dowloading istio: %v", err)
 	}
 
-	if conf := getistio.GetActiveConfig(); conf.IstioDistribution == nil {
-		if err := getistio.SetIstioVersion(homeDir, targetDistribution); err != nil {
+	if conf := getmesh.GetActiveConfig(); conf.IstioDistribution == nil {
+		if err := getmesh.SetIstioVersion(homeDir, targetDistribution); err != nil {
 			return fmt.Errorf("error switching to %s", conf.IstioDistribution.ToString())
 		}
 	}

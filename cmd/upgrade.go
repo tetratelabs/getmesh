@@ -17,16 +17,16 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getmesh/src/getmesh"
 )
 
 func newUpgradeCmd(version string) *cobra.Command {
 	return &cobra.Command{
 		Use:   "update",
-		Short: "Update getistio itself to the latest version",
-		Long:  `Update getistio itself to the latest version`,
+		Short: "Update getmesh itself to the latest version",
+		Long:  `Update getmesh itself to the latest version`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return getistio.Update(version)
+			return getmesh.Update(version)
 		},
 	}
 }

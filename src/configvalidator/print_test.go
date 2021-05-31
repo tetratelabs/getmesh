@@ -19,7 +19,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func TestPrintConfigValidationResultsWithoutNamespace(t *testing.T) {

@@ -23,9 +23,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getistio/api"
-	"github.com/tetratelabs/getistio/src/istioctl"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func Test_securityPatchCheckerImpl(t *testing.T) {
@@ -57,7 +56,7 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 	}
 
 	for _, d := range locals {
-		ctlPath := istioctl.GetIstioctlPath(dir, d)
+		ctlPath := istioctl.getmeshctlPath(dir, d)
 		suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
@@ -73,9 +72,9 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 
 	msg := buf.String()
 	for _, exp := range []string{
-		`[WARNING] The locally installed minor version 1.9-tetrate has a latest version 1.9.10-tetrate-v0 including security patches. We strongly recommend you to download 1.9.10-tetrate-v0 by "getistio fetch".`,
-		`[WARNING] The locally installed minor version 1.2-tetrate is no longer supported by GetIstio. We recommend you use the higher minor versions in "getistio list" or remove with "getistio prune"`,
-		`[WARNING] The locally installed minor version 1.7-tetrate has a latest version 1.7.6-tetrate-v2 including security patches. We strongly recommend you to download 1.7.6-tetrate-v2 by "getistio fetch".`,
+		`[WARNING] The locally installed minor version 1.9-tetrate has a latest version 1.9.10-tetrate-v0 including security patches. We strongly recommend you to download 1.9.10-tetrate-v0 by "getmesh fetch".`,
+		`[WARNING] The locally installed minor version 1.2-tetrate is no longer supported by getmesh. We recommend you use the higher minor versions in "getmesh list" or remove with "getmesh prune"`,
+		`[WARNING] The locally installed minor version 1.7-tetrate has a latest version 1.7.6-tetrate-v2 including security patches. We strongly recommend you to download 1.7.6-tetrate-v2 by "getmesh fetch".`,
 	} {
 		assert.Contains(t, msg, exp)
 	}

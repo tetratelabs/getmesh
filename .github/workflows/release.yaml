@@ -44,9 +44,9 @@ jobs:
           command: "push"
           format: "raw"
           owner: "tetrate"
-          repo: "getistio"
-          file: "getistio_darwin_amd64.tar.gz"
-          name: "getistio_darwin_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
+          repo: "getmesh"
+          file: "getmesh_darwin_amd64.tar.gz"
+          name: "getmesh_darwin_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
 
       - name: Push Linux binaries to Cloudsmith
         working-directory: dist
@@ -57,9 +57,9 @@ jobs:
           command: "push"
           format: "raw"
           owner: "tetrate"
-          repo: "getistio"
-          file: "getistio_linux_amd64.tar.gz"
-          name: "getistio_linux_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
+          repo: "getmesh"
+          file: "getmesh_linux_amd64.tar.gz"
+          name: "getmesh_linux_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
 
       - name: Push Manifest
         working-directory: dist
@@ -70,7 +70,7 @@ jobs:
           command: "push"
           format: "raw"
           owner: "tetrate"
-          repo: "getistio"
+          repo: "getmesh"
           file: "manifest.json"
           republish: "true"
           name: "manifest.json"
@@ -84,7 +84,7 @@ jobs:
           command: "push"
           format: "raw"
           owner: "tetrate"
-          repo: "getistio"
+          repo: "getmesh"
           file: "download.sh"
           republish: "true"
           name: "download.sh"
@@ -97,13 +97,13 @@ jobs:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      - name: Download the latest getistio
-        run: curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
+      - name: Download the latest getmesh
+        run: curl -sL https://dl.getmesh.io/public/raw/files/download.sh | bash
 
       - name: Check version
         run: |
           version=${{ env.RELEASE_VERSION }}
-          ~/.getistio/bin/getistio version --remote=false | grep ${version:1}
+          ~/.getmesh/bin/getmesh version --remote=false | grep ${version:1}
 
   release-doc:
     needs: [post-release-check]
@@ -119,26 +119,26 @@ jobs:
       - name: clone
         run: |
           mkdir ~/.ssh
-          echo "${{ secrets.GETISTIO_IO_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.getmesh_IO_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          git clone git@github.com:tetratelabs/getistio.io.git getistio.io
+          git clone git@github.com:tetratelabs/getmesh.io.git getmesh.io
 
       - name: cp
         run: |
-          cp -r doc/en/* getistio.io/content/en/
-          find doc/en/ -type f -name "_index.md" -print0 | xargs -0 sed -i -e "s/\/getistio-cli\/reference/\/zh\/getistio-cli\/reference/g"
-          cp -r doc/en/* getistio.io/content/zh/
+          cp -r doc/en/* getmesh.io/content/en/
+          find doc/en/ -type f -name "_index.md" -print0 | xargs -0 sed -i -e "s/\/getmesh-cli\/reference/\/zh\/getmesh-cli\/reference/g"
+          cp -r doc/en/* getmesh.io/content/zh/
 
       - name: commit
-        working-directory: getistio.io
+        working-directory: getmesh.io
         run: |
-          git config --global user.email "getistio@tetrate.io"
-          git config --global user.name "getistio"
+          git config --global user.email "getmesh@tetrate.io"
+          git config --global user.name "getmesh"
           git checkout main
           git add content/
-          git commit -a -m "Update docs from the getistio ${{ env.RELEASE_VERSION }} release"
+          git commit -a -m "Update docs from the getmesh ${{ env.RELEASE_VERSION }} release"
 
       - name: push
-        working-directory: getistio.io
+        working-directory: getmesh.io
         run: |
           git push origin main

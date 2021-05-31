@@ -1,45 +1,45 @@
 ---
-title: "getistio fetch"
-url: /getistio-cli/reference/getistio_fetch/
+title: "getmesh fetch"
+url: /getmesh-cli/reference/getmesh_fetch/
 ---
 
-Fetch istioctl of the specified version, flavor and flavor-version available in "getistio list" command
+Fetch istioctl of the specified version, flavor and flavor-version available in "getmesh list" command
 
 ```
-getistio fetch [flags]
+getmesh fetch [flags]
 ```
 
 #### Examples
 
 ```
 # Fetch the latest "tetrate flavored" istioctl of version=1.8
-$ getistio fetch --version 1.8
+$ getmesh fetch --version 1.8
 
 # Fetch the latest istioctl in version=1.7 and flavor=tetratefips
-$ getistio fetch --version 1.7 --flavor tetratefips
+$ getmesh fetch --version 1.7 --flavor tetratefips
 
 # Fetch the latest istioctl of version=1.7, flavor=tetrate and flavor-version=0
-$ getistio fetch --version 1.7 --flavor tetrate --flavor-version 0
+$ getmesh fetch --version 1.7 --flavor tetrate --flavor-version 0
 
 # Fetch the istioctl of version=1.7.4 flavor=tetrate flavor-version=0
-$ getistio fetch --version 1.7.4 --flavor tetrate --flavor-version 0
+$ getmesh fetch --version 1.7.4 --flavor tetrate --flavor-version 0
 
 # Fetch the istioctl of version=1.7.4 flavor=tetrate flavor-version=0 using name
-$ getistio fetch --name 1.7.4-tetrate-v0
+$ getmesh fetch --name 1.7.4-tetrate-v0
 
 # Fetch the latest istioctl of version=1.7.4 and flavor=tetratefips
-$ getistio fetch --version 1.7.4 --flavor tetratefips
+$ getmesh fetch --version 1.7.4 --flavor tetratefips
 
 # Fetch the latest "tetrate flavored" istioctl of version=1.7.4
-$ getistio fetch --version 1.7.4
+$ getmesh fetch --version 1.7.4
 
 # Fetch the istioctl of version=1.8.3 flavor=istio flavor-version=0
-$ getistio fetch --version 1.8.3 --flavor istio
+$ getmesh fetch --version 1.8.3 --flavor istio
 
 
 
 # Fetch the latest "tetrate flavored" istioctl
-$ getistio fetch
+$ getmesh fetch
 
 As you can see the above examples:
 - If --flavor-versions is not given, it defaults to the latest flavor version in the list
@@ -48,7 +48,7 @@ As you can see the above examples:
 - If --versions is not given, it defaults to the latest version of "tetrate" flavor.
 
 
-For more information, please refer to "getistio list --help" command.
+For more information, please refer to "getmesh list --help" command.
 
 ```
 
@@ -70,5 +70,5 @@ For more information, please refer to "getistio list --help" command.
 
 #### SEE ALSO
 
-* [getistio](/getistio-cli/reference/getistio/)	 - GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
+* [getmesh](/getmesh-cli/reference/getmesh/)	 - getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
 

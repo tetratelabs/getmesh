@@ -19,8 +19,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func newSetDefaultHubCmd(homedir string) *cobra.Command {
@@ -31,16 +31,16 @@ func newSetDefaultHubCmd(homedir string) *cobra.Command {
 	)
 	cmd := &cobra.Command{
 		Use:   "default-hub",
-		Short: `Set or Show the default hub passed to "getistio istioctl install" via "--set hub=" e.g. docker.io/istio`,
-		Long:  `Set or Show the default hub (root for Istio docker image paths) passed to "getistio istioctl install" via "--set hub="  e.g. docker.io/istio`,
+		Short: `Set or Show the default hub passed to "getmesh istioctl install" via "--set hub=" e.g. docker.io/istio`,
+		Long:  `Set or Show the default hub (root for Istio docker image paths) passed to "getmesh istioctl install" via "--set hub="  e.g. docker.io/istio`,
 		Example: `# Set the default hub to docker.io/istio
-$ getistio default-hub --set docker.io/istio
+$ getmesh default-hub --set docker.io/istio
 
 # Show the configured default hub
-$ getistio default-hub --show
+$ getmesh default-hub --show
 
 # Remove the configured default hub
-$ getistio default-hub --remove
+$ getmesh default-hub --remove
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return defaultHubCheckFlags(removeFlag, setFlag, showFlag)
@@ -51,8 +51,9 @@ $ getistio default-hub --remove
 			} else if removeFlag {
 				return defaultHubHandleRemove(homedir)
 			} else if showFlag {
-				defaultHubHandleShow(getistio.GetActiveConfig().DefaultHub)
+				defaultHubHandleShow(getmesh.GetActiveConfig().DefaultHub)
 			}
+			defaultHubHandleShow(getmesh.GetActiveConfig().DefaultHub)
 			return nil
 		},
 	}
@@ -62,7 +63,7 @@ $ getistio default-hub --remove
 	return cmd
 }
 
-var errDefaultHubArgCheck = errors.New("please provide exactly one of --remove, --set and --show flags for \"getistio default-hub\" command")
+var errDefaultHubArgCheck = errors.New("please provide exactly one of --remove, --set and --show flags for \"getmesh default-hub\" command")
 
 func defaultHubCheckFlags(remove bool, setValue string, show bool) error {
 	if setValue != "" {
@@ -86,7 +87,7 @@ func defaultHubCheckFlags(remove bool, setValue string, show bool) error {
 }
 
 func defaultHubHandleSet(homdir, setValue string) error {
-	if err := getistio.SetDefaultHub(homdir, setValue); err != nil {
+	if err := getmesh.SetDefaultHub(homdir, setValue); err != nil {
 		return err
 	}
 	logger.Infof("The default hub is now set to %s\n", setValue)
@@ -95,14 +96,14 @@ func defaultHubHandleSet(homdir, setValue string) error {
 
 func defaultHubHandleShow(current string) {
 	if current == "" {
-		logger.Infof("The default hub is not set yet. Istioctl's default value is used for \"getistio istioctl install\" command\n")
+		logger.Infof("The default hub is not set yet. Istioctl's default value is used for \"getmesh istioctl install\" command\n")
 	} else {
 		logger.Infof("The current default hub is set to %s\n", current)
 	}
 }
 
 func defaultHubHandleRemove(homdir string) error {
-	if err := getistio.SetDefaultHub(homdir, ""); err != nil {
+	if err := getmesh.SetDefaultHub(homdir, ""); err != nil {
 		return err
 	}
 	logger.Infof("The default hub is removed. Now Istioctl's default value is used for \"getistio istioctl install\" command\n")

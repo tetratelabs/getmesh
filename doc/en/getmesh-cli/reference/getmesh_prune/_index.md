@@ -1,22 +1,22 @@
 ---
-title: "getistio prune"
-url: /getistio-cli/reference/getistio_prune/
+title: "getmesh prune"
+url: /getmesh-cli/reference/getmesh_prune/
 ---
 
 Remove specific istioctl installed, or all, except the active one
 
 ```
-getistio prune [flags]
+getmesh prune [flags]
 ```
 
 #### Examples
 
 ```
 # remove all the installed
-$ getistio prune
+$ getmesh prune
 
 # remove the specific distribution
-$ getistio prune --version 1.7.4 --flavor tetrate --flavor-version 0
+$ getmesh prune --version 1.7.4 --flavor tetrate --flavor-version 0
 
 ```
 
@@ -37,5 +37,5 @@ $ getistio prune --version 1.7.4 --flavor tetrate --flavor-version 0
 
 #### SEE ALSO
 
-* [getistio](/getistio-cli/reference/getistio/)	 - GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
+* [getmesh](/getmesh-cli/reference/getmesh/)	 - getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.
 

@@ -26,11 +26,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/src/checkupgrade"
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/istioctl"
-	"github.com/tetratelabs/getistio/src/manifest"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/checkupgrade"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func newCheckCmd(homedir string) *cobra.Command {
@@ -39,19 +39,19 @@ func newCheckCmd(homedir string) *cobra.Command {
 		Short: "Check if there are patches available in the current minor version",
 		Long:  `Check if there are patches available in the current minor version, e.g. 1.7-tetrate: 1.7.4-tetrate-v1 -> 1.7.5-tetrate-v1`,
 		Example: `# example output
-$ getistio check-upgrade
+$ getmesh check-upgrade
 ...
 - Your data plane running in multiple minor versions: 1.7-tetrate, 1.8-tetrate
 - Your control plane running in multiple minor versions: 1.6-tetrate, 1.8-tetrate
-- The minor version 1.6-tetrate is not supported by Tetrate.io. We recommend you use the trusted minor versions in "getistio list"
+- The minor version 1.6-tetrate is not supported by Tetrate.io. We recommend you use the trusted minor versions in "getmesh list"
 - There is the available patch for the minor version 1.7-tetrate. We recommend upgrading all 1.7-tetrate versions -> 1.7.4-tetrate-v1
 - There is the available patch for the minor version 1.8-tetrate which includes **security upgrades**. We strongly recommend upgrading all 1.8-tetrate versions -> 1.8.1-tetrate-v1
 
 In the above example, we call names in the form of x.y-${flavor} "minor version", where x.y is Istio's upstream minor and ${flavor} is the flavor of the distribution.
-Please refer to 'getistio fetch --help' or 'getistio list --help' for more information.`,
+Please refer to 'getmesh fetch --help' or 'getmesh list --help' for more information.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if getistio.GetActiveConfig().IstioDistribution == nil {
-				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
+			if getmesh.GetActiveConfig().IstioDistribution == nil {
+				return errors.New("please fetch Istioctl by `getmesh fetch` beforehand")
 			}
 			return nil
 		},
