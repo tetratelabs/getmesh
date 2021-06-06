@@ -17,7 +17,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/istioctl"
 )
 
 func newShowCmd(homedir string) *cobra.Command {
@@ -25,7 +25,7 @@ func newShowCmd(homedir string) *cobra.Command {
 		Use:     "show",
 		Short:   "Show fetched Istio versions",
 		Long:    `Show fetched Istio version`,
-		Example: `getistio show`,
+		Example: `getmesh show`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return istioctl.PrintFetchedVersions(homedir)
 		},

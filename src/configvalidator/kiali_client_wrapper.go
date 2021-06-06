@@ -38,8 +38,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
-	"github.com/tetratelabs/getistio/src/util"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 // There are two reasons for having kialiClientWrapper:
@@ -275,7 +275,7 @@ func (c *kialiClientWrapper) GetIstioObjects(namespace, resourceType, labelSelec
 			if ss, ok := err.(errors.APIStatus); ok && ss.Status().Code == http.StatusNotFound {
 				logger.Infof("Resource %s not found in the cluster."+
 					" Maybe Istio has not been installed in your cluster."+
-					" Please make sure Istio is installed before execute \"getistio config-validate\"\n", kind)
+					" Please make sure Istio is installed before execute \"getmesh config-validate\"\n", kind)
 				os.Exit(1)
 			}
 			return nil, err

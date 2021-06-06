@@ -30,9 +30,9 @@ func TestGetIstioHomeDir(t *testing.T) {
 		require.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		actual, err := getIstioHomeDir(dir)
+		actual, err := getmeshHomeDir(dir)
 		require.NoError(t, err)
-		assert.Equal(t, filepath.Join(dir, getIstioDirname), actual)
+		assert.Equal(t, filepath.Join(dir, getmeshDirname), actual)
 	})
 
 	t.Run("created", func(t *testing.T) {
@@ -40,8 +40,8 @@ func TestGetIstioHomeDir(t *testing.T) {
 		require.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		// create .getistio prior to calling getIstioHomeDir
-		home := filepath.Join(dir, getIstioDirname)
+		// create .getmesh prior to calling getmeshHomeDir
+		home := filepath.Join(dir, getmeshDirname)
 		require.NoError(t, os.Mkdir(home, 0755))
 		filePath := filepath.Join(home, "tmp.txt")
 		f, err := os.Create(filePath)
@@ -51,7 +51,7 @@ func TestGetIstioHomeDir(t *testing.T) {
 		require.NoError(t, err)
 		require.NoError(t, f.Close())
 
-		actual, err := getIstioHomeDir(dir)
+		actual, err := getmeshHomeDir(dir)
 		require.NoError(t, err)
 		assert.Equal(t, home, actual)
 

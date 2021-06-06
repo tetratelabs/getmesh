@@ -22,18 +22,18 @@ import (
 	"path/filepath"
 )
 
-const getIstioDirname = ".getistio"
+const getmeshDirname = ".getmesh"
 
-func GetIstioHomeDir() (string, error) {
+func GetmeshHomeDir() (string, error) {
 	usr, err := user.Current()
 	if err != nil {
 		return "", err
 	}
-	return getIstioHomeDir(usr.HomeDir)
+	return getmeshHomeDir(usr.HomeDir)
 }
 
-func getIstioHomeDir(userHome string) (string, error) {
-	dir := filepath.Join(userHome, getIstioDirname)
+func getmeshHomeDir(userHome string) (string, error) {
+	dir := filepath.Join(userHome, getmeshDirname)
 	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		if err := os.Mkdir(dir, 0755); err != nil {

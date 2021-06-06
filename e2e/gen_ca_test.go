@@ -24,7 +24,7 @@ import (
 )
 
 func TestCheckGenCAConfigFileNotExist(t *testing.T) {
-	cmd := exec.Command("./getistio", "gen-ca", "--config-file=/tmp/filenotexist.yaml")
+	cmd := exec.Command("./getmesh", "gen-ca", "--config-file=/tmp/filenotexist.yaml")
 	buf := new(bytes.Buffer)
 	cmd.Stderr = buf
 	cmd.Stdout = os.Stdout
@@ -34,7 +34,7 @@ func TestCheckGenCAConfigFileNotExist(t *testing.T) {
 }
 
 func TestCheckGenCAConfigProviderUnavailable(t *testing.T) {
-	cmd := exec.Command("./getistio", "gen-ca", "--provider=unavailable")
+	cmd := exec.Command("./getmesh", "gen-ca", "--provider=unavailable")
 	buf := new(bytes.Buffer)
 	cmd.Stderr = buf
 	cmd.Stdout = os.Stdout
@@ -44,7 +44,7 @@ func TestCheckGenCAConfigProviderUnavailable(t *testing.T) {
 }
 
 func TestCheckGenCAConfigSigningCANotProvided1(t *testing.T) {
-	cmd := exec.Command("./getistio", "gen-ca", "--provider=aws")
+	cmd := exec.Command("./getmesh", "gen-ca", "--provider=aws")
 	buf := new(bytes.Buffer)
 	cmd.Stderr = buf
 	cmd.Stdout = os.Stdout
@@ -54,7 +54,7 @@ func TestCheckGenCAConfigSigningCANotProvided1(t *testing.T) {
 }
 
 func TestCheckGenCAConfigSigningCANotProvided2(t *testing.T) {
-	cmd := exec.Command("./getistio", "gen-ca", "--provider=aws")
+	cmd := exec.Command("./getmesh", "gen-ca", "--provider=aws")
 	buf := new(bytes.Buffer)
 	cmd.Stderr = buf
 	cmd.Stdout = os.Stdout
@@ -64,7 +64,7 @@ func TestCheckGenCAConfigSigningCANotProvided2(t *testing.T) {
 }
 
 func TestCheckGenCAConfigWrongRegionProvided(t *testing.T) {
-	cmd := exec.Command("./getistio", "gen-ca", "--provider=aws", "--signing-ca=testing", "--secret-file-path=/tmp/temp.yaml")
+	cmd := exec.Command("./getmesh", "gen-ca", "--provider=aws", "--signing-ca=testing", "--secret-file-path=/tmp/temp.yaml")
 	buf := new(bytes.Buffer)
 	cmd.Stderr = buf
 	cmd.Stdout = os.Stdout
@@ -74,7 +74,7 @@ func TestCheckGenCAConfigWrongRegionProvided(t *testing.T) {
 }
 
 func TestCheckGenCAConfigWrongInfoProvided(t *testing.T) {
-	cmd := exec.Command("./getistio", "gen-ca", "--provider=aws", "--signing-ca=arn:aws:acm-pca:us-west-2:123456789:certificate-authority/fake", "--secret-file-path=/tmp/temp.yaml")
+	cmd := exec.Command("./getmesh", "gen-ca", "--provider=aws", "--signing-ca=arn:aws:acm-pca:us-west-2:123456789:certificate-authority/fake", "--secret-file-path=/tmp/temp.yaml")
 	buf := new(bytes.Buffer)
 	cmd.Stderr = buf
 	cmd.Stdout = os.Stdout
@@ -84,7 +84,7 @@ func TestCheckGenCAConfigWrongInfoProvided(t *testing.T) {
 }
 
 func TestCheckGenCAConfigWrongFlagsProvided(t *testing.T) {
-	cmd := exec.Command("./getistio", "gen-ca", "--testing=test")
+	cmd := exec.Command("./getmesh", "gen-ca", "--testing=test")
 	buf := new(bytes.Buffer)
 	cmd.Stderr = buf
 	cmd.Stdout = os.Stdout

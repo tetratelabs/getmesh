@@ -28,7 +28,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/tetratelabs/getistio/src/util"
+	"github.com/tetratelabs/getmesh/src/util"
 )
 
 func init() {

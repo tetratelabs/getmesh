@@ -20,10 +20,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/api"
-	"github.com/tetratelabs/getistio/src/istioctl"
-	"github.com/tetratelabs/getistio/src/manifest"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 type switchFlags struct {
@@ -39,25 +39,25 @@ func newSwitchCmd(homedir string) *cobra.Command {
 		Short: "Switch the active istioctl to a specified version",
 		Long:  `Switch the active istioctl to a specified version`,
 		Example: `# Switch the active istioctl version to version=1.7.7, flavor=tetrate and flavor-version=0
-$ getistio switch --version 1.7.7 --flavor tetrate --flavor-version=0, 
+$ getmesh switch --version 1.7.7 --flavor tetrate --flavor-version=0, 
 
 # Switch to version=1.8.3, flavor=istio and flavor-version=0 using name flag
-$ getistio switch --name 1.8.3-istio-v0
+$ getmesh switch --name 1.8.3-istio-v0
 
 # Switch from active version=1.8.3 to version 1.9.0 with the same flavor and flavor-version
-$ getistio switch --version 1.9.0
+$ getmesh switch --version 1.9.0
 
 # Switch from active "tetrate flavored" version to "istio flavored" version with the same version and flavor-version
-$ getistio switch --flavor istio
+$ getmesh switch --flavor istio
 
 # Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version 1.9.0, flavor=tetrate and flavor-version=0
-$ getistio switch --version 1.9.0 --flavor=tetrate
+$ getmesh switch --version 1.9.0 --flavor=tetrate
 
 # Switch from active version=1.8.3, flavor=istio and flavor-version=0 to version=1.8.3, flavor=tetrate, flavor-version=1
-$ getistio switch --flavor tetrate --flavor-version=1
+$ getmesh switch --flavor tetrate --flavor-version=1
 
 # Switch from active version=1.8.3, flavor=istio and flavor-version=0 to the latest 1.9.x version, flavor=istio and flavor-version=0
-$ getistio switch --version 1.9
+$ getmesh switch --version 1.9
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := switchParse(homedir, &flag)

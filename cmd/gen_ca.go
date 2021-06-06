@@ -30,13 +30,13 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/tetratelabs/getistio/src/cacerts/k8s"
-	"github.com/tetratelabs/getistio/src/cacerts/providers"
-	"github.com/tetratelabs/getistio/src/cacerts/providers/config"
-	"github.com/tetratelabs/getistio/src/cacerts/providers/models"
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/util"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/cacerts/k8s"
+	"github.com/tetratelabs/getmesh/src/cacerts/providers"
+	"github.com/tetratelabs/getmesh/src/cacerts/providers/config"
+	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func newGenCACmd() *cobra.Command {
@@ -46,8 +46,8 @@ func newGenCACmd() *cobra.Command {
 		Long:    `Generates intermediate CA from different managed services such as AWS ACMPCA, GCP CAS`,
 		Example: examples(),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if getistio.GetActiveConfig().IstioDistribution == nil {
-				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
+			if getmesh.GetActiveConfig().IstioDistribution == nil {
+				return errors.New("please fetch Istioctl by `getmesh fetch` beforehand")
 			}
 			return nil
 		},
@@ -123,7 +123,7 @@ func examples() string {
 cat <<EOF >> aws.yaml
 {{ .AWS }}
 EOF
-getistio gen-ca --config-file aws.yaml
+getmesh gen-ca --config-file aws.yaml
 
 
 - GCP:
@@ -131,7 +131,7 @@ getistio gen-ca --config-file aws.yaml
 cat <<EOF >> gcp.yaml
 {{ .GCP }}
 EOF
-getistio gen-ca --config-file gcp.yaml`
+getmesh gen-ca --config-file gcp.yaml`
 	aws, err := config.ExampleAWSInstance.ToYaml()
 	if err != nil {
 		panic(fmt.Sprintf("error marshalling default aws config to yaml: %v", err))

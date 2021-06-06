@@ -21,8 +21,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getistio/src/getistio"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func Test_defaultHubCheckFlags(t *testing.T) {
@@ -51,8 +51,8 @@ func Test_defaultHubCheckFlags(t *testing.T) {
 }
 
 func Test_defaultHubHandleSet(t *testing.T) {
-	getistio.GlobalConfigMux.Lock()
-	defer getistio.GlobalConfigMux.Unlock()
+	getmesh.GlobalConfigMux.Lock()
+	defer getmesh.GlobalConfigMux.Unlock()
 	home, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
@@ -61,7 +61,7 @@ func Test_defaultHubHandleSet(t *testing.T) {
 	buf := logger.ExecuteWithLock(func() {
 		require.NoError(t, defaultHubHandleSet(home, value))
 	})
-	require.Equal(t, value, getistio.GetActiveConfig().DefaultHub)
+	require.Equal(t, value, getmesh.GetActiveConfig().DefaultHub)
 	require.Contains(t, buf.String(), "The default hub is now set to myhub.com")
 }
 
@@ -70,7 +70,7 @@ func Test_defaultHubHandleShow(t *testing.T) {
 		buf := logger.ExecuteWithLock(func() {
 			defaultHubHandleShow("")
 		})
-		require.Contains(t, buf.String(), "The default hub is not set yet. Istioctl's default value is used for \"getistio istioctl install\" command\n")
+		require.Contains(t, buf.String(), "The default hub is not set yet. Istioctl's default value is used for \"getmesh istioctl install\" command\n")
 	})
 
 	t.Run("set", func(t *testing.T) {
@@ -83,8 +83,8 @@ func Test_defaultHubHandleShow(t *testing.T) {
 }
 
 func Test_defaultHubHandleRemove(t *testing.T) {
-	getistio.GlobalConfigMux.Lock()
-	defer getistio.GlobalConfigMux.Unlock()
+	getmesh.GlobalConfigMux.Lock()
+	defer getmesh.GlobalConfigMux.Unlock()
 	home, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
@@ -95,5 +95,5 @@ func Test_defaultHubHandleRemove(t *testing.T) {
 	buf := logger.ExecuteWithLock(func() {
 		require.NoError(t, defaultHubHandleRemove(home))
 	})
-	require.Contains(t, buf.String(), "The default hub is removed. Now Istioctl's default value is used for \"getistio istioctl install\"")
+	require.Contains(t, buf.String(), "The default hub is removed. Now Istioctl's default value is used for \"getmesh istioctl install\"")
 }

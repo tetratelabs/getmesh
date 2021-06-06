@@ -23,10 +23,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getistio/api"
-	"github.com/tetratelabs/getistio/src/manifest"
-	"github.com/tetratelabs/getistio/src/util"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func TestIstioctl_istioctlArgChecks(t *testing.T) {
@@ -62,9 +62,9 @@ func TestIstioctl_istioctlArgChecks(t *testing.T) {
 	_, err = f.Write(raw)
 	require.NoError(t, err)
 
-	require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", f.Name()))
+	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
 	defer func() {
-		require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", ""))
+		require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", ""))
 	}()
 
 	t.Run("ok", func(t *testing.T) {

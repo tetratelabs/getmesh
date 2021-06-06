@@ -26,8 +26,8 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 
-	"github.com/tetratelabs/getistio/api"
-	"github.com/tetratelabs/getistio/src/util/logger"
+	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 const (
@@ -44,7 +44,7 @@ var manifestCheckers = map[string]func(*api.Manifest) error{
 var GlobalManifestURLMux sync.Mutex
 
 func FetchManifest() (ret *api.Manifest, err error) {
-	if p := os.Getenv("GETISTIO_TEST_MANIFEST_PATH"); len(p) != 0 {
+	if p := os.Getenv("GETMESH_TEST_MANIFEST_PATH"); len(p) != 0 {
 		raw, err := ioutil.ReadFile(p)
 		if err != nil {
 			return nil, err

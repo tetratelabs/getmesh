@@ -22,7 +22,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/istioctl"
 )
 
 func (cv *ConfigValidator) istioAnalyseValidations() ([]configValidationResult, error) {
@@ -41,7 +41,7 @@ func (cv *ConfigValidator) istioAnalyseValidations() ([]configValidationResult, 
 
 	out := new(bytes.Buffer)
 	stde := new(bytes.Buffer)
-	err := istioctl.ExecWithWriters(cv.getistioHomedir, analyzeCommandArgs, out, stde)
+	err := istioctl.ExecWithWriters(cv.getmeshHomedir, analyzeCommandArgs, out, stde)
 	if err != nil && !strings.Contains(stde.String(), "Error: Analyzers found issues when") {
 		return nil, errors.New(stde.String())
 	}

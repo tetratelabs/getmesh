@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getistio/src/util"
+	"github.com/tetratelabs/getmesh/src/util"
 )
 
 func Execute(version, homeDir string) {
@@ -74,10 +74,10 @@ func NewRoot(version, homeDir string) *cobra.Command {
 	cmd := &cobra.Command{
 		SilenceUsage:      true,
 		SilenceErrors:     true,
-		Use:               "getistio",
+		Use:               "getmesh",
 		DisableAutoGenTag: true,
-		Short:             `GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
-		Long:              `GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
+		Short:             `getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
+		Long:              `getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
 	}
 
 	cmd.AddCommand(newIstioCmd(homeDir))
