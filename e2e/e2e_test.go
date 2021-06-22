@@ -96,12 +96,12 @@ func Test_E2E(t *testing.T) {
 	t.Run("prune", prune)
 	t.Run("show", show)
 	t.Run("switch", switchTest)
-	t.Run("istioctl_install", istioctlInstall)
+	/*t.Run("istioctl_install", istioctlInstall)*/
 	t.Run("unknown", unknown)
 	t.Run("update", update)
 	t.Run("version", version)
-	t.Run("check-upgrade", checkUpgrade)
-	t.Run("config-validate", configValidate)
+	/*t.Run("check-upgrade", checkUpgrade)
+	t.Run("config-validate", configValidate)*/
 }
 
 func securityPatchChecker(t *testing.T) {
@@ -202,25 +202,22 @@ func list(t *testing.T) {
 	require.NoError(t, cmd.Run())
 
 	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	   K8S VERSIONS     
-   *1.9.1    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
-    1.9.1    	   istio   	      0       	1.17,1.18,1.19,1.20	
+   *1.9.5    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
+    1.9.5    	   istio   	      0       	1.17,1.18,1.19,1.20	
+    1.9.4    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
+    1.9.4    	   istio   	      0       	1.17,1.18,1.19,1.20	
     1.9.0    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
     1.9.0    	tetratefips	      1       	1.17,1.18,1.19,1.20	
     1.9.0    	   istio   	      0       	1.17,1.18,1.19,1.20	
-    1.8.4    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
-    1.8.4    	   istio   	      0       	1.16,1.17,1.18,1.19	
+    1.8.6    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
+    1.8.6    	   istio   	      0       	1.16,1.17,1.18,1.19	
+    1.8.5    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
+    1.8.5    	   istio   	      0       	1.16,1.17,1.18,1.19	
     1.8.3    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
     1.8.3    	tetratefips	      1       	1.16,1.17,1.18,1.19	
     1.8.3    	   istio   	      0       	1.16,1.17,1.18,1.19	
-    1.8.2    	  tetrate  	      0       	  1.16,1.17,1.18   	
-    1.8.1    	  tetrate  	      0       	  1.16,1.17,1.18   	
-    1.8.0    	  tetrate  	      0       	  1.16,1.17,1.18   	
     1.7.8    	  tetrate  	      0       	  1.16,1.17,1.18   	
-    1.7.8    	   istio   	      0       	  1.16,1.17,1.18   	
-    1.7.7    	  tetrate  	      0       	  1.16,1.17,1.18   	
-    1.7.6    	  tetrate  	      0       	  1.16,1.17,1.18   	
-    1.7.5    	  tetrate  	      0       	  1.16,1.17,1.18   	
-    1.7.4    	  tetrate  	      0       	  1.16,1.17,1.18`
+    1.7.8    	   istio   	      0       	  1.16,1.17,1.18`
 	assert.Contains(t, buf.String(), exp)
 	fmt.Println(buf.String())
 }
@@ -228,22 +225,22 @@ func list(t *testing.T) {
 func fetch(t *testing.T) {
 	defer func() {
 		cmd := exec.Command("./getmesh", "switch",
-			"--version", "1.9.1", "--flavor", "tetrate", "--flavor-version=0",
+			"--version", "1.9.5", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 	}()
 
-	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.1", "--flavor=tetrate", "--flavor-version=0")
+	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.6", "--flavor=tetrate", "--flavor-version=0")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
-	assert.Contains(t, buf.String(), `For more information about 1.8.1-tetrate-v0, please refer to the release notes: 
-- https://istio.io/latest/news/releases/1.8.x/announcing-1.8.1/
+	assert.Contains(t, buf.String(), `For more information about 1.8.6-tetrate-v0, please refer to the release notes: 
+- https://istio.io/latest/news/releases/1.8.x/announcing-1.8.6/
 
-istioctl switched to 1.8.1-tetrate-v0 now
+istioctl switched to 1.8.6-tetrate-v0 now
 `)
 
 	// not listed version should be error
@@ -274,7 +271,7 @@ istioctl switched to 1.8.1-tetrate-v0 now
 	assert.Contains(t, buf.String(), `-istio-v0 now`)
 
 	// fetch another version
-	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.5")
+	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.8")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
@@ -285,7 +282,7 @@ istioctl switched to 1.8.1-tetrate-v0 now
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	assert.Contains(t, buf.String(), `1.7.5-tetrate-v0 (Active)`)
+	assert.Contains(t, buf.String(), `1.7.8-tetrate-v0 (Active)`)
 	fmt.Println(buf.String())
 }
 
@@ -298,7 +295,7 @@ func prune(t *testing.T) {
 
 	t.Run("specific", func(t *testing.T) {
 		target := &api.IstioDistribution{
-			Version:       "1.7.5",
+			Version:       "1.7.8",
 			Flavor:        "tetrate",
 			FlavorVersion: 0,
 		}
@@ -329,17 +326,17 @@ func prune(t *testing.T) {
 	t.Run("all", func(t *testing.T) {
 		distros := []*api.IstioDistribution{
 			{
-				Version:       "1.7.5",
+				Version:       "1.7.8",
 				Flavor:        "tetrate",
 				FlavorVersion: 0,
 			},
 			{
-				Version:       "1.8.1",
+				Version:       "1.8.6",
 				Flavor:        "tetrate",
 				FlavorVersion: 0,
 			},
 			{
-				Version:       "1.9.1",
+				Version:       "1.9.5",
 				Flavor:        "tetrate",
 				FlavorVersion: 0,
 			},
@@ -383,16 +380,16 @@ func show(t *testing.T) {
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	exp := `1.7.5-tetrate-v0
-1.8.1-tetrate-v0
-1.9.1-tetrate-v0 (Active)`
+	exp := `1.7.8-tetrate-v0
+1.8.6-tetrate-v0
+1.9.5-tetrate-v0 (Active)`
 	assert.Contains(t, buf.String(), exp)
 	fmt.Println(buf.String())
 }
 
 func switchTest(t *testing.T) {
 	t.Run("full", func(t *testing.T) {
-		for _, v := range []string{"1.8.1", "1.9.1"} {
+		for _, v := range []string{"1.8.6", "1.9.5"} {
 			{
 				cmd := exec.Command("./getmesh", "switch",
 					"--version", v, "--flavor", "tetrate", "--flavor-version=0",
@@ -414,7 +411,7 @@ func switchTest(t *testing.T) {
 	})
 	t.Run("name", func(t *testing.T) {
 		cmd := exec.Command("./getmesh", "switch",
-			"--version", "1.8.1", "--flavor", "tetrate", "--flavor-version=0",
+			"--version", "1.8.6", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -425,10 +422,10 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		assert.Contains(t, buf.String(), "1.8.1-tetrate-v0")
+		assert.Contains(t, buf.String(), "1.8.6-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
-			"--name", "1.9.1-tetrate-v0",
+			"--name", "1.9.5-tetrate-v0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -439,12 +436,12 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		assert.Contains(t, buf.String(), "1.9.1-tetrate-v0")
+		assert.Contains(t, buf.String(), "1.9.5-tetrate-v0")
 		fmt.Println(buf.String())
 	})
 	t.Run("active", func(t *testing.T) {
 		cmd := exec.Command("./getmesh", "fetch",
-			"--version=1.9.1", "--flavor=istio", "--flavor-version=0",
+			"--version=1.9.5", "--flavor=istio", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -455,8 +452,8 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		assert.Contains(t, buf.String(), "1.9.1")
-		assert.NotContains(t, buf.String(), "1.9.1-tetrate-v0")
+		assert.Contains(t, buf.String(), "1.9.5")
+		assert.NotContains(t, buf.String(), "1.9.5-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
 			"--flavor=tetrate",
@@ -470,7 +467,7 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		assert.Contains(t, buf.String(), "1.9.1-tetrate-v0")
+		assert.Contains(t, buf.String(), "1.9.5-tetrate-v0")
 		fmt.Println(buf.String())
 	})
 }
@@ -583,7 +580,7 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "1.9.1-tetrate-v0 is the latest version in 1.9-tetrate")
+	assert.Contains(t, actual, "1.9.5-tetrate-v0 is the latest version in 1.9-tetrate")
 	fmt.Println(actual)
 
 	// change image to 1.8.1-tetrate-v0
@@ -609,7 +606,7 @@ func checkUpgrade(t *testing.T) {
 		fmt.Println(actual)
 		if strings.Contains(actual,
 			"There is the available patch for the minor version 1.8-tetrate. "+
-				"We recommend upgrading all 1.8-tetrate versions -> 1.8.4-tetrate-v0") {
+				"We recommend upgrading all 1.8-tetrate versions -> 1.8.6-tetrate-v0") {
 			break
 		}
 	}
