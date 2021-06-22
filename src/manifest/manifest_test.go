@@ -23,8 +23,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 func TestFetchManifest(t *testing.T) {

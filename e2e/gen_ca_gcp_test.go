@@ -32,7 +32,7 @@ import (
 func TestGCPProvider(t *testing.T) {
 	casCAName := os.Getenv("GOOGLE_CAS_CA_NAME")
 
-	cmd := exec.Command("./getmesh", "gen-ca", "--provider=gcp",
+	cmd := exec.Command("./getistio", "gen-ca", "--provider=gcp",
 		fmt.Sprintf("--cas-ca-name=%s", casCAName),
 		"--validity-days=100",
 		"--secret-file-path=/tmp/gcp-secret.yaml",

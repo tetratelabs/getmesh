@@ -24,10 +24,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/manifest"
 )
 
 func Test_switchParse(t *testing.T) {
@@ -63,9 +63,9 @@ func Test_switchParse(t *testing.T) {
 	_, err = f.Write(raw)
 	require.NoError(t, err)
 
-	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
+	require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", f.Name()))
 	defer func() {
-		require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", ""))
+		require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", ""))
 	}()
 
 	// set up active distro
@@ -75,7 +75,7 @@ func Test_switchParse(t *testing.T) {
 		FlavorVersion: 0,
 	}
 
-	require.NoError(t, getmesh.SetIstioVersion(home, d))
+	require.NoError(t, getistio.SetIstioVersion(home, d))
 	require.NoError(t,
 		os.MkdirAll(strings.TrimSuffix(istioctl.GetIstioctlPath(home, d), "/istioctl"), 0755))
 

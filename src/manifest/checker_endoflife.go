@@ -20,9 +20,9 @@ import (
 
 	"github.com/Masterminds/semver"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 func endOfLifeChecker(m *api.Manifest) error {
@@ -30,7 +30,7 @@ func endOfLifeChecker(m *api.Manifest) error {
 }
 
 func endOfLifeCheckerImpl(m *api.Manifest, now time.Time) error {
-	current := getmesh.GetActiveConfig().IstioDistribution
+	current := getistio.GetActiveConfig().IstioDistribution
 	if current == nil {
 		return nil
 	}

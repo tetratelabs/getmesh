@@ -20,10 +20,10 @@ import (
 	// required for authentication against GKE
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
-	"github.com/tetratelabs/getmesh/cmd"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/cmd"
+	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getistio/src/util"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 var (
@@ -32,13 +32,13 @@ var (
 )
 
 func main() {
-	hd, err := util.GetmeshHomeDir()
+	hd, err := util.GetIstioHomeDir()
 	if err != nil {
-		logger.Errorf("error initializing getmesh home directory: %w", err)
+		logger.Errorf("error initializing getistio home directory: %w", err)
 		os.Exit(1)
 	}
 
-	if err := getmesh.InitConfig(hd); err != nil {
+	if err := getistio.InitConfig(hd); err != nil {
 		logger.Errorf("error initializing config: %w", err)
 		os.Exit(1)
 	}

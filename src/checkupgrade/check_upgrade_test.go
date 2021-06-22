@@ -22,8 +22,8 @@ import (
 	"github.com/stretchr/testify/require"
 	istioversion "istio.io/pkg/version"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 func TestIstioVersion(t *testing.T) {
@@ -132,7 +132,7 @@ control plane version: 1.7.4-tetrate-v0, 1.8.1-tetrate-v0
 	})
 }
 
-func Test_printgetmeshCheck(t *testing.T) {
+func Test_printGetistioCheck(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		for _, c := range []istioversion.Version{
 			{
@@ -157,7 +157,7 @@ func Test_printgetmeshCheck(t *testing.T) {
 				},
 			},
 		} {
-			err := printgetmeshCheck(c, &api.Manifest{
+			err := printGetistioCheck(c, &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{{Version: "1.4.aaaa"}}})
 			assert.Error(t, err)
 			t.Log(err)
@@ -191,12 +191,12 @@ func Test_printgetmeshCheck(t *testing.T) {
 		} {
 			t.Run(fmt.Sprintf("%d-th", i), func(t *testing.T) {
 				buf := logger.ExecuteWithLock(func() {
-					err := printgetmeshCheck(c, &api.Manifest{})
+					err := printGetistioCheck(c, &api.Manifest{})
 					require.NoError(t, err)
 				})
 
 				actual := buf.String()
-				assert.Contains(t, actual, "Please install distributions with tetrate flavor listed in `getmesh list` command")
+				assert.Contains(t, actual, "Please install distributions with tetrate flavor listed in `getistio list` command")
 				assert.Contains(t, actual, "nothing to check")
 				t.Log(actual)
 			})
@@ -249,7 +249,7 @@ func Test_printgetmeshCheck(t *testing.T) {
 
 			t.Run(fmt.Sprintf("%d-th", i), func(t *testing.T) {
 				buf := logger.ExecuteWithLock(func() {
-					err := printgetmeshCheck(c, &api.Manifest{})
+					err := printGetistioCheck(c, &api.Manifest{})
 					require.Error(t, err)
 				})
 
@@ -303,7 +303,7 @@ func Test_printgetmeshCheck(t *testing.T) {
 					`- Your control plane running in multiple minor versions: 1.6-tetrate, 1.8-tetrate`,
 					` There is the available patch for the minor version 1.7-tetrate. We recommend upgrading all 1.7-tetrate versions -> 1.7.10-tetrate-v10`,
 					` There is the available patch for the minor version 1.8-tetrate. We recommend upgrading all 1.8-tetrate versions -> 1.8.10-tetrate-v10`,
-					` The minor version 1.6-tetrate is no longer supported by getmesh. We recommend you use the higher minor versions in "getmesh list"`,
+					` The minor version 1.6-tetrate is no longer supported by GetIstio. We recommend you use the higher minor versions in "getistio list"`,
 				},
 			},
 			{
@@ -344,7 +344,7 @@ func Test_printgetmeshCheck(t *testing.T) {
 		} {
 			t.Run(fmt.Sprintf("%d-th", i), func(t *testing.T) {
 				buf := logger.ExecuteWithLock(func() {
-					err := printgetmeshCheck(c.iv, &api.Manifest{IstioDistributions: c.ds})
+					err := printGetistioCheck(c.iv, &api.Manifest{IstioDistributions: c.ds})
 					require.Error(t, err)
 				})
 
@@ -381,8 +381,8 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 		}, &api.Manifest{IstioDistributions: ms})
 		require.NoError(t, err)
 		require.False(t, ok)
-		assert.Contains(t, msg, "The minor version 1.0-tetrate is no longer supported by getmesh.")
-		assert.Contains(t, msg, "getmesh list")
+		assert.Contains(t, msg, "The minor version 1.0-tetrate is no longer supported by GetIstio.")
+		assert.Contains(t, msg, "getistio list")
 		t.Log(msg)
 
 		msg, ok, err = getLatestPatchInManifestMsg(&api.IstioDistribution{
@@ -390,8 +390,8 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 		}, &api.Manifest{IstioDistributions: ms})
 		require.NoError(t, err)
 		require.False(t, ok)
-		assert.Contains(t, msg, "The minor version 1.10-tetratefips is no longer supported by getmesh.")
-		assert.Contains(t, msg, "getmesh list")
+		assert.Contains(t, msg, "The minor version 1.10-tetratefips is no longer supported by GetIstio.")
+		assert.Contains(t, msg, "getistio list")
 		t.Log(msg)
 
 	})

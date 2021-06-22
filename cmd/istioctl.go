@@ -25,12 +25,12 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/manifest"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/manifest"
+	"github.com/tetratelabs/getistio/src/util"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 func newIstioCmd(homedir string) *cobra.Command {
@@ -40,17 +40,17 @@ func newIstioCmd(homedir string) *cobra.Command {
 		Short: "Execute istioctl with given arguments",
 		Long:  `Execute istioctl with given arguments where the version of istioctl is set by "getsitio fetch or switch"`,
 		Example: `# install Istio with the default profile
-getmesh istioctl install --set profile=default
+getistio istioctl install --set profile=default
 
 # check versions of Istio data plane, control plane, and istioctl
-getmesh istioctl version`,
+getistio istioctl version`,
 		PreRunE: func(_ *cobra.Command, args []string) error {
-			cur := getmesh.GetActiveConfig().IstioDistribution
+			cur := getistio.GetActiveConfig().IstioDistribution
 			if cur == nil {
-				return errors.New("please fetch Istioctl by `getmesh fetch` beforehand")
+				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
 			}
 			var err error
-			processedArgs, err = istioctlArgChecks(args, cur, getmesh.GetActiveConfig().DefaultHub)
+			processedArgs, err = istioctlArgChecks(args, cur, getistio.GetActiveConfig().DefaultHub)
 			if err != nil {
 				return err
 			}
@@ -102,7 +102,7 @@ func istioctlArgChecks(args []string, currentDistro *api.IstioDistribution, defa
 				return nil, err
 			} else if !ok {
 				logger.Warnf("Your active istioctl of version %s is deprecated. "+
-					"We recommend you use the supported distribution listed in \"getmesh list\" command. \n", currentDistro.ToString())
+					"We recommend you use the supported distribution listed in \"getistio list\" command. \n", currentDistro.ToString())
 				p := promptui.Prompt{
 					Label:     "Proceed",
 					IsConfirm: true,
@@ -128,7 +128,7 @@ func istioctlArgChecks(args []string, currentDistro *api.IstioDistribution, defa
 		prev = a
 	}
 
-	// Insert the default hub set by "getmesh default-hub --set".
+	// Insert the default hub set by "getistio default-hub --set".
 	if hasInstallCMD && !hasHubParameter {
 		if defaultHub != "" {
 			out = append(out, "--set", fmt.Sprintf("hub=%s", defaultHub))
@@ -154,8 +154,8 @@ func istioctlPatchVersionCheck(current *api.IstioDistribution, ms *api.Manifest)
 
 	if !current.Equal(latestPatch) {
 		logger.Warnf("your current patch version %s is not the latest version %s. "+
-			"We recommend you fetch the latest version through \"getmesh fetch\" command, "+
-			"and switch to the latest version through \"getmesh switch\" command \n", current.Version, latestPatch.Version)
+			"We recommend you fetch the latest version through \"getistio fetch\" command, "+
+			"and switch to the latest version through \"getistio switch\" command \n", current.Version, latestPatch.Version)
 
 		p := promptui.Prompt{
 			Label:     "Proceed",
@@ -185,7 +185,7 @@ func istioctlParsePreCheckArgs(args []string) []string {
 
 func istioK8scompatibilityCheck(homedir string, args []string) error {
 	// if current istioctl does not support preCheck in either stable or experimental version
-	// getmesh will bypass preCheck
+	// getistio will bypass preCheck
 	if !istioctlHasPreCheckCommand(homedir) {
 		return nil
 	}

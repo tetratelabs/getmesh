@@ -1,4 +1,4 @@
-module github.com/tetratelabs/getmesh
+module github.com/tetratelabs/getistio
 
 go 1.15
 

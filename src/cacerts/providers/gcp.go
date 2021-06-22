@@ -25,9 +25,9 @@ import (
 	privateca2 "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	"github.com/tetratelabs/getmesh/src/cacerts/certutils"
-	"github.com/tetratelabs/getmesh/src/cacerts/k8s"
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
+	"github.com/tetratelabs/getistio/src/cacerts/certutils"
+	"github.com/tetratelabs/getistio/src/cacerts/k8s"
+	"github.com/tetratelabs/getistio/src/cacerts/providers/models"
 )
 
 // ProviderGCP contains credentials for establishing connection to the GCP,

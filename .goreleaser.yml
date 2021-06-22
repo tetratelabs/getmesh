@@ -1,6 +1,6 @@
-project_name: getmesh
+project_name: getistio
 builds:
-  - binary: getmesh
+  - binary: getistio
     env:
       - CGO_ENABLED=0
     goos:

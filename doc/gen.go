@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 
-	"github.com/tetratelabs/getmesh/cmd"
+	"github.com/tetratelabs/getistio/cmd"
 )
 
 const basePrefix = "doc/en"
@@ -24,13 +24,13 @@ func main() {
 }
 
 var (
-	commandPrefix          = filepath.Join(basePrefix, "getmesh-cli", "reference")
+	commandPrefix          = filepath.Join(basePrefix, "getistio-cli", "reference")
 	contributingPrefix     = filepath.Join(basePrefix, "community")
 	contributingAttributes = []struct {
 		path, title, beginning string
 	}{
 		{path: filepath.Join(contributingPrefix, "/building-and-testing"), title: "Building and Testing", beginning: "## Building & Testing\n"},
-		{path: filepath.Join(contributingPrefix, "/contributing"), title: "Contributing to getmesh", beginning: "## Contributing\n"},
+		{path: filepath.Join(contributingPrefix, "/contributing"), title: "Contributing to GetIstio", beginning: "## Contributing\n"},
 		{path: filepath.Join(contributingPrefix, "/release"), title: "Release process", beginning: "## Release\n"},
 	}
 )
@@ -54,8 +54,8 @@ func cmdWriteFile(c *cobra.Command) {
 	}
 
 	var prefix string
-	if c.Name() != "getmesh" {
-		prefix = filepath.Join(commandPrefix, "getmesh_"+c.Name())
+	if c.Name() != "getistio" {
+		prefix = filepath.Join(commandPrefix, "getistio_"+c.Name())
 	} else {
 		// root cmd
 		prefix = filepath.Join(commandPrefix, c.Name())
@@ -70,7 +70,7 @@ func cmdWriteFile(c *cobra.Command) {
 	defer f.Close()
 
 	// should be able to handle multiple depth subcommands if c is not root:
-	// if c.Name() != "getmesh" { for _, r := range c.Commands() {...} }
+	// if c.Name() != "getistio" { for _, r := range c.Commands() {...} }
 
 	_, err = f.WriteString(cmdFormatDoc(c.Name(), buf.String()))
 	if err != nil {
@@ -98,9 +98,9 @@ func cmdFormatDoc(name, base string) string {
 
 	// append hugo header
 	var title, url string
-	if name != "getmesh" {
-		title = "getmesh " + name
-		url = cmdGetURL("getmesh_" + name)
+	if name != "getistio" {
+		title = "getistio " + name
+		url = cmdGetURL("getistio_" + name)
 	} else {
 		// root cmd
 		title = name
@@ -116,7 +116,7 @@ func cmdLinkHandler(name string) string {
 }
 
 func cmdGetURL(in string) string {
-	return "/getmesh-cli/reference/" + strings.ToLower(in) + "/"
+	return "/getistio-cli/reference/" + strings.ToLower(in) + "/"
 }
 
 func runContributingGen() {

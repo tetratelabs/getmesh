@@ -27,9 +27,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/src/cacerts/providers/models"
+	"github.com/tetratelabs/getistio/src/util"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 // IstioSecretName is the name used to create the Secret in Istio CA Namespace.
@@ -200,12 +200,12 @@ func (secret *IstioSecretDetails) CreateSecret(secretOptions *models.SecretOptio
 	return secret.Create(secretOptions.IstioNamespace, kubeCli)
 }
 
-// CreateSecretFile creates secret in getmesh Directory if we get any error while creating secret.
+// CreateSecretFile creates secret in GETISTIO Directory if we get any error while creating secret.
 func (secret *IstioSecretDetails) CreateSecretFile() (string, error) {
 
-	homeDir, err := util.GetmeshHomeDir()
+	homeDir, err := util.GetIstioHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("unable to find getmesh directory: %w", err)
+		return "", fmt.Errorf("unable to find getistio directory: %w", err)
 	}
 
 	if err = os.Mkdir(homeDir+"/secret", 0755); err != nil {
@@ -214,7 +214,7 @@ func (secret *IstioSecretDetails) CreateSecretFile() (string, error) {
 		}
 	}
 
-	tmpfile, err := ioutil.TempFile(homeDir+"/secret", "getmesh-*.yaml")
+	tmpfile, err := ioutil.TempFile(homeDir+"/secret", "getistio-*.yaml")
 	if err != nil {
 		return "", err
 	}

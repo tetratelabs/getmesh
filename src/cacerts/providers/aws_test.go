@@ -24,7 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/acmpca"
 	"github.com/aws/aws-sdk-go/service/acmpca/acmpcaiface"
 	"github.com/stretchr/testify/require"
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
+	"github.com/tetratelabs/getistio/src/cacerts/providers/models"
 	"gotest.tools/assert"
 )
 

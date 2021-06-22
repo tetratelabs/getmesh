@@ -21,10 +21,10 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/manifest"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/manifest"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 type fetchFlags struct {
@@ -37,36 +37,36 @@ func newFetchCmd(homedir string) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "fetch",
-		Short: "Fetch istioctl of the specified version, flavor and flavor-version available in \"getmesh list\" command",
-		Long:  `Fetch istioctl of the specified version, flavor and flavor-version available in "getmesh list" command`,
+		Short: "Fetch istioctl of the specified version, flavor and flavor-version available in \"getistio list\" command",
+		Long:  `Fetch istioctl of the specified version, flavor and flavor-version available in "getistio list" command`,
 		Example: `# Fetch the latest "tetrate flavored" istioctl of version=1.8
-$ getmesh fetch --version 1.8
+$ getistio fetch --version 1.8
 
 # Fetch the latest istioctl in version=1.7 and flavor=tetratefips
-$ getmesh fetch --version 1.7 --flavor tetratefips
+$ getistio fetch --version 1.7 --flavor tetratefips
 
 # Fetch the latest istioctl of version=1.7, flavor=tetrate and flavor-version=0
-$ getmesh fetch --version 1.7 --flavor tetrate --flavor-version 0
+$ getistio fetch --version 1.7 --flavor tetrate --flavor-version 0
 
 # Fetch the istioctl of version=1.7.4 flavor=tetrate flavor-version=0
-$ getmesh fetch --version 1.7.4 --flavor tetrate --flavor-version 0
+$ getistio fetch --version 1.7.4 --flavor tetrate --flavor-version 0
 
 # Fetch the istioctl of version=1.7.4 flavor=tetrate flavor-version=0 using name
-$ getmesh fetch --name 1.7.4-tetrate-v0
+$ getistio fetch --name 1.7.4-tetrate-v0
 
 # Fetch the latest istioctl of version=1.7.4 and flavor=tetratefips
-$ getmesh fetch --version 1.7.4 --flavor tetratefips
+$ getistio fetch --version 1.7.4 --flavor tetratefips
 
 # Fetch the latest "tetrate flavored" istioctl of version=1.7.4
-$ getmesh fetch --version 1.7.4
+$ getistio fetch --version 1.7.4
 
 # Fetch the istioctl of version=1.8.3 flavor=istio flavor-version=0
-$ getmesh fetch --version 1.8.3 --flavor istio
+$ getistio fetch --version 1.8.3 --flavor istio
 
 
 
 # Fetch the latest "tetrate flavored" istioctl
-$ getmesh fetch
+$ getistio fetch
 
 As you can see the above examples:
 - If --flavor-versions is not given, it defaults to the latest flavor version in the list
@@ -75,7 +75,7 @@ As you can see the above examples:
 - If --versions is not given, it defaults to the latest version of "tetrate" flavor.
 
 
-For more information, please refer to "getmesh list --help" command.
+For more information, please refer to "getistio list --help" command.
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ms, err := manifest.FetchManifest()

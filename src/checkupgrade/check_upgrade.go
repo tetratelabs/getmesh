@@ -25,8 +25,8 @@ import (
 	// 	using this may be fragile due to the I/F change in the future
 	istioversion "istio.io/pkg/version"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 var ErrIssueFound = errors.New("version issue found")
@@ -34,8 +34,8 @@ var ErrIssueFound = errors.New("version issue found")
 func IstioVersion(iv istioversion.Version, manifest *api.Manifest) error {
 	logger.Infof("[Summary of your Istio mesh]\n")
 	printSummary(iv)
-	logger.Infof("[GetMesh Check]\n")
-	return printgetmeshCheck(iv, manifest)
+	logger.Infof("[GetIstio Check]\n")
+	return printGetistioCheck(iv, manifest)
 }
 
 func printSummary(iv istioversion.Version) {
@@ -71,7 +71,7 @@ func printSummary(iv istioversion.Version) {
 	logger.Infof("%s\n", msg)
 }
 
-func printgetmeshCheck(iv istioversion.Version, manifest *api.Manifest) error {
+func printGetistioCheck(iv istioversion.Version, manifest *api.Manifest) error {
 	var multiple bool
 	dpVersions, err := getDataPlaneVersions(iv.DataPlaneVersion)
 	if err != nil {
@@ -152,8 +152,8 @@ func getLatestPatchInManifestMsg(target *api.IstioDistribution, manifest *api.Ma
 	}
 
 	if foundLatest == nil {
-		return fmt.Sprintf("- The minor version %s is no longer supported by getmesh. "+
-			"We recommend you use the higher minor versions in \"getmesh list\"\n", tg), false, nil
+		return fmt.Sprintf("- The minor version %s is no longer supported by GetIstio. "+
+			"We recommend you use the higher minor versions in \"getistio list\"\n", tg), false, nil
 	}
 
 	if foundLatest.Equal(target) {
@@ -220,7 +220,7 @@ func findLowestPatchVersionsInGroup(in []*api.IstioDistribution) (map[string]*ap
 	for _, d := range in {
 		if d.IsUpstream() {
 			logger.Warnf("the upstream istio distributions are not supported by check-upgrade command: %s. "+
-				"Please install distributions with tetrate flavor listed in `getmesh list` command\n", d.Version)
+				"Please install distributions with tetrate flavor listed in `getistio list` command\n", d.Version)
 			continue
 		}
 

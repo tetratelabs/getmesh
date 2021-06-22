@@ -15,14 +15,14 @@
 package manifest
 
 import (
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/util"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 func securityPatchChecker(m *api.Manifest) error {
-	hd, err := util.GetmeshHomeDir()
+	hd, err := util.GetIstioHomeDir()
 	if err != nil {
 		return err
 	}
@@ -48,8 +48,8 @@ func securityPatchCheckerImpl(homedir string, m *api.Manifest) error {
 		}
 
 		if target == nil {
-			logger.Warnf("The locally installed minor version %s is no longer supported by getmesh. "+
-				"We recommend you use the higher minor versions in \"getmesh list\" or remove with \"getmesh prune\"\n", g)
+			logger.Warnf("The locally installed minor version %s is no longer supported by GetIstio. "+
+				"We recommend you use the higher minor versions in \"getistio list\" or remove with \"getistio prune\"\n", g)
 			continue
 		}
 
@@ -59,7 +59,7 @@ func securityPatchCheckerImpl(homedir string, m *api.Manifest) error {
 		} else if greater && includeSecurityPatch {
 			t := target.ToString()
 			logger.Warnf("The locally installed minor version %s has a latest version %s including security patches. "+
-				"We strongly recommend you to download %s by \"getmesh fetch\".\n", g, t, t)
+				"We strongly recommend you to download %s by \"getistio fetch\".\n", g, t, t)
 		}
 	}
 

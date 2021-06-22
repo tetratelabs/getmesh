@@ -2,14 +2,12 @@
 
 # originally copied from https://wasmtime.dev/install.sh with some modifications
 
-# TODO: delete after the next release.
 GETISTIO_LATEST_VERSION="1.0.6"
-GETMESH_LATEST_VERSION="1.0.6"
 
-if [[ -z "${GETMESH_VERSION}" ]]; then
-  VERSION="${GETMESH_LATEST_VERSION}"
+if [[ -z "${GETISTIO_VERSION}" ]]; then
+  VERSION="${GETISTIO_LATEST_VERSION}"
 else
-  VERSION="${GETMESH_VERSION}"
+  VERSION="${GETISTIO_VERSION}"
 fi
 
 if [[ -z "${FETCH_LATEST_ISTIOCTL}" ]]; then
@@ -20,11 +18,11 @@ fi
 
 OS="$(uname)"
 LOCAL_ARCH="$(uname -m)"
-GETMESH_HOME=${HOME}/.getmesh
-GETMESH_BIN_DIR="${GETMESH_HOME}"/bin
-mkdir -p "${GETMESH_BIN_DIR}"
-mkdir -p "${GETMESH_HOME}"/istio
-EXECUTABLE_OUT="${GETMESH_BIN_DIR}"/getmesh
+GETISTIO_HOME=${HOME}/.getistio
+GETISTIO_BIN_DIR="${GETISTIO_HOME}"/bin
+mkdir -p "${GETISTIO_BIN_DIR}"
+mkdir -p "${GETISTIO_HOME}"/istio
+EXECUTABLE_OUT="${GETISTIO_BIN_DIR}"/getistio
 
 error() {
   command printf '\033[1;31mError\033[0m: %s\n\n' "$1" 1>&2
@@ -63,24 +61,24 @@ case ${LOCAL_ARCH} in
     ;;
 esac
 
-URL="https://dl.getistio.io/public/raw/files/GETMESH_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
+URL="https://dl.getistio.io/public/raw/files/getistio_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
 
-if [[ -n "${GETMESH_TEST_BINRAY_URL}" ]]; then
-    URL=${GETMESH_TEST_BINRAY_URL}
+if [[ -n "${GETISTIO_TEST_BINRAY_URL}" ]]; then
+    URL=${GETISTIO_TEST_BINRAY_URL}
 fi
 
-printf "\nDownloading getmesh from %s ...\n" "$URL"
+printf "\nDownloading GetIstio from %s ...\n" "$URL"
 if ! curl -o /dev/null -sIf "$URL"; then
   printf "\n%s is not found\n" "$URL"
   exit 1
 fi
 
-curl -fsL "$URL" -o getmesh.tar.gz
-tar -zxf getmesh.tar.gz -C"${GETMESH_BIN_DIR}"
+curl -fsL "$URL" -o getistio.tar.gz
+tar -zxf getistio.tar.gz -C"${GETISTIO_BIN_DIR}"
 chmod u+x "${EXECUTABLE_OUT}"
-rm getmesh.tar.gz
+rm getistio.tar.gz
 
-printf "GetMesh Download Complete!\n\n"
+printf "GetIstio Download Complete!\n\n"
 
 detect_profile() {
   local shellname="$1"
@@ -131,15 +129,15 @@ build_path_str() {
     # fish uses a little different syntax to modify the PATH
     cat <<END_FISH_SCRIPT
 
-set -gx GETMESH_HOME "$profile_install_dir"
-string match -r ".getmesh" "\$PATH" > /dev/null; or set -gx PATH "\$GETMESH_HOME/bin" \$PATH
+set -gx GETISTIO_HOME "$profile_install_dir"
+string match -r ".getistio" "\$PATH" > /dev/null; or set -gx PATH "\$GETISTIO_HOME/bin" \$PATH
 END_FISH_SCRIPT
   else
     # bash and zsh
     cat <<END_BASH_SCRIPT
 
-export GETMESH_HOME="$profile_install_dir"
-export PATH="\$GETMESH_HOME/bin:\$PATH"
+export GETISTIO_HOME="$profile_install_dir"
+export PATH="\$GETISTIO_HOME/bin:\$PATH"
 END_BASH_SCRIPT
   fi
 }
@@ -159,7 +157,7 @@ update_profile() {
     eprintf "$path_str"
     return 1
   else
-    if ! command grep -qc 'GETMESH_HOME' "$detected_profile"; then
+    if ! command grep -qc 'GETISTIO_HOME' "$detected_profile"; then
       echo 'Updating' "user profile ($detected_profile)..."
       printf "The following two lines are added into your profile (%s):\n" $detected_profile
       printf "$path_str\n\n"
@@ -168,11 +166,11 @@ update_profile() {
   fi
 }
 
-update_profile "${GETMESH_HOME}"
+update_profile "${GETISTIO_HOME}"
 
 if [ "${FETCH_LATEST_ISTIOCTL}" = "true" ]; then
   printf "Downloading latest istio ...\n"
   ${EXECUTABLE_OUT} fetch
 fi
 
-printf "Finished installation. Open a new terminal to start using getmesh!\n"
+printf "Finished installation. Open a new terminal to start using getistio!\n"

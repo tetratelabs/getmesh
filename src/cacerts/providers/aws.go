@@ -26,9 +26,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/acmpca"
 	"github.com/aws/aws-sdk-go/service/acmpca/acmpcaiface"
 
-	"github.com/tetratelabs/getmesh/src/cacerts/certutils"
-	"github.com/tetratelabs/getmesh/src/cacerts/k8s"
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
+	"github.com/tetratelabs/getistio/src/cacerts/certutils"
+	"github.com/tetratelabs/getistio/src/cacerts/k8s"
+	"github.com/tetratelabs/getistio/src/cacerts/providers/models"
 )
 
 // ProviderAWS contains credentials for establishing connection to the AWS,

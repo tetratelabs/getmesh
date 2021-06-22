@@ -20,7 +20,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 var tableColumns = []string{"NAMESPACE", "NAME", "RESOURCE TYPE", "ERROR CODE", "SEVERITY", "MESSAGE"}

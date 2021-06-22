@@ -20,18 +20,18 @@ import (
 
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/src/util"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
-var ErrConfigIssuesFound = errors.New("getmesh config validation exit with istio config issues")
+var ErrConfigIssuesFound = errors.New("getistio config validation exit with istio config issues")
 
 // ConfigValidator is general structure for validating istio config
 // preset in current live-cluster
 type ConfigValidator struct {
 	kubeCli         kubernetes.Interface
 	namespace       string
-	getmeshHomedir  string
+	getistioHomedir string
 	outputThreshold Severity
 	files           []string
 }
@@ -56,7 +56,7 @@ func New(homedir, namespace, outputThreshold string, files []string) (*ConfigVal
 	return &ConfigValidator{
 		kubeCli:         kubeCli,
 		namespace:       namespace,
-		getmeshHomedir:  homedir,
+		getistioHomedir: homedir,
 		outputThreshold: sv,
 		files:           files,
 	}, nil

@@ -97,13 +97,13 @@ jobs:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      - name: Download the latest getmesh
+      - name: Download the latest getistio
         run: curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
 
       - name: Check version
         run: |
           version=${{ env.RELEASE_VERSION }}
-          ~/.getmesh/bin/getmesh version --remote=false | grep ${version:1}
+          ~/.getistio/bin/getistio version --remote=false | grep ${version:1}
 
   release-doc:
     needs: [post-release-check]

@@ -21,8 +21,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/src/configvalidator"
-	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getistio/src/configvalidator"
+	"github.com/tetratelabs/getistio/src/getistio"
 )
 
 func newConfigValidateCmd(homedir string) *cobra.Command {
@@ -34,16 +34,16 @@ func newConfigValidateCmd(homedir string) *cobra.Command {
 		Long: `Validate the current Istio configurations in your cluster just like 'istioctl analyze'. Inspect all namespaces by default.
 If the <file/directory> is specified, we analyze the effect of applying these yaml files against the current cluster.`,
 		Example: `# validating a local manifest against the current cluster
-$ getmesh config-validate my-app.yaml another-app.yaml
+$ getistio config-validate my-app.yaml another-app.yaml
 
 # validating local manifests in a directory against the current cluster in a specific namespace
-$ getmesh config-validate -n bookinfo my-manifest-dir/
+$ getistio config-validate -n bookinfo my-manifest-dir/
 
 NAME                        	RESOURCE TYPE 	ERROR CODE	SEVERITY	MESSAGE
 httpbin                     	Service       	IST0108   	Warning 	[my-manifest-dir/service.yaml:1] Unknown annotation: networking.istio.io/non-exist
 
 # for all namespaces
-$ getmesh config-validate
+$ getistio config-validate
 
 NAMESPACE               NAME                    RESOURCE TYPE           ERROR CODE      SEVERITY        MESSAGE
 default                 bookinfo-gateway        Gateway                 IST0101         Error           Referenced selector not found: "app=nonexisting"
@@ -51,14 +51,14 @@ bookinfo                default                 Peerauthentication      KIA0505 
 bookinfo                bookinfo-gateway        Gateway                 KIA0302         Warning         No matching workload found for gateway selector in this namespace
 
 # for a specific namespace
-$ getmesh config-validate -n bookinfo
+$ getistio config-validate -n bookinfo
 
 NAME                    RESOURCE TYPE           ERROR CODE      SEVERITY        MESSAGE
 bookinfo-gateway        Gateway                 IST0101         Error           Referenced selector not found: "app=nonexisting"
 bookinfo-gateway        Gateway                 KIA0302         Warning         No matching workload found for gateway selector in this namespace
 
 # for a specific namespace with Error as threshold for validation
-$ getmesh config-validate -n bookinfo --output-threshold Error
+$ getistio config-validate -n bookinfo --output-threshold Error
 
 NAME                    RESOURCE TYPE           ERROR CODE      SEVERITY        MESSAGE
 bookinfo-gateway        Gateway                 IST0101         Error           Referenced selector not found: "app=nonexisting"
@@ -82,8 +82,8 @@ The error code of the found issue which is prefixed by 'IST' or 'KIA'. Please re
 
 [MESSAGE] the detailed message of the found issue`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if getmesh.GetActiveConfig().IstioDistribution == nil {
-				return errors.New("please fetch Istioctl by `getmesh fetch` beforehand")
+			if getistio.GetActiveConfig().IstioDistribution == nil {
+				return errors.New("please fetch Istioctl by `getistio fetch` beforehand")
 			}
 			return nil
 		},

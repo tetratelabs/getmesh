@@ -17,8 +17,8 @@ package providers
 import (
 	"context"
 
-	"github.com/tetratelabs/getmesh/src/cacerts/k8s"
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
+	"github.com/tetratelabs/getistio/src/cacerts/k8s"
+	"github.com/tetratelabs/getistio/src/cacerts/providers/models"
 )
 
 // ProviderInterface defines the operations available on cloud providers

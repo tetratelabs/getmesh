@@ -25,9 +25,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getistio/src/util/logger"
 )
 
 func Test_endOfLifeChecker(t *testing.T) {
@@ -35,8 +35,8 @@ func Test_endOfLifeChecker(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
 
-	getmesh.GlobalConfigMux.Lock()
-	defer getmesh.GlobalConfigMux.Unlock()
+	getistio.GlobalConfigMux.Lock()
+	defer getistio.GlobalConfigMux.Unlock()
 
 	m := &api.Manifest{
 		IstioDistributions: []*api.IstioDistribution{
@@ -59,10 +59,10 @@ func Test_endOfLifeChecker(t *testing.T) {
 
 	_, err = f.Write(raw)
 	require.NoError(t, err)
-	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
+	require.NoError(t, os.Setenv("GETISTIO_TEST_MANIFEST_PATH", f.Name()))
 
 	t.Run("ok version", func(t *testing.T) {
-		require.NoError(t, getmesh.SetIstioVersion(home, &api.IstioDistribution{Version: "1.8.1"}))
+		require.NoError(t, getistio.SetIstioVersion(home, &api.IstioDistribution{Version: "1.8.1"}))
 		buf := logger.ExecuteWithLock(func() {
 			require.NoError(t, endOfLifeCheckerImpl(m, time.Now()))
 		})
@@ -71,7 +71,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 	})
 
 	t.Run("ok time", func(t *testing.T) {
-		require.NoError(t, getmesh.SetIstioVersion(home, &api.IstioDistribution{Version: "1.7.1"}))
+		require.NoError(t, getistio.SetIstioVersion(home, &api.IstioDistribution{Version: "1.7.1"}))
 		buf := logger.ExecuteWithLock(func() {
 			now := time.Date(2020, 9, 5, 0, 0, 0, 0, time.Local)
 			require.NoError(t, endOfLifeCheckerImpl(m, now))
@@ -87,7 +87,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 			version, minorVersion string
 		}{{version: "1.7.1", minorVersion: "1.7"}, {version: "1.6.100", minorVersion: "1.6"}} {
 			t.Run(c.version, func(t *testing.T) {
-				require.NoError(t, getmesh.SetIstioVersion(home, &api.IstioDistribution{Version: c.version}))
+				require.NoError(t, getistio.SetIstioVersion(home, &api.IstioDistribution{Version: c.version}))
 				buf := logger.ExecuteWithLock(func() {
 					require.NoError(t, endOfLifeCheckerImpl(m, now))
 				})

@@ -36,10 +36,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getistio/api"
+	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getistio/src/istioctl"
+	"github.com/tetratelabs/getistio/src/util"
 )
 
 func TestMain(m *testing.M) {
@@ -56,12 +56,12 @@ func TestMain(m *testing.M) {
 		_, _ = w.Write(downloadShell)
 	}))
 	defer ts.Close()
-	if err := os.Setenv("GETMESH_TEST_DOWNLOAD_SHELL_URL", ts.URL); err != nil {
+	if err := os.Setenv("GETISTIO_TEST_DOWNLOAD_SHELL_URL", ts.URL); err != nil {
 		log.Fatal(err)
 	}
 
 	// set up manifest
-	if err := os.Setenv("GETMESH_TEST_MANIFEST_PATH", "./manifest.json"); err != nil {
+	if err := os.Setenv("GETISTIO_TEST_MANIFEST_PATH", "./manifest.json"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -70,7 +70,7 @@ func TestMain(m *testing.M) {
 
 func getTestBinaryServer(t *testing.T) *httptest.Server {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		raw, err := ioutil.ReadFile("getmesh")
+		raw, err := ioutil.ReadFile("getistio")
 		require.NoError(t, err)
 
 		gz := gzip.NewWriter(w)
@@ -79,7 +79,7 @@ func getTestBinaryServer(t *testing.T) *httptest.Server {
 		tw := tar.NewWriter(gz)
 		defer tw.Close()
 
-		hdr := &tar.Header{Name: "getmesh", Mode: 0600, Size: int64(len(raw))}
+		hdr := &tar.Header{Name: "getistio", Mode: 0600, Size: int64(len(raw))}
 		require.NoError(t, tw.WriteHeader(hdr))
 		_, err = tw.Write(raw)
 		require.NoError(t, err)
@@ -88,7 +88,7 @@ func getTestBinaryServer(t *testing.T) *httptest.Server {
 }
 
 func Test_E2E(t *testing.T) {
-	t.Run("getmesh_install", getmeshInstall)
+	t.Run("getistio_install", getistioInstall)
 	t.Run("list", list)
 	t.Run("end_of_life", enfOfLife)
 	t.Run("security_patch_checker", securityPatchChecker)
@@ -126,35 +126,35 @@ func securityPatchChecker(t *testing.T) {
 	_, err = f.Write(raw)
 	require.NoError(t, err)
 
-	cmd := exec.Command("./getmesh", "list")
+	cmd := exec.Command("./getistio", "list")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(), fmt.Sprintf("GETMESH_TEST_MANIFEST_PATH=%s", f.Name()))
+	cmd.Env = append(os.Environ(), fmt.Sprintf("GETISTIO_TEST_MANIFEST_PATH=%s", f.Name()))
 	require.NoError(t, cmd.Run())
-	assert.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.9-tetrate has a latest version 1.9.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.9.1000000000000-tetrate-v0 by "getmesh fetch".`)
+	assert.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.9-tetrate has a latest version 1.9.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.9.1000000000000-tetrate-v0 by "getistio fetch".`)
 }
 
 func update(t *testing.T) {
 	ts := getTestBinaryServer(t)
 	defer ts.Close()
-	env := append(os.Environ(), fmt.Sprintf("GETMESH_TEST_BINRAY_URL=%s", ts.URL))
+	env := append(os.Environ(), fmt.Sprintf("GETISTIO_TEST_BINRAY_URL=%s", ts.URL))
 
-	cmd := exec.Command("./getmesh", "update")
+	cmd := exec.Command("./getistio", "update")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	assert.Contains(t, actual, "getmesh successfully updated from dev to 1.0.6!")
+	assert.Contains(t, actual, "getistio successfully updated from dev to 1.0.6!")
 	t.Log(actual)
 }
 
-func getmeshInstall(t *testing.T) {
+func getistioInstall(t *testing.T) {
 	ts := getTestBinaryServer(t)
 	defer ts.Close()
-	env := append(os.Environ(), fmt.Sprintf("GETMESH_TEST_BINRAY_URL=%s", ts.URL))
+	env := append(os.Environ(), fmt.Sprintf("GETISTIO_TEST_BINRAY_URL=%s", ts.URL))
 
 	cmd := exec.Command("bash", "./download.sh")
 	cmd.Stdout = os.Stdout
@@ -165,8 +165,8 @@ func getmeshInstall(t *testing.T) {
 	// check directory
 	u, err := user.Current()
 	require.NoError(t, err)
-	gh := filepath.Join(u.HomeDir, ".getmesh")
-	_, err = os.Stat(filepath.Join(gh, "bin/getmesh"))
+	gh := filepath.Join(u.HomeDir, ".getistio")
+	_, err = os.Stat(filepath.Join(gh, "bin/getistio"))
 	require.NoError(t, err)
 	_, err = os.Stat(filepath.Join(gh, "istio"))
 	require.NoError(t, err)
@@ -177,16 +177,16 @@ func getmeshInstall(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
 	require.NoError(t, cmd.Run())
-	_, err = os.Stat(filepath.Join(gh, "bin/getmesh"))
+	_, err = os.Stat(filepath.Join(gh, "bin/getistio"))
 	require.NoError(t, err)
 }
 
 func enfOfLife(t *testing.T) {
-	h, err := util.GetmeshHomeDir()
+	h, err := util.GetIstioHomeDir()
 	require.NoError(t, err)
-	require.NoError(t, getmesh.SetIstioVersion(h, &api.IstioDistribution{Version: "1.6.2"}))
+	require.NoError(t, getistio.SetIstioVersion(h, &api.IstioDistribution{Version: "1.6.2"}))
 
-	cmd := exec.Command("./getmesh", "list")
+	cmd := exec.Command("./getistio", "list")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -195,7 +195,7 @@ func enfOfLife(t *testing.T) {
 }
 
 func list(t *testing.T) {
-	cmd := exec.Command("./getmesh", "list")
+	cmd := exec.Command("./getistio", "list")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -227,7 +227,7 @@ func list(t *testing.T) {
 
 func fetch(t *testing.T) {
 	defer func() {
-		cmd := exec.Command("./getmesh", "switch",
+		cmd := exec.Command("./getistio", "switch",
 			"--version", "1.9.1", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
@@ -235,7 +235,7 @@ func fetch(t *testing.T) {
 		require.NoError(t, cmd.Run())
 	}()
 
-	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.1", "--flavor=tetrate", "--flavor-version=0")
+	cmd := exec.Command("./getistio", "fetch", "--version=1.8.1", "--flavor=tetrate", "--flavor-version=0")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -247,18 +247,18 @@ istioctl switched to 1.8.1-tetrate-v0 now
 `)
 
 	// not listed version should be error
-	cmd = exec.Command("./getmesh", "fetch", "--version=1.70000000000000000000.4")
+	cmd = exec.Command("./getistio", "fetch", "--version=1.70000000000000000000.4")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.Error(t, cmd.Run())
 
-	cmd = exec.Command("./getmesh", "fetch", "--version=1.70000000000000000000.4", "--flavor-version=0")
+	cmd = exec.Command("./getistio", "fetch", "--version=1.70000000000000000000.4", "--flavor-version=0")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.Error(t, cmd.Run())
 
 	// fetch without version
-	cmd = exec.Command("./getmesh", "fetch", "--flavor=istio", "--flavor-version=0")
+	cmd = exec.Command("./getistio", "fetch", "--flavor=istio", "--flavor-version=0")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -266,7 +266,7 @@ istioctl switched to 1.8.1-tetrate-v0 now
 	assert.Contains(t, buf.String(), `-istio-v0 now`)
 
 	// fetch with single flavor flag
-	cmd = exec.Command("./getmesh", "fetch", "--flavor=istio")
+	cmd = exec.Command("./getistio", "fetch", "--flavor=istio")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -274,13 +274,13 @@ istioctl switched to 1.8.1-tetrate-v0 now
 	assert.Contains(t, buf.String(), `-istio-v0 now`)
 
 	// fetch another version
-	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.5")
+	cmd = exec.Command("./getistio", "fetch", "--version=1.7.5")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
 
 	// check the active istioctl has been changed to the last fetched one
-	cmd = exec.Command("./getmesh", "show")
+	cmd = exec.Command("./getistio", "show")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -290,7 +290,7 @@ istioctl switched to 1.8.1-tetrate-v0 now
 }
 
 func prune(t *testing.T) {
-	home, err := util.GetmeshHomeDir()
+	home, err := util.GetIstioHomeDir()
 	require.NoError(t, err)
 
 	// note that this prune test depends on the abovefetch test,
@@ -308,7 +308,7 @@ func prune(t *testing.T) {
 		require.NoError(t, err)
 
 		// prune
-		cmd := exec.Command("./getmesh", "prune", "--version", target.Version,
+		cmd := exec.Command("./getistio", "prune", "--version", target.Version,
 			"--flavor", target.Flavor, "--flavor-version", strconv.Itoa(int(target.FlavorVersion)))
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -319,7 +319,7 @@ func prune(t *testing.T) {
 		require.Error(t, err)
 
 		// restore the version
-		cmd = exec.Command("./getmesh", "fetch", "--version", target.Version,
+		cmd = exec.Command("./getistio", "fetch", "--version", target.Version,
 			"--flavor", target.Flavor, "--flavor-version", strconv.Itoa(int(target.FlavorVersion)))
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -351,7 +351,7 @@ func prune(t *testing.T) {
 		}
 
 		// prune all except the active one
-		cmd := exec.Command("./getmesh", "prune")
+		cmd := exec.Command("./getistio", "prune")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
@@ -367,7 +367,7 @@ func prune(t *testing.T) {
 				require.Error(t, err)
 
 				// restore the version
-				cmd = exec.Command("./getmesh", "fetch", "--version", d.Version,
+				cmd = exec.Command("./getistio", "fetch", "--version", d.Version,
 					"--flavor", d.Flavor, "--flavor-version", strconv.Itoa(int(d.FlavorVersion)))
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
@@ -378,7 +378,7 @@ func prune(t *testing.T) {
 }
 
 func show(t *testing.T) {
-	cmd := exec.Command("./getmesh", "show")
+	cmd := exec.Command("./getistio", "show")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -394,7 +394,7 @@ func switchTest(t *testing.T) {
 	t.Run("full", func(t *testing.T) {
 		for _, v := range []string{"1.8.1", "1.9.1"} {
 			{
-				cmd := exec.Command("./getmesh", "switch",
+				cmd := exec.Command("./getistio", "switch",
 					"--version", v, "--flavor", "tetrate", "--flavor-version=0",
 				)
 				cmd.Stdout = os.Stdout
@@ -402,7 +402,7 @@ func switchTest(t *testing.T) {
 				require.NoError(t, cmd.Run())
 			}
 			{
-				cmd := exec.Command("./getmesh", "istioctl", "version")
+				cmd := exec.Command("./getistio", "istioctl", "version")
 				buf := new(bytes.Buffer)
 				cmd.Stdout = buf
 				cmd.Stderr = os.Stderr
@@ -413,28 +413,28 @@ func switchTest(t *testing.T) {
 		}
 	})
 	t.Run("name", func(t *testing.T) {
-		cmd := exec.Command("./getmesh", "switch",
+		cmd := exec.Command("./getistio", "switch",
 			"--version", "1.8.1", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 
-		cmd = exec.Command("./getmesh", "istioctl", "version")
+		cmd = exec.Command("./getistio", "istioctl", "version")
 		buf := new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 		assert.Contains(t, buf.String(), "1.8.1-tetrate-v0")
 
-		cmd = exec.Command("./getmesh", "switch",
+		cmd = exec.Command("./getistio", "switch",
 			"--name", "1.9.1-tetrate-v0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 
-		cmd = exec.Command("./getmesh", "istioctl", "version")
+		cmd = exec.Command("./getistio", "istioctl", "version")
 		buf = new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
@@ -443,14 +443,14 @@ func switchTest(t *testing.T) {
 		fmt.Println(buf.String())
 	})
 	t.Run("active", func(t *testing.T) {
-		cmd := exec.Command("./getmesh", "fetch",
+		cmd := exec.Command("./getistio", "fetch",
 			"--version=1.9.1", "--flavor=istio", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 
-		cmd = exec.Command("./getmesh", "istioctl", "version")
+		cmd = exec.Command("./getistio", "istioctl", "version")
 		buf := new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
@@ -458,14 +458,14 @@ func switchTest(t *testing.T) {
 		assert.Contains(t, buf.String(), "1.9.1")
 		assert.NotContains(t, buf.String(), "1.9.1-tetrate-v0")
 
-		cmd = exec.Command("./getmesh", "switch",
+		cmd = exec.Command("./getistio", "switch",
 			"--flavor=tetrate",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 
-		cmd = exec.Command("./getmesh", "istioctl", "version")
+		cmd = exec.Command("./getistio", "istioctl", "version")
 		buf = new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
@@ -476,7 +476,7 @@ func switchTest(t *testing.T) {
 }
 
 func istioctlInstall(t *testing.T) {
-	cmd := exec.Command("./getmesh", "istioctl",
+	cmd := exec.Command("./getistio", "istioctl",
 		"install", "--set", "profile=default", "-y")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
@@ -499,18 +499,18 @@ func unknown(t *testing.T) {
 	}{
 		{
 			name:  "unknown commands",
-			cmd:   exec.Command("./getmesh", "unknown"),
-			wants: `getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
+			cmd:   exec.Command("./getistio", "unknown"),
+			wants: `GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
 		},
 		{
 			name:  "unknown flags",
-			cmd:   exec.Command("./getmesh", "list", "--unknown"),
+			cmd:   exec.Command("./getistio", "list", "--unknown"),
 			wants: `List available Istio distributions built by Tetrate`,
 		},
 		{
 			name:  "general tests",
-			cmd:   exec.Command("./getmesh", "unknown", "list"),
-			wants: `getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
+			cmd:   exec.Command("./getistio", "unknown", "list"),
+			wants: `GetIstio is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
 		},
 	}
 	for _, c := range cases {
@@ -531,16 +531,16 @@ func version(t *testing.T) {
 			{"version", "--remote=true"},
 			{"version"},
 		} {
-			cmd := exec.Command("./getmesh", args...)
+			cmd := exec.Command("./getistio", args...)
 			buf := new(bytes.Buffer)
 			cmd.Stdout = buf
 			cmd.Stderr = os.Stderr
 			require.NoError(t, cmd.Run())
 			actual := buf.String()
-			assert.Contains(t, actual, "getmesh version: dev")
+			assert.Contains(t, actual, "getistio version: dev")
 			assert.Contains(t, actual, "active istioctl")
 			// latest version is available
-			assert.Contains(t, actual, "Please run 'getmesh update' to install")
+			assert.Contains(t, actual, "Please run 'getistio update' to install")
 			assert.Contains(t, actual, "control plane version")
 			assert.Contains(t, actual, "data plane version")
 			fmt.Println(actual)
@@ -548,28 +548,28 @@ func version(t *testing.T) {
 
 	})
 	t.Run("local", func(t *testing.T) {
-		cmd := exec.Command("./getmesh", "version", "--remote=false")
+		cmd := exec.Command("./getistio", "version", "--remote=false")
 		buf := new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 		actual := buf.String()
-		assert.Contains(t, actual, "getmesh version: dev")
+		assert.Contains(t, actual, "getistio version: dev")
 		assert.Contains(t, actual, "active istioctl")
 		// latest version is available
-		assert.Contains(t, actual, "Please run 'getmesh update' to install")
+		assert.Contains(t, actual, "Please run 'getistio update' to install")
 		assert.NotContains(t, actual, "control plane version")
 		assert.NotContains(t, actual, "data plane version")
 		fmt.Println(actual)
 	})
 	t.Run("unknown cluster", func(t *testing.T) {
-		cmd := exec.Command("./getmesh", "version", "-c", "unknown.yaml")
+		cmd := exec.Command("./getistio", "version", "-c", "unknown.yaml")
 		buf := new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 		actual := buf.String()
-		assert.Contains(t, actual, "getmesh version: dev")
+		assert.Contains(t, actual, "getistio version: dev")
 		assert.Contains(t, actual, "active istioctl")
 		assert.Contains(t, actual, "no active Kubernetes clusters found")
 		fmt.Println(actual)
@@ -577,7 +577,7 @@ func version(t *testing.T) {
 }
 
 func checkUpgrade(t *testing.T) {
-	cmd := exec.Command("./getmesh", "check-upgrade")
+	cmd := exec.Command("./getistio", "check-upgrade")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -599,7 +599,7 @@ func checkUpgrade(t *testing.T) {
 	var i int
 	for ; i < 10; i++ {
 		time.Sleep(time.Second * 6)
-		cmd := exec.Command("./getmesh", "check-upgrade")
+		cmd := exec.Command("./getistio", "check-upgrade")
 		buf := new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
@@ -626,7 +626,7 @@ func configValidate(t *testing.T) {
 
 	t.Run("all namespaces", func(t *testing.T) {
 		t.Parallel()
-		cmd := exec.Command("./getmesh", "config-validate")
+		cmd := exec.Command("./getistio", "config-validate")
 		bufOut := new(bytes.Buffer)
 		cmd.Stdout = bufOut
 		cmd.Stderr = os.Stderr
@@ -646,7 +646,7 @@ func configValidate(t *testing.T) {
 
 	t.Run("all namespaces with threshold", func(t *testing.T) {
 		t.Parallel()
-		cmd := exec.Command("./getmesh", "config-validate", "--output-threshold", "Error")
+		cmd := exec.Command("./getistio", "config-validate", "--output-threshold", "Error")
 		bufOut := new(bytes.Buffer)
 		cmd.Stdout = bufOut
 		cmd.Stderr = os.Stderr
@@ -666,7 +666,7 @@ func configValidate(t *testing.T) {
 		f, err := ioutil.TempFile("", "")
 		require.NoError(t, err)
 		defer f.Close()
-		cmd := exec.Command("./getmesh", "config-validate", "--kubeconfig", f.Name())
+		cmd := exec.Command("./getistio", "config-validate", "--kubeconfig", f.Name())
 		bufErr := new(bytes.Buffer)
 		cmd.Stderr = bufErr
 		require.Error(t, cmd.Run())
@@ -678,7 +678,7 @@ func configValidate(t *testing.T) {
 
 	t.Run("single namespace", func(t *testing.T) {
 		t.Parallel()
-		cmd := exec.Command("./getmesh", "config-validate", "-n", "bookinfo")
+		cmd := exec.Command("./getistio", "config-validate", "-n", "bookinfo")
 		bufOut := new(bytes.Buffer)
 		cmd.Stdout = bufOut
 		cmd.Stderr = os.Stderr
@@ -698,7 +698,7 @@ func configValidate(t *testing.T) {
 
 	t.Run("healthy", func(t *testing.T) {
 		t.Parallel()
-		cmd := exec.Command("./getmesh", "config-validate", "-n", "healthy")
+		cmd := exec.Command("./getistio", "config-validate", "-n", "healthy")
 		bufOut := new(bytes.Buffer)
 		cmd.Stdout = bufOut
 		cmd.Stderr = os.Stderr
@@ -712,7 +712,7 @@ func configValidate(t *testing.T) {
 
 	t.Run("local file", func(t *testing.T) {
 		t.Parallel()
-		cmd := exec.Command("./getmesh",
+		cmd := exec.Command("./getistio",
 			"config-validate", "-n", "invalid",
 			"e2e/testdata/config-validate-local.yaml",
 		)
@@ -735,7 +735,7 @@ func configValidate(t *testing.T) {
 
 	t.Run("local directory", func(t *testing.T) {
 		t.Parallel()
-		cmd := exec.Command("./getmesh",
+		cmd := exec.Command("./getistio",
 			"config-validate", "-n", "invalid",
 			"e2e/testdata/config-validate-local",
 		)

@@ -19,8 +19,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getistio/src/getistio"
+	"github.com/tetratelabs/getistio/src/manifest"
 )
 
 func newListCmd() *cobra.Command {
@@ -28,7 +28,7 @@ func newListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "List available Istio distributions built by Tetrate",
 		Long:  `List available Istio distributions built by Tetrate`,
-		Example: `$ getmesh list
+		Example: `$ getistio list
 
 ISTIO VERSION	FLAVOR 	FLAVOR VERSION	 K8S VERSIONS
    *1.8.2    	tetrate	      0       	1.16,1.17,1.18
@@ -65,7 +65,7 @@ Supported k8s versions for the distribution
 				return fmt.Errorf("error fetching manifest: %v", err)
 			}
 
-			if err := manifest.PrintManifest(ms, getmesh.GetActiveConfig().IstioDistribution); err != nil {
+			if err := manifest.PrintManifest(ms, getistio.GetActiveConfig().IstioDistribution); err != nil {
 				return fmt.Errorf("error executing istioctl: %v", err)
 			}
 			return nil
