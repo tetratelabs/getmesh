@@ -39,7 +39,6 @@ eprintf() {
   command printf '%s\n' "$1" 1>&2
 }
 
-
 case ${OS} in
   Linux)
     OS=linux
