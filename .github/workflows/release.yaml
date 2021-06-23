@@ -33,7 +33,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release-doc:
-    needs: [post-release-check]
     name: release-doc
     runs-on: ubuntu-latest
     steps:
