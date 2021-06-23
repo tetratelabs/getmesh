@@ -70,7 +70,7 @@ execute() {
       binexe="${binexe}.exe"
     fi
     install "${srcdir}/${binexe}" "${BINDIR}/"
-    log_info "installed ${BINDIR}/${binexe}"
+    log_info "installed $(pwd)/${BINDIR}/${binexe}"
   done
   rm -rf "${tmpdir}"
 }
@@ -385,3 +385,6 @@ CHECKSUM_URL=${GITHUB_DOWNLOAD}/${TAG}/${CHECKSUM}
 
 
 execute
+
+# Aa a sanity check, install the latest default Istio.
+$(pwd)/bin/getmesh fetch
