@@ -1,6 +1,8 @@
+# See http://goreleaser.com for valid values
 project_name: getmesh
 builds:
   - binary: getmesh
+    main: .
     env:
       - CGO_ENABLED=0
     goos:
@@ -8,14 +10,7 @@ builds:
       - darwin
     goarch:
       - amd64
-archives:
-  - format: tar.gz
-    name_template: '{{ .Binary }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}'
-    files: [""] # necessary to exclude any files except the binary
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
+      - arm64
 changelog:
   sort: asc
   filters:
