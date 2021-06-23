@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 
-# originally copied from https://wasmtime.dev/install.sh with some modifications
+# Originally copied from https://wasmtime.dev/install.sh with some modifications
 
-# TODO: delete after the next release.
-GETISTIO_LATEST_VERSION="1.0.6"
+# This script downloads the latest getmesh cli.
+
+# TODO: get the latest version from github releases.
 GETMESH_LATEST_VERSION="1.0.6"
-
-if [[ -z "${GETMESH_VERSION}" ]]; then
-  VERSION="${GETMESH_LATEST_VERSION}"
-else
-  VERSION="${GETMESH_VERSION}"
-fi
 
 if [[ -z "${FETCH_LATEST_ISTIOCTL}" ]]; then
   FETCH_LATEST_ISTIOCTL="true"
@@ -62,7 +57,7 @@ case ${LOCAL_ARCH} in
     ;;
 esac
 
-URL="https://dl.getistio.io/public/raw/files/GETMESH_${OS}_${LOCAL_ARCH}_v${VERSION}.tar.gz"
+URL="https://github.com/tetratelabs/getmesh/releases/download/v${GETMESH_LATEST_VERSION}/getmesh_${OS}_${LOCAL_ARCH}.tar.gz"
 
 if [[ -n "${GETMESH_TEST_BINRAY_URL}" ]]; then
     URL=${GETMESH_TEST_BINRAY_URL}
