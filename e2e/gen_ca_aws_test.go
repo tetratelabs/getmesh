@@ -40,7 +40,7 @@ func TestAWSProviderValidityDaysExceedC(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "unable to issue CA, due to error: unable to issue certificate: unable to issue certificate: ValidationException: The certificate validity specified exceeds the CA validity.")
+	require.Contains(t, actual, "unable to issue CA, due to error: unable to issue certificate: unable to issue certificate: ValidationException: The certificate validity specified exceeds the CA validity.")
 }
 
 // Positive test for whole workflow.
@@ -60,5 +60,5 @@ func TestAWSProvider(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "apiVersion: v1\nkind: Secret\nmetadata:\n  name: cacerts\n  namespace: istio-system\ntype: Opaque\ndata:\n  ca-cert.pem: -----BEGIN CERTIFICATE-----\n")
+	require.Contains(t, actual, "apiVersion: v1\nkind: Secret\nmetadata:\n  name: cacerts\n  namespace: istio-system\ntype: Opaque\ndata:\n  ca-cert.pem: -----BEGIN CERTIFICATE-----\n")
 }

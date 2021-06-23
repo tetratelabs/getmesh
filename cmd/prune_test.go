@@ -18,7 +18,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
@@ -50,7 +49,7 @@ func Test_pruneCheckFlags(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 			}
-			assert.Equal(t, c.exp, actual)
+			require.Equal(t, c.exp, actual)
 		})
 	}
 }

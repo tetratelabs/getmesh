@@ -18,7 +18,6 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,9 +47,9 @@ func TestExtractYamlFilePaths(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, e := range exp {
-		assert.Contains(t, actual, e)
+		require.Contains(t, actual, e)
 	}
 
-	assert.NotContains(t, actual, excluded)
+	require.NotContains(t, actual, excluded)
 	t.Logf("in: %v, out: %v", in, actual)
 }

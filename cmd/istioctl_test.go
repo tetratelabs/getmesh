@@ -20,7 +20,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
@@ -103,7 +102,7 @@ func TestIstioctl_istioctlArgChecks(t *testing.T) {
 			require.Error(t, err)
 		})
 
-		assert.Contains(t, buf.String(), "Your active istioctl of version 1.7.4-tetratefips-v0 is deprecated.")
+		require.Contains(t, buf.String(), "Your active istioctl of version 1.7.4-tetratefips-v0 is deprecated.")
 		t.Log(buf.String())
 	})
 }
@@ -172,7 +171,7 @@ func TestIstioctl_istioctlParsePreCheckArgs(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			actual := istioctlParsePreCheckArgs(c.args)
-			assert.Equal(t, c.exp, actual)
+			require.Equal(t, c.exp, actual)
 		})
 	}
 }
@@ -247,7 +246,7 @@ func TestIstioctl_istioctlParseVerifyInstallArgs(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			actual := istioctlParseVerifyInstallArgs(c.args)
-			assert.Equal(t, c.exp, actual)
+			require.Equal(t, c.exp, actual)
 		})
 	}
 }
@@ -277,7 +276,7 @@ func TestIstioctl_istioctPatchVersionCheck(t *testing.T) {
 			require.Error(t, istioctlPatchVersionCheck(current, m))
 		})
 
-		assert.Contains(t, buf.String(), "your current patch version 1.7.5 is not the latest version 1.7.6")
+		require.Contains(t, buf.String(), "your current patch version 1.7.5 is not the latest version 1.7.6")
 		t.Log(buf.String())
 	})
 
@@ -379,7 +378,7 @@ func TestIstioctl_istioctlPreProcessArgs(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			actual := istioctlPreProcessArgs(test.args)
-			assert.Equal(t, test.wants, actual)
+			require.Equal(t, test.wants, actual)
 		})
 	}
 }

@@ -43,8 +43,8 @@ func TestGCPProvider(t *testing.T) {
 	cmd.Run()
 
 	actual := buf.String()
-	assert.Contains(t, actual, "Kubernetes Secret YAML created successfully in /tmp/gcp-secret.yaml")
+	require.Contains(t, actual, "Kubernetes Secret YAML created successfully in /tmp/gcp-secret.yaml")
 
 	_, err := ioutil.ReadFile("/tmp/gcp-secret.yaml")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }

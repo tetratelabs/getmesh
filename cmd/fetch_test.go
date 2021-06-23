@@ -18,8 +18,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
+	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/getmesh/api"
 )
 
@@ -139,10 +138,10 @@ func Test_fetchParams(t *testing.T) {
 		t.Run(fmt.Sprintf("%d-th case", i), func(t *testing.T) {
 			actual, err := fetchParams(c.flag, c.mf)
 			if c.exp == nil {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
-				assert.Equal(t, c.exp, actual)
+				require.NoError(t, err)
+				require.Equal(t, c.exp, actual)
 			}
 		})
 

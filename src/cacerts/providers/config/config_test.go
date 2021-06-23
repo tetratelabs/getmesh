@@ -20,7 +20,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"gotest.tools/assert"
 )
 
 func TestNewConfigDefault(t *testing.T) {
@@ -48,20 +47,20 @@ certificateParameters:
 	require.NoError(t, err)
 
 	// check modified values
-	assert.Equal(t, "DUMMYARN", getConfig.ProviderConfig.AWSConfig.SigningCA)
-	assert.Equal(t, "DUMMY-TEMPLATE_ARN", getConfig.ProviderConfig.AWSConfig.TemplateARN)
-	assert.Equal(t, "SHA256WITHRSA", getConfig.ProviderConfig.AWSConfig.SigningAlgorithm)
-	assert.Equal(t, "dummy-istio-ns", getConfig.CertParameters.SecretOptions.IstioNamespace)
+	require.Equal(t, "DUMMYARN", getConfig.ProviderConfig.AWSConfig.SigningCA)
+	require.Equal(t, "DUMMY-TEMPLATE_ARN", getConfig.ProviderConfig.AWSConfig.TemplateARN)
+	require.Equal(t, "SHA256WITHRSA", getConfig.ProviderConfig.AWSConfig.SigningAlgorithm)
+	require.Equal(t, "dummy-istio-ns", getConfig.CertParameters.SecretOptions.IstioNamespace)
 
 	// check default values
-	assert.Equal(t, int64(3650), getConfig.CertParameters.ValidityDays)
-	assert.Equal(t, 2048, getConfig.CertParameters.KeyLength)
-	assert.Equal(t, "Istio CA", getConfig.CertParameters.CertRequest.Subject.CommonName)
-	assert.Equal(t, "California", getConfig.CertParameters.CertRequest.Subject.Province[0])
-	assert.Equal(t, "Sunnyvale", getConfig.CertParameters.CertRequest.Subject.Locality[0])
-	assert.Equal(t, "Istio", getConfig.CertParameters.CertRequest.Subject.Organization[0])
-	assert.Equal(t, "US", getConfig.CertParameters.CertRequest.Subject.Country[0])
-	assert.Equal(t, "ca.istio.io", getConfig.CertParameters.CertRequest.DNSNames[0])
+	require.Equal(t, int64(3650), getConfig.CertParameters.ValidityDays)
+	require.Equal(t, 2048, getConfig.CertParameters.KeyLength)
+	require.Equal(t, "Istio CA", getConfig.CertParameters.CertRequest.Subject.CommonName)
+	require.Equal(t, "California", getConfig.CertParameters.CertRequest.Subject.Province[0])
+	require.Equal(t, "Sunnyvale", getConfig.CertParameters.CertRequest.Subject.Locality[0])
+	require.Equal(t, "Istio", getConfig.CertParameters.CertRequest.Subject.Organization[0])
+	require.Equal(t, "US", getConfig.CertParameters.CertRequest.Subject.Country[0])
+	require.Equal(t, "ca.istio.io", getConfig.CertParameters.CertRequest.DNSNames[0])
 
 }
 

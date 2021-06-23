@@ -18,8 +18,6 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/stretchr/testify/require"
 )
 
@@ -117,7 +115,7 @@ spec:
 				break
 			}
 		}
-		assert.True(t, found)
-		assert.Contains(t, c.localIstioObjectFilesRef, kialiObjectKey("default", exp, "VirtualService"))
+		require.True(t, found)
+		require.Contains(t, c.localIstioObjectFilesRef, kialiObjectKey("default", exp, "VirtualService"))
 	}
 }

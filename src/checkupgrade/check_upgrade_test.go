@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	istioversion "istio.io/pkg/version"
 
@@ -68,7 +67,7 @@ func Test_printSummary(t *testing.T) {
 		})
 
 		actual := buf.String()
-		assert.Equal(t, fmt.Sprintf("active istioctl version: %s\n\n", in.ClientVersion.Version), actual)
+		require.Equal(t, fmt.Sprintf("active istioctl version: %s\n\n", in.ClientVersion.Version), actual)
 	})
 
 	t.Run("full", func(t *testing.T) {
@@ -92,7 +91,7 @@ func Test_printSummary(t *testing.T) {
 			})
 
 			actual := buf.String()
-			assert.Equal(t, `active istioctl version: 1.7.4-tetrate-v0
+			require.Equal(t, `active istioctl version: 1.7.4-tetrate-v0
 data plane version: 1.7.4-tetrate-v0 (2 proxies)
 control plane version: 1.7.4-tetrate-v0
 
@@ -123,7 +122,7 @@ control plane version: 1.7.4-tetrate-v0
 			})
 
 			actual := buf.String()
-			assert.Equal(t, `active istioctl version: 1.7.4-tetrate-v0
+			require.Equal(t, `active istioctl version: 1.7.4-tetrate-v0
 data plane version: 1.7.4-tetrate-v0 (2 proxies), 1.8.4-tetrate-v0 (1 proxies)
 control plane version: 1.7.4-tetrate-v0, 1.8.1-tetrate-v0
 
@@ -159,7 +158,7 @@ func Test_printgetmeshCheck(t *testing.T) {
 		} {
 			err := printgetmeshCheck(c, &api.Manifest{
 				IstioDistributions: []*api.IstioDistribution{{Version: "1.4.aaaa"}}})
-			assert.Error(t, err)
+			require.Error(t, err)
 			t.Log(err)
 		}
 	})
@@ -196,8 +195,8 @@ func Test_printgetmeshCheck(t *testing.T) {
 				})
 
 				actual := buf.String()
-				assert.Contains(t, actual, "Please install distributions with tetrate flavor listed in `getmesh list` command")
-				assert.Contains(t, actual, "nothing to check")
+				require.Contains(t, actual, "Please install distributions with tetrate flavor listed in `getmesh list` command")
+				require.Contains(t, actual, "nothing to check")
 				t.Log(actual)
 			})
 		}
@@ -254,7 +253,7 @@ func Test_printgetmeshCheck(t *testing.T) {
 				})
 
 				actual := buf.String()
-				assert.Contains(t, actual, "running in multiple minor versions")
+				require.Contains(t, actual, "running in multiple minor versions")
 				t.Log(actual)
 			})
 		}
@@ -350,7 +349,7 @@ func Test_printgetmeshCheck(t *testing.T) {
 
 				actual := buf.String()
 				for _, e := range c.exp {
-					assert.Contains(t, actual, e)
+					require.Contains(t, actual, e)
 				}
 				t.Log(actual)
 			})
@@ -381,8 +380,8 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 		}, &api.Manifest{IstioDistributions: ms})
 		require.NoError(t, err)
 		require.False(t, ok)
-		assert.Contains(t, msg, "The minor version 1.0-tetrate is no longer supported by getmesh.")
-		assert.Contains(t, msg, "getmesh list")
+		require.Contains(t, msg, "The minor version 1.0-tetrate is no longer supported by getmesh.")
+		require.Contains(t, msg, "getmesh list")
 		t.Log(msg)
 
 		msg, ok, err = getLatestPatchInManifestMsg(&api.IstioDistribution{
@@ -390,8 +389,8 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 		}, &api.Manifest{IstioDistributions: ms})
 		require.NoError(t, err)
 		require.False(t, ok)
-		assert.Contains(t, msg, "The minor version 1.10-tetratefips is no longer supported by getmesh.")
-		assert.Contains(t, msg, "getmesh list")
+		require.Contains(t, msg, "The minor version 1.10-tetratefips is no longer supported by getmesh.")
+		require.Contains(t, msg, "getmesh list")
 		t.Log(msg)
 
 	})
@@ -408,7 +407,7 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 		}, &api.Manifest{IstioDistributions: ms})
 		require.NoError(t, err)
 		require.True(t, ok)
-		assert.Contains(t, msg, "- 1.8.10-tetrate-v10 is the latest version in 1.8-tetrate")
+		require.Contains(t, msg, "- 1.8.10-tetrate-v10 is the latest version in 1.8-tetrate")
 		t.Log(msg)
 
 		msg, ok, err = getLatestPatchInManifestMsg(&api.IstioDistribution{
@@ -417,7 +416,7 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 		}, &api.Manifest{IstioDistributions: ms})
 		require.NoError(t, err)
 		require.True(t, ok)
-		assert.Contains(t, msg, "- 1.7.20-tetratefips-v1 is the latest version in 1.7-tetratefips")
+		require.Contains(t, msg, "- 1.7.20-tetratefips-v1 is the latest version in 1.7-tetratefips")
 		t.Log(msg)
 	})
 
@@ -440,7 +439,7 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 				actual, ok, err := getLatestPatchInManifestMsg(v, &api.Manifest{IstioDistributions: ms})
 				require.NoError(t, err)
 				require.False(t, ok)
-				assert.Contains(t, actual, "all 1.8-tetrate versions -> 1.8.10-tetrate-v10")
+				require.Contains(t, actual, "all 1.8-tetrate versions -> 1.8.10-tetrate-v10")
 				t.Log(actual)
 			})
 
@@ -454,7 +453,7 @@ func Test_getLatestPatchInManifestMsg(t *testing.T) {
 				actual, ok, err := getLatestPatchInManifestMsg(v, &api.Manifest{IstioDistributions: ms})
 				require.NoError(t, err)
 				require.False(t, ok)
-				assert.Contains(t, actual, "which includes **security upgrades**. We strongly recommend upgrading all 1.7-tetratefips versions -> 1.7.20-tetratefips-v30")
+				require.Contains(t, actual, "which includes **security upgrades**. We strongly recommend upgrading all 1.7-tetratefips versions -> 1.7.20-tetratefips-v30")
 				t.Log(actual)
 			})
 		}
@@ -476,7 +475,7 @@ func Test_getMultipleMinorVersionRunningMsg(t *testing.T) {
 			exp: "- Your data plane running in multiple minor versions: 1.6-tetrate, 1.7-tetrate, 1.9-tetratefips, 2.1-tetratefips\n",
 		},
 	} {
-		assert.Equal(t, c.exp, getMultipleMinorVersionRunningMsg(c.t, c.mvs))
+		require.Equal(t, c.exp, getMultipleMinorVersionRunningMsg(c.t, c.mvs))
 	}
 }
 
@@ -484,7 +483,7 @@ func Test_getControlPlaneVersions(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
 		actual, err := getControlPlaneVersions(nil)
 		require.NoError(t, err)
-		assert.Empty(t, actual)
+		require.Empty(t, actual)
 	})
 
 	t.Run("error", func(t *testing.T) {
@@ -505,7 +504,7 @@ func Test_getControlPlaneVersions(t *testing.T) {
 			require.NoError(t, err)
 		})
 
-		assert.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
+		require.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
 		t.Log(buf.String())
 	})
 
@@ -558,7 +557,7 @@ func Test_getControlPlaneVersions(t *testing.T) {
 			t.Run(fmt.Sprintf("%d-th", i), func(t *testing.T) {
 				actual, err := getControlPlaneVersions(&c.in)
 				require.NoError(t, err)
-				assert.Equal(t, c.exp, actual)
+				require.Equal(t, c.exp, actual)
 			})
 		}
 	})
@@ -568,7 +567,7 @@ func Test_getDataPlaneVersions(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
 		actual, err := getDataPlaneVersions(nil)
 		require.NoError(t, err)
-		assert.Empty(t, actual)
+		require.Empty(t, actual)
 	})
 
 	t.Run("error", func(t *testing.T) {
@@ -584,7 +583,7 @@ func Test_getDataPlaneVersions(t *testing.T) {
 			require.NoError(t, err)
 		})
 
-		assert.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
+		require.Contains(t, buf.String(), "Please install distributions with tetrate flavor listed in")
 		t.Log(buf.String())
 	})
 
@@ -654,7 +653,7 @@ func Test_getDataPlaneVersions(t *testing.T) {
 			t.Run(fmt.Sprintf("%d-th", i), func(t *testing.T) {
 				actual, err := getDataPlaneVersions(&c.in)
 				require.NoError(t, err)
-				assert.Equal(t, c.exp, actual)
+				require.Equal(t, c.exp, actual)
 			})
 		}
 	})

@@ -18,7 +18,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -29,7 +29,7 @@ func TestGetKubeConfigLocation(t *testing.T) {
 		defer os.Setenv("KUBECONFIG", original)
 
 		config := GetKubeConfigLocation()
-		assert.Equal(t, config, clientcmd.RecommendedHomeFile)
+		require.Equal(t, config, clientcmd.RecommendedHomeFile)
 	})
 
 	t.Run("KUBECONFIG", func(t *testing.T) {
@@ -39,7 +39,7 @@ func TestGetKubeConfigLocation(t *testing.T) {
 		defer os.Setenv("KUBECONFIG", original)
 
 		config := GetKubeConfigLocation()
-		assert.Equal(t, config, actual)
+		require.Equal(t, config, actual)
 	})
 	t.Run("local", func(t *testing.T) {
 		actual := "./testconfig"
@@ -49,7 +49,7 @@ func TestGetKubeConfigLocation(t *testing.T) {
 
 		KubeConfig = actual
 		config := GetKubeConfigLocation()
-		assert.Equal(t, config, actual)
+		require.Equal(t, config, actual)
 		KubeConfig = "" //cleanup
 	})
 }

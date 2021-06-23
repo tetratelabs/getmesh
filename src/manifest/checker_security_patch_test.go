@@ -20,7 +20,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
@@ -77,11 +76,11 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 		`[WARNING] The locally installed minor version 1.2-tetrate is no longer supported by getmesh. We recommend you use the higher minor versions in "getmesh list" or remove with "getmesh prune"`,
 		`[WARNING] The locally installed minor version 1.7-tetrate has a latest version 1.7.6-tetrate-v2 including security patches. We strongly recommend you to download 1.7.6-tetrate-v2 by "getmesh fetch".`,
 	} {
-		assert.Contains(t, msg, exp)
+		require.Contains(t, msg, exp)
 	}
 
 	for _, nexp := range []string{"1.10", "1.8.2"} {
-		assert.NotContains(t, msg, nexp)
+		require.NotContains(t, msg, nexp)
 	}
 
 	t.Log(msg)
@@ -122,7 +121,7 @@ func Test_constructLatestVersionsMap(t *testing.T) {
 	} {
 		actual, err := constructLatestVersionsMap(c.in)
 		require.NoError(t, err)
-		assert.Equal(t, c.exp, actual)
+		require.Equal(t, c.exp, actual)
 	}
 }
 
@@ -164,7 +163,7 @@ func Test_findSecurityPatchUpgrade(t *testing.T) {
 		require.NoError(t, err)
 		actual, includeSP, err := findSecurityPatchUpgrade(c.base, g, remotes)
 		require.NoError(t, err)
-		assert.Equal(t, c.exp, actual)
-		assert.Equal(t, c.expIncludeSecurityPatch, includeSP)
+		require.Equal(t, c.exp, actual)
+		require.Equal(t, c.expIncludeSecurityPatch, includeSP)
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -47,9 +46,9 @@ func Test_parseManifestEOLDate(t *testing.T) {
 			a, err := parseManifestEOLDate(c.in)
 			require.NoError(t, err)
 			y, m, d := a.Date()
-			assert.Equal(t, c.expYear, y)
-			assert.Equal(t, c.expMonth, int(m))
-			assert.Equal(t, c.expDay, d)
+			require.Equal(t, c.expYear, y)
+			require.Equal(t, c.expMonth, int(m))
+			require.Equal(t, c.expDay, d)
 		}
 	})
 }
@@ -84,7 +83,7 @@ func TestIstioDistribution_ToString(t *testing.T) {
 			exp: "1.8.3-istio-v0",
 		},
 	} {
-		assert.Equal(t, c.exp, c.in.ToString())
+		require.Equal(t, c.exp, c.in.ToString())
 	}
 }
 
@@ -124,7 +123,7 @@ func TestIstioDistributionEqual(t *testing.T) {
 			exp: false,
 		},
 	} {
-		assert.Equal(t, c.exp, c.in.Equal(operand))
+		require.Equal(t, c.exp, c.in.Equal(operand))
 	}
 }
 
@@ -154,12 +153,12 @@ func TestIstioDistribution_ExistInManifest(t *testing.T) {
 
 	ok, err := d.ExistInManifest(ms)
 	require.NoError(t, err)
-	assert.True(t, ok)
+	require.True(t, ok)
 
 	d.FlavorVersion--
 	ok, err = d.ExistInManifest(ms)
 	require.NoError(t, err)
-	assert.False(t, ok)
+	require.False(t, ok)
 }
 
 func TestIstioDistribution_Group(t *testing.T) {
@@ -173,14 +172,14 @@ func TestIstioDistribution_Group(t *testing.T) {
 	} {
 		actual, err := c.in.Group()
 		require.NoError(t, err)
-		assert.Equal(t, c.exp, actual)
+		require.Equal(t, c.exp, actual)
 	}
 }
 
 func TestIstioDistribution_IsUpstream(t *testing.T) {
-	assert.True(t, (&IstioDistribution{Flavor: "istio"}).IsUpstream())
-	assert.False(t, (&IstioDistribution{Flavor: "tetrate"}).IsUpstream())
-	assert.False(t, (&IstioDistribution{Flavor: "tetratefips"}).IsUpstream())
+	require.True(t, (&IstioDistribution{Flavor: "istio"}).IsUpstream())
+	require.False(t, (&IstioDistribution{Flavor: "tetrate"}).IsUpstream())
+	require.False(t, (&IstioDistribution{Flavor: "tetratefips"}).IsUpstream())
 }
 
 func TestIstioDistribution_GreaterThan(t *testing.T) {
@@ -192,7 +191,7 @@ func TestIstioDistribution_GreaterThan(t *testing.T) {
 		} {
 			actual, err := base.GreaterThan(c)
 			require.NoError(t, err)
-			assert.True(t, actual)
+			require.True(t, actual)
 		}
 	})
 
@@ -203,7 +202,7 @@ func TestIstioDistribution_GreaterThan(t *testing.T) {
 		} {
 			actual, err := base.GreaterThan(c)
 			require.NoError(t, err)
-			assert.False(t, actual)
+			require.False(t, actual)
 		}
 	})
 }
@@ -211,7 +210,7 @@ func TestIstioDistribution_GreaterThan(t *testing.T) {
 func TestIstioDistribution_Equal(t *testing.T) {
 	base := &IstioDistribution{Version: "1.2.3", Flavor: "tetrate", FlavorVersion: 40}
 	t.Run("true", func(t *testing.T) {
-		assert.True(t, base.Equal(&IstioDistribution{Version: "1.2.3", Flavor: "tetrate", FlavorVersion: 40}))
+		require.True(t, base.Equal(&IstioDistribution{Version: "1.2.3", Flavor: "tetrate", FlavorVersion: 40}))
 	})
 
 	t.Run("false", func(t *testing.T) {
@@ -249,7 +248,7 @@ func TestIstioDistributionFromString(t *testing.T) {
 		} {
 			v, err := IstioDistributionFromString(c.in)
 			require.NoError(t, err, c.in, c.in)
-			assert.Equal(t, c.exp, v)
+			require.Equal(t, c.exp, v)
 		}
 	})
 
@@ -260,7 +259,7 @@ func TestIstioDistributionFromString(t *testing.T) {
 			"1.6.7-tetrate-v", "1.7.113-tetrate-",
 		} {
 			_, err := IstioDistributionFromString(in)
-			assert.Error(t, err, in)
+			require.Error(t, err, in)
 		}
 	})
 }
@@ -277,8 +276,8 @@ func Test_parseFlavor(t *testing.T) {
 		} {
 			flavor, flavorVersion, err := parseFlavor(c.in)
 			require.NoError(t, err)
-			assert.Equal(t, c.flavor, flavor)
-			assert.Equal(t, c.flavorVersion, flavorVersion)
+			require.Equal(t, c.flavor, flavor)
+			require.Equal(t, c.flavorVersion, flavorVersion)
 		}
 	})
 
@@ -572,13 +571,13 @@ func TestGetLatestDistribution(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			latest, isSecure, err := GetLatestDistribution(test.current, test.maniest)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			if latest == nil {
-				assert.Equal(t, latest, test.wants)
+				require.Equal(t, latest, test.wants)
 			} else {
-				assert.True(t, latest.Equal(test.wants))
+				require.True(t, latest.Equal(test.wants))
 			}
-			assert.Equal(t, test.wantsSecure, isSecure)
+			require.Equal(t, test.wantsSecure, isSecure)
 		})
 	}
 }
