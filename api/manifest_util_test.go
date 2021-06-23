@@ -12,7 +12,7 @@ import (
 
 func TestManifest_GetManifestEOLDates(t *testing.T) {
 	// This test virtually validates the HEAD manifest.json's `istio_minor_versions_eof_dates` field.
-	raw, err := ioutil.ReadFile("../manifest.json")
+	raw, err := ioutil.ReadFile("../site/manifest.json")
 	require.NoError(t, err)
 
 	var ms Manifest

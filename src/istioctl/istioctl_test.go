@@ -465,7 +465,7 @@ func TestFetch(t *testing.T) {
 func Test_fetchIstioctl(t *testing.T) {
 	// This test virtually validates the HEAD istio distributions' existence in the HEAD manifest.json
 
-	f, err := ioutil.ReadFile("../../manifest.json")
+	f, err := ioutil.ReadFile("../../site/manifest.json")
 	require.NoError(t, err)
 	var m api.Manifest
 	require.NoError(t, json.Unmarshal(f, &m))
