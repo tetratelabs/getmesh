@@ -31,7 +31,6 @@ var (
 	}{
 		{path: filepath.Join(contributingPrefix, "/building-and-testing"), title: "Building and Testing", beginning: "## Building & Testing\n"},
 		{path: filepath.Join(contributingPrefix, "/contributing"), title: "Contributing to getmesh", beginning: "## Contributing\n"},
-		{path: filepath.Join(contributingPrefix, "/release"), title: "Release process", beginning: "## Release\n"},
 	}
 )
 
