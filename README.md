@@ -79,8 +79,9 @@ curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
 ```
 This would overwrite the existing version of getmesh to the one just downloaded.
 
-For more information on getmesh, please visit [getmesh.io](https://getmesh.io).
+For more information on getmesh, please visit [istio.tetratelabs.io](https://istio.tetratelabs.io/).
 
 # Contributing
 
-For developers interested in contributing to getmesh, please follow the instruction in [CONTRIBUTING.md](CONTRIBUTING.md).
+For developers interested in contributing to 
+, please follow the instruction in [CONTRIBUTING.md](CONTRIBUTING.md).
