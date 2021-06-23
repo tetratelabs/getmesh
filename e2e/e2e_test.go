@@ -48,7 +48,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// set up download shell
-	downloadShell, err := ioutil.ReadFile("../site/install.sh")
+	downloadShell, err := ioutil.ReadFile("site/install.sh")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// set up manifest
-	if err := os.Setenv("GETMESH_TEST_MANIFEST_PATH", "../site/manifest.json"); err != nil {
+	if err := os.Setenv("GETMESH_TEST_MANIFEST_PATH", "site/manifest.json"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -156,7 +156,7 @@ func getmeshInstall(t *testing.T) {
 	defer ts.Close()
 	env := append(os.Environ(), fmt.Sprintf("GETMESH_TEST_BINRAY_URL=%s", ts.URL))
 
-	cmd := exec.Command("bash", "../site/install.sh")
+	cmd := exec.Command("bash", "site/install.sh")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
@@ -172,7 +172,7 @@ func getmeshInstall(t *testing.T) {
 	require.NoError(t, err)
 
 	// install again, and check if it does not break anything
-	cmd = exec.Command("bash", "../site/install.sh")
+	cmd = exec.Command("bash", "site/install.sh")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
