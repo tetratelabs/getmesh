@@ -24,6 +24,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"os/user"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
@@ -62,22 +64,6 @@ func TestMain(m *testing.M) {
 
 	os.Exit(m.Run())
 }
-
-// func getTestBinaryServer(t *testing.T) *httptest.Server {
-// 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		raw, err := ioutil.ReadFile("getmesh")
-// 		require.NoError(t, err)
-// 		gz := gzip.NewWriter(w)
-// 		defer gz.Close()
-// 		tw := tar.NewWriter(gz)
-// 		defer tw.Close()
-// 		hdr := &tar.Header{Name: "getmesh", Mode: 0600, Size: int64(len(raw))}
-// 		require.NoError(t, tw.WriteHeader(hdr))
-// 		_, err = tw.Write(raw)
-// 		require.NoError(t, err)
-// 	}))
-// 	return ts
-// }
 
 func Test_E2E(t *testing.T) {
 	t.Run("getmesh_install", getmeshInstall)
@@ -127,40 +113,18 @@ func securityPatchChecker(t *testing.T) {
 }
 
 func getmeshInstall(t *testing.T) {
-	// TODO: revert after the next release
-	// ts := getTestBinaryServer(t)
-	// defer ts.Close()
-	// env := append(os.Environ(), fmt.Sprintf("GETMESH_TEST_BINRAY_URL=%s", ts.URL))
-
-	// cmd := exec.Command("bash", "site/install.sh")
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Env = env
-	// require.NoError(t, cmd.Run())
-
-	// // check directory
-	// u, err := user.Current()
-	// require.NoError(t, err)
-	// gh := filepath.Join(u.HomeDir, ".getmesh")
-	// _, err = os.Stat(filepath.Join(gh, "bin/getmesh"))
-	// require.NoError(t, err)
-	// _, err = os.Stat(filepath.Join(gh, "istio"))
-	// require.NoError(t, err)
-
-	// // install again, and check if it does not break anything
-	// cmd = exec.Command("bash", "site/install.sh")
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Env = env
-	// require.NoError(t, cmd.Run())
-	// _, err = os.Stat(filepath.Join(gh, "bin/getmesh"))
-	// require.NoError(t, err)
-
-	cmd := exec.Command("./getmesh", "fetch", "--version", "1.9.5",
-		"--flavor", "tetrate", "--flavor-version", strconv.Itoa(0))
+	cmd := exec.Command("bash", "site/install.sh")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
+
+	// check directory
+	u, err := user.Current()
+	require.NoError(t, err)
+	_, err = os.Stat(filepath.Join("bin/getmesh"))
+	require.NoError(t, err)
+	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "istio"))
+	require.NoError(t, err)
 }
 
 func enfOfLife(t *testing.T) {
@@ -526,7 +490,6 @@ func version(t *testing.T) {
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 		actual := buf.String()
-		require.Contains(t, actual, "getmesh version: dev")
 		require.Contains(t, actual, "active istioctl")
 		// latest version is available
 		require.NotContains(t, actual, "control plane version")
@@ -539,7 +502,6 @@ func version(t *testing.T) {
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 		actual := buf.String()
-		require.Contains(t, actual, "getmesh version: dev")
 		require.Contains(t, actual, "active istioctl")
 		require.Contains(t, actual, "no active Kubernetes clusters found")
 	})
