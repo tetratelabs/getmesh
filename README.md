@@ -71,13 +71,6 @@ getmesh update
 ```
 
 <br />
-While we recommend always using the latest getmesh, if the user wants to download a different version of getmesh for testing or other reasons, they could do so with the following command:
-
-```sh
-export GETMESH_VERSION=<your_version>
-curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
-```
-This would overwrite the existing version of getmesh to the one just downloaded.
 
 For more information on getmesh, please visit [istio.tetratelabs.io](https://istio.tetratelabs.io/).
 
