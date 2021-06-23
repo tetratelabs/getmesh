@@ -71,4 +71,3 @@ You can add the sign off when creating the git commit via `git commit -s`.
 
 Or, you can sign off the whole PR via `git rebase --signoff main`.
 
-
