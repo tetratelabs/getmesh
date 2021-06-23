@@ -21,7 +21,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
@@ -88,21 +87,21 @@ func Test_switchParse(t *testing.T) {
 		distro, err := switchParse(home, flag)
 		require.NoError(t, err)
 		exp := &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 0}
-		assert.Equal(t, distro, exp)
+		require.Equal(t, distro, exp)
 	})
 	t.Run("name", func(t *testing.T) {
 		flag := &switchFlags{name: "1.8.3-istio-v0"}
 		distro, err := switchParse(home, flag)
 		require.NoError(t, err)
 		exp := &api.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 0}
-		assert.Equal(t, distro, exp)
+		require.Equal(t, distro, exp)
 	})
 	t.Run("group", func(t *testing.T) {
 		flag := &switchFlags{version: "1.7", flavor: "istio", flavorVersion: 0}
 		distro, err := switchParse(home, flag)
 		require.NoError(t, err)
 		exp := &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 0}
-		assert.Equal(t, distro, exp)
+		require.Equal(t, distro, exp)
 	})
 }
 
@@ -135,6 +134,6 @@ func Test_switchHandleDistro(t *testing.T) {
 	} {
 		v, err := switchHandleDistro(c.curr, c.flags)
 		require.NoError(t, err)
-		assert.Equal(t, c.exp, v)
+		require.Equal(t, c.exp, v)
 	}
 }

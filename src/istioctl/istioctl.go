@@ -85,7 +85,7 @@ func PrintFetchedVersions(homeDir string) error {
 		}
 
 		name := dist.Name()
-		if strings.Contains(name, curr.ToString()) {
+		if curr != nil && strings.Contains(name, curr.ToString()) {
 			logger.Infof(name + " (Active)\n")
 		} else {
 			logger.Infof(name + "\n")

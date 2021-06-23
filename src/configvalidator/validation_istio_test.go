@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParseIstioctlAnalyzeResult(t *testing.T) {
@@ -63,7 +63,7 @@ func TestParseIstioctlAnalyzeResult(t *testing.T) {
 			},
 		},
 	} {
-		assert.Equal(t, []configValidationResult{c.exp},
+		require.Equal(t, []configValidationResult{c.exp},
 			parseIstioctlAnalyzeResult(bytes.NewBufferString(c.in)), c.in)
 	}
 }

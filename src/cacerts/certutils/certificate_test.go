@@ -20,12 +20,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"gotest.tools/assert"
 )
 
 func TestCreateCertificateSigningRequest(t *testing.T) {
 	csrBytesEncoded, subordinateCaKey, err := CreateCSR(x509.CertificateRequest{}, 2048)
 	require.NoError(t, err)
-	assert.Equal(t, strings.HasPrefix(string(csrBytesEncoded), "-----BEGIN CERTIFICATE REQUEST-----"), true)
-	assert.Equal(t, strings.HasPrefix(subordinateCaKey, "-----BEGIN PRIVATE KEY-----"), true)
+	require.Equal(t, strings.HasPrefix(string(csrBytesEncoded), "-----BEGIN CERTIFICATE REQUEST-----"), true)
+	require.Equal(t, strings.HasPrefix(subordinateCaKey, "-----BEGIN PRIVATE KEY-----"), true)
 }

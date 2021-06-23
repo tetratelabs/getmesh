@@ -20,7 +20,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -32,7 +31,7 @@ func TestGetIstioHomeDir(t *testing.T) {
 
 		actual, err := getmeshHomeDir(dir)
 		require.NoError(t, err)
-		assert.Equal(t, filepath.Join(dir, getmeshDirname), actual)
+		require.Equal(t, filepath.Join(dir, getmeshDirname), actual)
 	})
 
 	t.Run("created", func(t *testing.T) {
@@ -53,11 +52,11 @@ func TestGetIstioHomeDir(t *testing.T) {
 
 		actual, err := getmeshHomeDir(dir)
 		require.NoError(t, err)
-		assert.Equal(t, home, actual)
+		require.Equal(t, home, actual)
 
 		// verify the existing directory left intact
 		b, err := ioutil.ReadFile(filePath)
 		require.NoError(t, err)
-		assert.Equal(t, expBytes, b)
+		require.Equal(t, expBytes, b)
 	})
 }

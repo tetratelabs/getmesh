@@ -22,7 +22,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
@@ -67,7 +66,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 			require.NoError(t, endOfLifeCheckerImpl(m, time.Now()))
 		})
 
-		assert.Equal(t, "", buf.String())
+		require.Equal(t, "", buf.String())
 	})
 
 	t.Run("ok time", func(t *testing.T) {
@@ -77,7 +76,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 			require.NoError(t, endOfLifeCheckerImpl(m, now))
 		})
 
-		assert.Equal(t, "", buf.String())
+		require.Equal(t, "", buf.String())
 	})
 
 	t.Run("warn", func(t *testing.T) {
@@ -92,7 +91,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 					require.NoError(t, endOfLifeCheckerImpl(m, now))
 				})
 
-				assert.Contains(t, buf.String(), fmt.Sprintf(exp, c.minorVersion))
+				require.Contains(t, buf.String(), fmt.Sprintf(exp, c.minorVersion))
 				t.Log(buf.String())
 			})
 

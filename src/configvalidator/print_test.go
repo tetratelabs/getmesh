@@ -17,8 +17,7 @@ package configvalidator
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
+	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -38,11 +37,11 @@ func TestPrintConfigValidationResultsWithoutNamespace(t *testing.T) {
 
 	exps := append(tableColumns[1:], res.name, res.errorCode, res.resourceType, res.message, res.severity.Name)
 	for _, c := range exps {
-		assert.Contains(t, actual, c)
+		require.Contains(t, actual, c)
 	}
 
-	assert.NotContains(t, actual, res.namespace)
-	assert.NotContains(t, actual, "NAMESPACE")
+	require.NotContains(t, actual, res.namespace)
+	require.NotContains(t, actual, "NAMESPACE")
 	t.Log(actual)
 
 }
@@ -63,7 +62,7 @@ func TestPrintConfigValidationResults(t *testing.T) {
 	actual := buf.String()
 	exps := append(tableColumns, res.namespace, res.name, res.errorCode, res.resourceType, res.message, res.severity.Name)
 	for _, c := range exps {
-		assert.Contains(t, actual, c)
+		require.Contains(t, actual, c)
 	}
 
 	t.Log(actual)

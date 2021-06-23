@@ -17,7 +17,7 @@ package configvalidator
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConfigValidator_filterResults(t *testing.T) {
@@ -28,7 +28,7 @@ func TestConfigValidator_filterResults(t *testing.T) {
 			}
 
 			cv := &ConfigValidator{}
-			assert.Equal(t, in, cv.filterResults(in))
+			require.Equal(t, in, cv.filterResults(in))
 		})
 
 		t.Run("single", func(t *testing.T) {
@@ -37,7 +37,7 @@ func TestConfigValidator_filterResults(t *testing.T) {
 			}
 
 			cv := &ConfigValidator{namespace: "kube-system"}
-			assert.Equal(t, in[1:], cv.filterResults(in))
+			require.Equal(t, in[1:], cv.filterResults(in))
 		})
 	})
 
@@ -49,7 +49,7 @@ func TestConfigValidator_filterResults(t *testing.T) {
 				{namespace: "kube-system", severity: SeverityLevelError},
 			}
 			cv := &ConfigValidator{namespace: "default"}
-			assert.Equal(t, in[:1], cv.filterResults(in))
+			require.Equal(t, in[:1], cv.filterResults(in))
 		})
 		t.Run("allnamespaces", func(t *testing.T) {
 			in := []configValidationResult{
@@ -58,12 +58,12 @@ func TestConfigValidator_filterResults(t *testing.T) {
 				{namespace: "default", severity: SeverityLevelInfo},
 			}
 			cv := &ConfigValidator{}
-			assert.Equal(t, in[:2], cv.filterResults(in))
+			require.Equal(t, in[:2], cv.filterResults(in))
 		})
 	})
 }
 
 func TestConfigValidator_allNamespaces(t *testing.T) {
-	assert.True(t, (&ConfigValidator{namespace: ""}).allNamespaces())
-	assert.False(t, (&ConfigValidator{namespace: "default"}).allNamespaces())
+	require.True(t, (&ConfigValidator{namespace: ""}).allNamespaces())
+	require.False(t, (&ConfigValidator{namespace: "default"}).allNamespaces())
 }

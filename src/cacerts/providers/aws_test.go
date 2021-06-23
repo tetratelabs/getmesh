@@ -25,7 +25,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/acmpca/acmpcaiface"
 	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
-	"gotest.tools/assert"
 )
 
 const (
@@ -132,7 +131,7 @@ func TestIssueCertificateAuthorityNegative(t *testing.T) {
 			IstioNamespace: "Mock",
 		},
 	})
-	assert.Equal(t, err.Error(), "unable to get CACertificateRequest: mockValidationErrorForGetCertificate")
+	require.Equal(t, err.Error(), "unable to get CACertificateRequest: mockValidationErrorForGetCertificate")
 }
 
 func TestGetCertificate(t *testing.T) {
@@ -158,7 +157,7 @@ func TestGetCertificateNegative(t *testing.T) {
 	_, err := provider.getCert(context.TODO(), models.GetCertOptions{
 		CertNameIdentifier: "",
 	})
-	assert.Equal(t, err.Error(), "unable to get certificate: "+errMockGetCertificate)
+	require.Equal(t, err.Error(), "unable to get certificate: "+errMockGetCertificate)
 }
 
 func TestIssueCertificate(t *testing.T) {
@@ -205,5 +204,5 @@ func TestGetIssueCertificateNegative(t *testing.T) {
 		ValidityType:  "DAYS",
 		ValidityValue: 30,
 	})
-	assert.Equal(t, err.Error(), "unable to issue certificate: "+errMockIssueCertificate)
+	require.Equal(t, err.Error(), "unable to issue certificate: "+errMockIssueCertificate)
 }

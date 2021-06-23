@@ -20,7 +20,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCheckGenCAConfigFileNotExist(t *testing.T) {
@@ -30,7 +30,7 @@ func TestCheckGenCAConfigFileNotExist(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, `unable to open config file path: open /tmp/filenotexist.yaml: no such file or directory`)
+	require.Contains(t, actual, `unable to open config file path: open /tmp/filenotexist.yaml: no such file or directory`)
 }
 
 func TestCheckGenCAConfigProviderUnavailable(t *testing.T) {
@@ -40,7 +40,7 @@ func TestCheckGenCAConfigProviderUnavailable(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "`unavailable` provider yet to be implement")
+	require.Contains(t, actual, "`unavailable` provider yet to be implement")
 }
 
 func TestCheckGenCAConfigSigningCANotProvided1(t *testing.T) {
@@ -50,7 +50,7 @@ func TestCheckGenCAConfigSigningCANotProvided1(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "found empty AWS Signing CA ARN")
+	require.Contains(t, actual, "found empty AWS Signing CA ARN")
 }
 
 func TestCheckGenCAConfigSigningCANotProvided2(t *testing.T) {
@@ -60,7 +60,7 @@ func TestCheckGenCAConfigSigningCANotProvided2(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "found empty AWS Signing CA ARN")
+	require.Contains(t, actual, "found empty AWS Signing CA ARN")
 }
 
 func TestCheckGenCAConfigWrongRegionProvided(t *testing.T) {
@@ -70,7 +70,7 @@ func TestCheckGenCAConfigWrongRegionProvided(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "unable to issue CA, due to error: unable to initialize AWS Client: unable to get AWS Region: unable to find region for AWS Signing CA ARN")
+	require.Contains(t, actual, "unable to issue CA, due to error: unable to initialize AWS Client: unable to get AWS Region: unable to find region for AWS Signing CA ARN")
 }
 
 func TestCheckGenCAConfigWrongInfoProvided(t *testing.T) {
@@ -80,7 +80,7 @@ func TestCheckGenCAConfigWrongInfoProvided(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "unable to issue CA, due to error: unable to get CACertificateRequest: NoCredentialProviders")
+	require.Contains(t, actual, "unable to issue CA, due to error: unable to get CACertificateRequest: NoCredentialProviders")
 }
 
 func TestCheckGenCAConfigWrongFlagsProvided(t *testing.T) {
@@ -90,5 +90,5 @@ func TestCheckGenCAConfigWrongFlagsProvided(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
 	actual := buf.String()
-	assert.Contains(t, actual, "unknown flag: --testing\n")
+	require.Contains(t, actual, "unknown flag: --testing\n")
 }

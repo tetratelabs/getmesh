@@ -89,7 +89,6 @@ func NewRoot(version, homeDir string) *cobra.Command {
 	cmd.AddCommand(newShowCmd(homeDir))
 	cmd.AddCommand(newConfigValidateCmd(homeDir))
 	cmd.AddCommand(newGenCACmd())
-	cmd.AddCommand(newUpgradeCmd(version))
 	cmd.AddCommand(newPruneCmd(homeDir))
 	cmd.AddCommand(newSetDefaultHubCmd(homeDir))
 

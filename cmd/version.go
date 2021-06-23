@@ -75,17 +75,6 @@ func newVersionCmd(homedir, getmeshVersion string) *cobra.Command {
 				}
 			}
 
-			latest, err := getmesh.LatestVersion()
-			if err != nil {
-				return fmt.Errorf("failed to check getmesh's latest version: %v", err)
-			}
-
-			if latest != getmeshVersion {
-				logger.Infof(
-					"\nThe latest getmesh of version %s is available. Please run 'getmesh update' to install %s\n",
-					latest, latest)
-			}
-
 			return nil
 		},
 	}

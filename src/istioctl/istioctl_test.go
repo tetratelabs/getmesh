@@ -23,7 +23,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
@@ -102,7 +101,7 @@ func TestPrintFetchedVersions(t *testing.T) {
 1.7.3-tetrate-v0 (Active)
 20.1.1-tetrate-v0
 `
-		assert.Equal(t, exp, buf.String())
+		require.Equal(t, exp, buf.String())
 	})
 }
 
@@ -121,7 +120,7 @@ func TestGetCurrentExecutable(t *testing.T) {
 		defer os.RemoveAll(dir)
 		require.NoError(t, getmesh.SetIstioVersion(dir, d))
 		_, err = GetCurrentExecutable(dir)
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 
 	t.Run("ok", func(t *testing.T) {
@@ -147,8 +146,8 @@ func TestGetCurrentExecutable(t *testing.T) {
 		defer f.Close()
 
 		actual, err := GetCurrentExecutable(dir)
-		assert.NoError(t, err)
-		assert.Equal(t, "1.7.3-tetrate-v0", actual.ToString())
+		require.NoError(t, err)
+		require.Equal(t, "1.7.3-tetrate-v0", actual.ToString())
 	})
 }
 
@@ -158,7 +157,7 @@ func Test_getmeshctlPath(t *testing.T) {
 		Flavor:        api.IstioDistributionFlavorTetrate,
 		FlavorVersion: 0,
 	}
-	assert.Equal(t, "tmpdir/istio/1.7.3-tetrate-v0/bin/istioctl",
+	require.Equal(t, "tmpdir/istio/1.7.3-tetrate-v0/bin/istioctl",
 		GetIstioctlPath("tmpdir", d))
 }
 
@@ -229,7 +228,7 @@ func TestRemove(t *testing.T) {
 
 		err := Remove(dir, d, nil)
 		require.Error(t, err)
-		assert.Equal(t, "we skip removing 1.7.3-non-exist-v1 since it does not exist in your system", err.Error())
+		require.Equal(t, "we skip removing 1.7.3-non-exist-v1 since it does not exist in your system", err.Error())
 	})
 
 	t.Run("specific", func(t *testing.T) {
@@ -281,11 +280,11 @@ func Test_checkExists(t *testing.T) {
 		f, err := os.Create(ctlPath)
 		require.NoError(t, err)
 		f.Close()
-		assert.NoError(t, checkExist(dir, d))
+		require.NoError(t, checkExist(dir, d))
 	})
 
 	t.Run("non exist", func(t *testing.T) {
-		assert.Error(t, checkExist(dir, &api.IstioDistribution{
+		require.Error(t, checkExist(dir, &api.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "non-exist",
 			FlavorVersion: 0,
@@ -322,17 +321,17 @@ func TestSwitch(t *testing.T) {
 		d.Version = "1.7.3"
 		require.NoError(t, getmesh.SetIstioVersion(dir, d))
 		d.Version = "20.1.1"
-		assert.NoError(t, Switch(dir, d))
-		assert.Equal(t, d, getmesh.GetActiveConfig().IstioDistribution)
+		require.NoError(t, Switch(dir, d))
+		require.Equal(t, d, getmesh.GetActiveConfig().IstioDistribution)
 	})
 
 	t.Run("non-exist", func(t *testing.T) {
-		assert.Error(t, Switch(dir, &api.IstioDistribution{
+		require.Error(t, Switch(dir, &api.IstioDistribution{
 			Version:       "0.1.1",
 			Flavor:        api.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}))
-		assert.Error(t, Switch(dir, &api.IstioDistribution{
+		require.Error(t, Switch(dir, &api.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "non-exist",
 			FlavorVersion: 0,
@@ -370,7 +369,7 @@ func TestExec(t *testing.T) {
 
 	buf := new(bytes.Buffer)
 	require.NoError(t, ExecWithWriters(dir, []string{"."}, buf, nil))
-	assert.Equal(t, buf.String(), "istioctl")
+	require.Equal(t, buf.String(), "istioctl")
 }
 
 func TestFetch(t *testing.T) {
@@ -475,10 +474,13 @@ func Test_fetchIstioctl(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	for _, d := range m.IstioDistributions {
-		require.NoError(t, fetchIstioctl(dir, d))
-		ctlPath := GetIstioctlPath(dir, d)
-		_, err = os.Stat(ctlPath)
-		require.NoError(t, err)
-		t.Log(ctlPath)
+		d := d
+		t.Run(d.String(), func(t *testing.T) {
+			require.NoError(t, fetchIstioctl(dir, d))
+			ctlPath := GetIstioctlPath(dir, d)
+			_, err = os.Stat(ctlPath)
+			require.NoError(t, err)
+			t.Log(ctlPath)
+		})
 	}
 }

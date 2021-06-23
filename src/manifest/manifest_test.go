@@ -20,7 +20,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/api"
@@ -74,7 +73,7 @@ func TestFetchManifest(t *testing.T) {
 	for _, a := range actual.IstioDistributions {
 		delete(expIstioVersions, a.ToString())
 	}
-	assert.Equal(t, map[string]struct{}{}, expIstioVersions)
+	require.Equal(t, map[string]struct{}{}, expIstioVersions)
 }
 
 func TestPrintManifest(t *testing.T) {
@@ -99,7 +98,7 @@ func TestPrintManifest(t *testing.T) {
 		buf := logger.ExecuteWithLock(func() {
 			require.NoError(t, PrintManifest(manifest, nil))
 		})
-		assert.Equal(t, `ISTIO VERSION	FLAVOR 	FLAVOR VERSION	K8S VERSIONS 
+		require.Equal(t, `ISTIO VERSION	FLAVOR 	FLAVOR VERSION	K8S VERSIONS 
     1.7.6    	tetrate	      0       	    1.16    	
     1.7.5    	tetrate	      0       	    1.16    	
 `,
@@ -140,7 +139,7 @@ func TestPrintManifest(t *testing.T) {
 			require.NoError(t, PrintManifest(manifest, current))
 		})
 
-		assert.Equal(t, `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	K8S VERSIONS 
+		require.Equal(t, `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	K8S VERSIONS 
     1.8.3    	   istio   	      0       	    1.18    	
    *1.7.6    	tetratefips	      0       	    1.16    	
     1.7.5    	  tetrate  	      0       	    1.16    	
