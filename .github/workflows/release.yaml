@@ -32,79 +32,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      - name: Push Mac binaries to Cloudsmith
-        working-directory: dist
-        id: push-mac
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-          command: "push"
-          format: "raw"
-          owner: "tetrate"
-          repo: "getistio"
-          file: "getistio_darwin_amd64.tar.gz"
-          name: "getistio_darwin_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
-
-      - name: Push Linux binaries to Cloudsmith
-        working-directory: dist
-        id: push-linux
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-          command: "push"
-          format: "raw"
-          owner: "tetrate"
-          repo: "getistio"
-          file: "getistio_linux_amd64.tar.gz"
-          name: "getistio_linux_amd64_${{ env.RELEASE_VERSION }}.tar.gz"
-
-      - name: Push Manifest
-        working-directory: dist
-        id: push-manifest
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-          command: "push"
-          format: "raw"
-          owner: "tetrate"
-          repo: "getistio"
-          file: "manifest.json"
-          republish: "true"
-          name: "manifest.json"
-
-      - name: Push Download Script
-        working-directory: dist
-        id: push-script
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-          command: "push"
-          format: "raw"
-          owner: "tetrate"
-          repo: "getistio"
-          file: "download.sh"
-          republish: "true"
-          name: "download.sh"
-
-  post-release-check:
-    needs: [release-binary]
-    name: post-release-check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      - name: Download the latest getmesh
-        run: curl -sL https://dl.getistio.io/public/raw/files/download.sh | bash
-
-      - name: Check version
-        run: |
-          version=${{ env.RELEASE_VERSION }}
-          ~/.getmesh/bin/getmesh version --remote=false | grep ${version:1}
-
   release-doc:
     needs: [post-release-check]
     name: release-doc
@@ -119,26 +46,26 @@ jobs:
       - name: clone
         run: |
           mkdir ~/.ssh
-          echo "${{ secrets.GETISTIO_IO_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.TETRATE_ISTIO_DISTRO_IO_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          git clone git@github.com:tetratelabs/getistio.io.git getistio.io
+          git clone git@github.com:tetratelabs/istio-distro.io.git istio-distro.io
 
       - name: cp
         run: |
-          cp -r doc/en/* getistio.io/content/en/
-          find doc/en/ -type f -name "_index.md" -print0 | xargs -0 sed -i -e "s/\/getistio-cli\/reference/\/zh\/getistio-cli\/reference/g"
-          cp -r doc/en/* getistio.io/content/zh/
+          cp -r doc/en/* istio-distro.io/content/en/
+          find doc/en/ -type f -name "_index.md" -print0 | xargs -0 sed -i -e "s/\/getmesh-cli\/reference/\/zh\/getmesh-cli\/reference/g"
+          cp -r doc/en/* istio-distro.io/content/zh/
 
       - name: commit
-        working-directory: getistio.io
+        working-directory: istio-distro.io
         run: |
-          git config --global user.email "getistio@tetrate.io"
-          git config --global user.name "getistio"
+          git config --global user.email "getmesh@tetrate.io"
+          git config --global user.name "getmesh"
           git checkout main
           git add content/
-          git commit -a -m "Update docs from the getistio ${{ env.RELEASE_VERSION }} release"
+          git commit -a -m "Update docs from the getmesh ${{ env.RELEASE_VERSION }} release"
 
       - name: push
-        working-directory: getistio.io
+        working-directory: istio-distro.io
         run: |
           git push origin main
