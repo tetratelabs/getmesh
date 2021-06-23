@@ -1,12 +1,10 @@
-# getmesh [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-![Simplify Istio with GetIsito!](getmesh.png)
+# GetMesh [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Overview
 
 An integration, and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio. The enterprises require ability to control Istio versioning, support multiple versions of istio, ability to easily move between the versions, integration with cloud providers certification systems and centralized config management and validation. 
 
-The GetIsio CLI tool supports these enterprise level requirements via:
+The getmesh CLI tool supports these enterprise level requirements via:
 
 - enforcement of fetching certified versions of Istio and enables only compatible versions of Istio installation
 - allows seamlessly switching between multiple istioctl versions
