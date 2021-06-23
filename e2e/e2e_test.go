@@ -15,9 +15,7 @@
 package e2e
 
 import (
-	"archive/tar"
 	"bytes"
-	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -65,22 +63,6 @@ func TestMain(m *testing.M) {
 	}
 
 	os.Exit(m.Run())
-}
-
-func getTestBinaryServer(t *testing.T) *httptest.Server {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		raw, err := ioutil.ReadFile("./getmesh")
-		require.NoError(t, err)
-		gz := gzip.NewWriter(w)
-		defer gz.Close()
-		tw := tar.NewWriter(gz)
-		defer tw.Close()
-		hdr := &tar.Header{Name: "getmesh", Mode: 0600, Size: int64(len(raw))}
-		require.NoError(t, tw.WriteHeader(hdr))
-		_, err = tw.Write(raw)
-		require.NoError(t, err)
-	}))
-	return ts
 }
 
 func Test_E2E(t *testing.T) {
@@ -131,14 +113,9 @@ func securityPatchChecker(t *testing.T) {
 }
 
 func getmeshInstall(t *testing.T) {
-	ts := getTestBinaryServer(t)
-	defer ts.Close()
-	env := append(os.Environ(), fmt.Sprintf("GETMESH_TEST_BINRAY_URL=%s", ts.URL))
-
 	cmd := exec.Command("bash", "site/install.sh")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Env = env
 	require.NoError(t, cmd.Run())
 
 	// check directory
