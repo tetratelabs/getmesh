@@ -57,7 +57,7 @@ func TestPreFlightChecks(t *testing.T) {
 		cfg.SetDefaultValues()
 		cfg.DisableSecretCreation = false
 		err := genCAPreFlightChecks(cfg, cs)
-		require.Contains(t, err, "namespaces \"istio-system\" not found")
+		require.Contains(t, err.Error(), "namespaces \"istio-system\" not found")
 
 		ns := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}}
 		_, err = cs.CoreV1().Namespaces().Create(context.Background(), ns, metav1.CreateOptions{})
@@ -82,14 +82,14 @@ func TestPreFlightChecks(t *testing.T) {
 		require.NoError(t, os.Mkdir(ro, 0400))
 		cfg.CertParameters.SecretFilePath = filepath.Join(ro, "test.yaml")
 		err = genCAPreFlightChecks(cfg, cs)
-		require.Contains(t, err, "unable to write on secret file path:")
+		require.Contains(t, err.Error(), "unable to write on secret file path:")
 
 		// ok
 		f, err := ioutil.TempFile(d, "")
 		require.NoError(t, err)
 		cfg.CertParameters.SecretFilePath = f.Name()
 		err = genCAPreFlightChecks(cfg, cs)
-		require.Contains(t, err, f.Name()+"` already exist, please change the file path before proceeding")
+		require.Contains(t, err.Error(), f.Name()+"` already exist, please change the file path before proceeding")
 	})
 }
 
@@ -114,7 +114,7 @@ func TestFetchParametersError(t *testing.T) {
 		t.Run(c.label, func(t *testing.T) {
 			require.NoError(t, flags.Parse(c.arguments))
 			_, err := genCAFetchParameters(flags)
-			require.Contains(t, err, c.expected)
+			require.Contains(t, err.Error(), c.expected)
 		})
 	}
 }
