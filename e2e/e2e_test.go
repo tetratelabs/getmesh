@@ -96,12 +96,12 @@ func Test_E2E(t *testing.T) {
 	t.Run("prune", prune)
 	t.Run("show", show)
 	t.Run("switch", switchTest)
-	/*t.Run("istioctl_install", istioctlInstall)*/
+	t.Run("istioctl_install", istioctlInstall)
 	t.Run("unknown", unknown)
 	t.Run("update", update)
 	t.Run("version", version)
-	/*t.Run("check-upgrade", checkUpgrade)
-	t.Run("config-validate", configValidate)*/
+	t.Run("check-upgrade", checkUpgrade)
+	t.Run("config-validate", configValidate)
 }
 
 func securityPatchChecker(t *testing.T) {
