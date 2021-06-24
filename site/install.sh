@@ -23,7 +23,7 @@ usage() {
 $this: download go binaries for tetratelabs/getmesh
 
 Usage: $this [-b] bindir [-d] [tag]
-  -b sets bindir or installation directory, Defaults to ./bin
+  -b sets bindir or installation directory, Defaults to {HOME}/.getmesh/bin
   -d turns on debug logging
    [tag] is a tag from
    https://github.com/tetratelabs/getmesh/releases
@@ -37,10 +37,10 @@ EOF
 }
 
 parse_args() {
-  #BINDIR is ./bin unless set be ENV
+  #BINDIR is ${HOME}/.getmesh/bin unless set be ENV
   # over-ridden by flag below
 
-  BINDIR=${BINDIR:-./bin}
+  BINDIR=${BINDIR:-.getmesh/bin}
   while getopts "b:dh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
