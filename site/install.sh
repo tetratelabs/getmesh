@@ -23,7 +23,7 @@ usage() {
 $this: download go binaries for tetratelabs/getmesh
 
 Usage: $this [-b] bindir [-d] [tag]
-  -b sets bindir or installation directory, Defaults to ./bin
+  -b sets bindir or installation directory, Defaults to {HOME}/.getmesh/bin
   -d turns on debug logging
    [tag] is a tag from
    https://github.com/tetratelabs/getmesh/releases
@@ -37,10 +37,10 @@ EOF
 }
 
 parse_args() {
-  #BINDIR is ./bin unless set be ENV
+  #BINDIR is ${HOME}/.getmesh/bin unless set be ENV
   # over-ridden by flag below
 
-  BINDIR=${BINDIR:-./bin}
+  BINDIR=${BINDIR:-.getmesh/bin}
   while getopts "b:dh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
@@ -64,13 +64,13 @@ execute() {
   hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
-  test ! -d "${BINDIR}" && install -d "${BINDIR}"
+  test ! -d "${HOME}/${BINDIR}" && install -d "${HOME}/${BINDIR}"
   for binexe in $BINARIES; do
     if [ "$OS" = "windows" ]; then
       binexe="${binexe}.exe"
     fi
-    install "${srcdir}/${binexe}" "${BINDIR}/"
-    log_info "installed $(pwd)/${BINDIR}/${binexe}"
+    install "${srcdir}/${binexe}" "${HOME}/${BINDIR}/"
+    log_info "installed ${HOME}/${BINDIR}/${binexe}"
   done
   rm -rf "${tmpdir}"
 }
@@ -124,6 +124,9 @@ but credit (and pull requests) appreciated.
 EOF
 is_command() {
   command -v "$1" >/dev/null
+}
+echo_fexists() {
+  [ -f "$1" ] && echo "$1"
 }
 echoerr() {
   echo "$@" 1>&2
@@ -383,8 +386,96 @@ TARBALL_URL=${GITHUB_DOWNLOAD}/${TAG}/${TARBALL}
 CHECKSUM=getmesh_${VERSION}_checksums.txt
 CHECKSUM_URL=${GITHUB_DOWNLOAD}/${TAG}/${CHECKSUM}
 
-
+# Install
 execute
 
 # Aa a sanity check, install the latest default Istio.
-$(pwd)/bin/getmesh fetch
+${HOME}/.getmesh/bin/getmesh fetch >/dev/null
+
+# Updating profile - originally copied from https://wasmtime.dev/install.sh with some modifications
+detect_profile() {
+  local shellname="$1"
+  local uname="$2"
+
+  if [ -f "$PROFILE" ]; then
+    echo "$PROFILE"
+    return
+  fi
+
+  # try to detect the current shell
+  case "$shellname" in
+    bash)
+      # based on Ubuntu 20.04 tests - the sequence of the profiles processing
+      # is the same for both Linux and Mac - .bash_profile first and then
+      # bashrc, also confirmed here:
+      # https://askubuntu.com/questions/161249/bashrc-not-executed-when-opening-new-terminal
+      echo_fexists "$HOME/.bash_profile" || echo_fexists "$HOME/.bashrc"
+      ;;
+    zsh)
+      echo "$HOME/.zshrc"
+      ;;
+    fish)
+      echo "$HOME/.config/fish/config.fish"
+      ;;
+    *)
+      # Fall back to checking for profile file existence. Once again, the order
+      # differs between macOS and everything else.
+      local profiles
+
+      profiles=( .profile .bash_profile .bashrc .zshrc .config/fish/config.fish )
+          ;;
+        *)
+
+      for profile in "${profiles[@]}"; do
+        echo_fexists "$HOME/$profile" && break
+      done
+      ;;
+  esac
+}
+
+# generate shell code to source the loading script and modify the path for the input profile
+build_path_str() {
+  local profile="$1"
+  local profile_install_dir="$2"
+
+  if [[ $profile =~ \.fish$ ]]; then
+    # fish uses a little different syntax to modify the PATH
+    cat <<END_FISH_SCRIPT
+set -gx GETMESH_HOME "$profile_install_dir"
+string match -r ".getistio" "\$PATH" > /dev/null; or set -gx PATH "\$GETMESH_HOME/bin" \$PATH
+END_FISH_SCRIPT
+  else
+    # bash and zsh
+    cat <<END_BASH_SCRIPT
+export GETMESH_HOME="$profile_install_dir"
+export PATH="\$GETMESH_HOME/bin:\$PATH"
+END_BASH_SCRIPT
+  fi
+}
+
+update_profile() {
+  local install_dir="$1"
+
+  local profile_install_dir=$(echo "$install_dir" | sed "s:^$HOME:\$HOME:")
+  local detected_profile="$(detect_profile $(basename "/$SHELL") $(uname -s) )"
+  local path_str="$(build_path_str "$detected_profile" "$profile_install_dir")"
+
+  if [ -z "${detected_profile-}" ] ; then
+    log_err "no user profile found."
+    log_err "tried \$PROFILE ($PROFILE), ~/.bashrc, ~/.bash_profile, ~/.zshrc, ~/.profile, and ~/.config/fish/config.fish."
+    log_err ''
+    log_err "you can either create one of these and try again or add these lines to the appropriate file:"
+    printf "\n$path_str\n"
+    return 1
+  else
+    if ! command grep -qc 'GETMESH_HOME' "$detected_profile"; then
+      log_info "updating user profile ($detected_profile)..."
+      log_info "the following two lines are added into your profile ($detected_profile):" 
+      printf "\n$path_str\n"
+      command printf "$path_str" >> "$detected_profile"
+      printf "\nFinished installation. Open a new terminal to start using getmesh!\n"
+    fi
+  fi
+}
+
+update_profile ${HOME}/.getmesh
