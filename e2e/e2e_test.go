@@ -121,7 +121,7 @@ func getmeshInstall(t *testing.T) {
 	// check directory
 	u, err := user.Current()
 	require.NoError(t, err)
-	_, err = os.Stat(filepath.Join("bin/getmesh"))
+	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "bin", "getmesh"))
 	require.NoError(t, err)
 	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "istio"))
 	require.NoError(t, err)
