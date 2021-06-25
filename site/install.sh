@@ -387,7 +387,7 @@ CHECKSUM_URL=${GITHUB_DOWNLOAD}/${TAG}/${CHECKSUM}
 execute
 
 # Aa a sanity check, install the latest default Istio.
-$(pwd)/bin/getmesh fetch >/dev/null
+${HOME}/.getmesh/bin/getmesh fetch >/dev/null
 
 # Updating profile - originally copied from https://wasmtime.dev/install.sh with some modifications
 detect_profile() {
