@@ -125,6 +125,9 @@ EOF
 is_command() {
   command -v "$1" >/dev/null
 }
+echo_fexists() {
+  [ -f "$1" ] && echo "$1"
+}
 echoerr() {
   echo "$@" 1>&2
 }
@@ -461,8 +464,8 @@ update_profile() {
     log_err "no user profile found."
     log_err "tried \$PROFILE ($PROFILE), ~/.bashrc, ~/.bash_profile, ~/.zshrc, ~/.profile, and ~/.config/fish/config.fish."
     log_err ''
-    log_err "you can either create one of these and try again or add this to the appropriate file:"
-    log_err "$path_str"
+    log_err "you can either create one of these and try again or add these lines to the appropriate file:"
+    printf "\n$path_str\n"
     return 1
   else
     if ! command grep -qc 'GETMESH_HOME' "$detected_profile"; then
