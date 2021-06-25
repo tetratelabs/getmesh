@@ -470,7 +470,7 @@ update_profile() {
       log_info "the following two lines are added into your profile ($detected_profile):" 
       printf "\n$path_str\n"
       command printf "$path_str" >> "$detected_profile"
-      printf "\nFinished installation. Open a new terminal to start using getistio!\n"
+      printf "\nFinished installation. Open a new terminal to start using getmesh!\n"
     fi
   fi
 }
