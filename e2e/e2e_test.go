@@ -20,8 +20,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"os/exec"
 	"os/user"
@@ -41,19 +39,6 @@ import (
 
 func TestMain(m *testing.M) {
 	if err := os.Chdir(".."); err != nil {
-		log.Fatal(err)
-	}
-
-	// set up download shell
-	downloadShell, err := ioutil.ReadFile("site/install.sh")
-	if err != nil {
-		log.Fatal(err)
-	}
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write(downloadShell)
-	}))
-	defer ts.Close()
-	if err := os.Setenv("GETMESH_TEST_DOWNLOAD_SHELL_URL", ts.URL); err != nil {
 		log.Fatal(err)
 	}
 
@@ -79,6 +64,21 @@ func Test_E2E(t *testing.T) {
 	t.Run("version", version)
 	t.Run("check-upgrade", checkUpgrade)
 	t.Run("config-validate", configValidate)
+}
+
+func getmeshInstall(t *testing.T) {
+	cmd := exec.Command("bash", "site/install.sh")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	require.NoError(t, cmd.Run())
+
+	// check directory
+	u, err := user.Current()
+	require.NoError(t, err)
+	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "bin", "getmesh"))
+	require.NoError(t, err)
+	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "istio"))
+	require.NoError(t, err)
 }
 
 func securityPatchChecker(t *testing.T) {
@@ -110,21 +110,6 @@ func securityPatchChecker(t *testing.T) {
 	cmd.Env = append(os.Environ(), fmt.Sprintf("GETMESH_TEST_MANIFEST_PATH=%s", f.Name()))
 	require.NoError(t, cmd.Run())
 	require.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.10-tetrate has a latest version 1.10.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.10.1000000000000-tetrate-v0 by "getmesh fetch".`)
-}
-
-func getmeshInstall(t *testing.T) {
-	cmd := exec.Command("bash", "site/install.sh")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	require.NoError(t, cmd.Run())
-
-	// check directory
-	u, err := user.Current()
-	require.NoError(t, err)
-	_, err = os.Stat(filepath.Join("bin/getmesh"))
-	require.NoError(t, err)
-	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "istio"))
-	require.NoError(t, err)
 }
 
 func enfOfLife(t *testing.T) {
