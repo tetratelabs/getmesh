@@ -191,20 +191,20 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	require.Error(t, cmd.Run())
 
 	// fetch without version
-	cmd = exec.Command("./getmesh", "fetch", "--flavor=istio", "--flavor-version=0")
+	cmd = exec.Command("./getmesh", "fetch", "--flavor=tetrate", "--flavor-version=0")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-istio-v0 now`)
+	require.Contains(t, buf.String(), `-tetrate-v0 now`)
 
 	// fetch with single flavor flag
-	cmd = exec.Command("./getmesh", "fetch", "--flavor=istio")
+	cmd = exec.Command("./getmesh", "fetch", "--flavor=tetrate")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-istio-v0 now`)
+	require.Contains(t, buf.String(), `-tetrate-v0 now`)
 
 	// fetch another version
 	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.8")
@@ -225,7 +225,7 @@ func prune(t *testing.T) {
 	home, err := util.GetmeshHomeDir()
 	require.NoError(t, err)
 
-	// note that this prune test depends on the abovefetch test,
+	// note that this prune test depends on the above fetch test,
 	// and we should restore the fetched versions for subsequent tests
 
 	t.Run("specific", func(t *testing.T) {
