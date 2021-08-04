@@ -85,7 +85,7 @@ func securityPatchChecker(t *testing.T) {
 	m := &api.Manifest{
 		IstioDistributions: []*api.IstioDistribution{
 			{
-				Version:         "1.9.1000000000000",
+				Version:         "1.10.1000000000000",
 				Flavor:          api.IstioDistributionFlavorTetrate,
 				FlavorVersion:   0,
 				IsSecurityPatch: true,
@@ -109,7 +109,7 @@ func securityPatchChecker(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(os.Environ(), fmt.Sprintf("GETMESH_TEST_MANIFEST_PATH=%s", f.Name()))
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.9-tetrate has a latest version 1.9.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.9.1000000000000-tetrate-v0 by "getmesh fetch".`)
+	require.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.10-tetrate has a latest version 1.10.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.10.1000000000000-tetrate-v0 by "getmesh fetch".`)
 }
 
 func enfOfLife(t *testing.T) {
@@ -133,7 +133,13 @@ func list(t *testing.T) {
 	require.NoError(t, cmd.Run())
 
 	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	   K8S VERSIONS     
-   *1.9.5    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
+   *1.10.3   	  tetrate  	      0       	1.17,1.18,1.19,1.20	
+   1.10.3    	tetratefips	      0       	1.17,1.18,1.19,1.20	
+   1.10.3    	   istio   	      0       	1.17,1.18,1.19,1.20	
+    1.9.7    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
+    1.9.7    	tetratefips	      0       	1.17,1.18,1.19,1.20	
+    1.9.7    	   istio   	      0       	1.17,1.18,1.19,1.20	
+    1.9.5    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
     1.9.5    	   istio   	      0       	1.17,1.18,1.19,1.20	
     1.9.4    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
     1.9.4    	   istio   	      0       	1.17,1.18,1.19,1.20	
@@ -155,7 +161,7 @@ func list(t *testing.T) {
 func fetch(t *testing.T) {
 	defer func() {
 		cmd := exec.Command("./getmesh", "switch",
-			"--version", "1.9.5", "--flavor", "tetrate", "--flavor-version=0",
+			"--version", "1.10.3", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -185,20 +191,20 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	require.Error(t, cmd.Run())
 
 	// fetch without version
-	cmd = exec.Command("./getmesh", "fetch", "--flavor=istio", "--flavor-version=0")
+	cmd = exec.Command("./getmesh", "fetch", "--flavor=tetrate", "--flavor-version=0")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-istio-v0 now`)
+	require.Contains(t, buf.String(), `-tetrate-v0 now`)
 
 	// fetch with single flavor flag
-	cmd = exec.Command("./getmesh", "fetch", "--flavor=istio")
+	cmd = exec.Command("./getmesh", "fetch", "--flavor=tetrate")
 	buf = new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-istio-v0 now`)
+	require.Contains(t, buf.String(), `-tetrate-v0 now`)
 
 	// fetch another version
 	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.8")
@@ -219,7 +225,7 @@ func prune(t *testing.T) {
 	home, err := util.GetmeshHomeDir()
 	require.NoError(t, err)
 
-	// note that this prune test depends on the abovefetch test,
+	// note that this prune test depends on the above fetch test,
 	// and we should restore the fetched versions for subsequent tests
 
 	t.Run("specific", func(t *testing.T) {
@@ -265,7 +271,7 @@ func prune(t *testing.T) {
 				FlavorVersion: 0,
 			},
 			{
-				Version:       "1.9.5",
+				Version:       "1.10.3",
 				Flavor:        "tetrate",
 				FlavorVersion: 0,
 			},
@@ -309,15 +315,15 @@ func show(t *testing.T) {
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	exp := `1.7.8-tetrate-v0
-1.8.6-tetrate-v0
-1.9.5-tetrate-v0 (Active)`
+	exp := `1.10.3-tetrate-v0 (Active)
+1.7.8-tetrate-v0
+1.8.6-tetrate-v0`
 	require.Contains(t, buf.String(), exp)
 }
 
 func switchTest(t *testing.T) {
 	t.Run("full", func(t *testing.T) {
-		for _, v := range []string{"1.8.6", "1.9.5"} {
+		for _, v := range []string{"1.8.6", "1.10.3"} {
 			{
 				cmd := exec.Command("./getmesh", "switch",
 					"--version", v, "--flavor", "tetrate", "--flavor-version=0",
@@ -352,7 +358,7 @@ func switchTest(t *testing.T) {
 		require.Contains(t, buf.String(), "1.8.6-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
-			"--name", "1.9.5-tetrate-v0",
+			"--name", "1.10.3-tetrate-v0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -363,11 +369,11 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "1.9.5-tetrate-v0")
+		require.Contains(t, buf.String(), "1.10.3-tetrate-v0")
 	})
 	t.Run("active", func(t *testing.T) {
 		cmd := exec.Command("./getmesh", "fetch",
-			"--version=1.9.5", "--flavor=istio", "--flavor-version=0",
+			"--version=1.10.3", "--flavor=istio", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -378,8 +384,8 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "1.9.5")
-		require.NotContains(t, buf.String(), "1.9.5-tetrate-v0")
+		require.Contains(t, buf.String(), "1.10.3")
+		require.NotContains(t, buf.String(), "1.10.3-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
 			"--flavor=tetrate",
@@ -393,7 +399,7 @@ func switchTest(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "1.9.5-tetrate-v0")
+		require.Contains(t, buf.String(), "1.10.3-tetrate-v0")
 	})
 }
 
@@ -407,10 +413,7 @@ func istioctlInstall(t *testing.T) {
 	actual := buf.String()
 
 	// istioctl x precheck
-	require.Contains(t, actual, "Can initialize the Kubernetes client.")
-	require.Contains(t, actual, "Can query the Kubernetes API Server.")
-	require.Contains(t, actual, "Istio will be installed in the istio-system namespace.")
-	require.Contains(t, actual, "Install Pre-Check passed! The cluster is ready for Istio installation.")
+	require.Contains(t, actual, "No issues found when checking the cluster. Istio is safe to install or upgrade")
 }
 
 func unknown(t *testing.T) {
@@ -499,7 +502,7 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	require.Contains(t, actual, "1.9.5-tetrate-v0 is the latest version in 1.9-tetrate")
+	require.Contains(t, actual, "1.10.3-tetrate-v0 is the latest version in 1.10-tetrate")
 
 	// change image to 1.8.1-tetrate-v0
 	image := "containers.istio.tetratelabs.com/pilot:1.8.1-tetrate-v0"
