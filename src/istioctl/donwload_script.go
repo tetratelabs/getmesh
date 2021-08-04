@@ -88,12 +88,7 @@ ARCH_SUPPORTED=$(echo "$ISTIO_VERSION" | awk  '{ ARCH_SUPPORTED=substr($0, 1, 3)
 ARCH_UNSUPPORTED="1.5"
 
 if [ "${OS}" = "Linux" ] ; then
-  # This checks if 1.6 <= 1.5 or 1.4 <= 1.5
-  if [ "$(expr "${ARCH_SUPPORTED}" \<= "${ARCH_UNSUPPORTED}")" -eq 1 ]; then
-    without_arch
-  else
-    with_arch
-  fi
+  with_arch
 elif [ "x${OS}" = "xDarwin" ] ; then
   without_arch
 else
