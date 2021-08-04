@@ -110,7 +110,7 @@ jobs:
       - name: setup kind cluster
         uses: engineerd/setup-kind@v0.5.0
         with:
-          image: kindest/node:v1.20.1
+          image: kindest/node:v1.20.7
 
       - uses: actions/cache@v2
         with:
