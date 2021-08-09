@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package manifest
+package manifestchecker
 
 import (
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
-func securityPatchChecker(m *api.Manifest) error {
+func securityPatchChecker(m *manifest.Manifest) error {
 	hd, err := util.GetmeshHomeDir()
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func securityPatchChecker(m *api.Manifest) error {
 	return securityPatchCheckerImpl(hd, m)
 }
 
-func securityPatchCheckerImpl(homedir string, m *api.Manifest) error {
+func securityPatchCheckerImpl(homedir string, m *manifest.Manifest) error {
 	vs, err := istioctl.GetFetchedVersions(homedir)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func securityPatchCheckerImpl(homedir string, m *api.Manifest) error {
 		if err != nil {
 			return err
 		} else if greater && includeSecurityPatch {
-			t := target.ToString()
+			t := target.String()
 			logger.Warnf("The locally installed minor version %s has a latest version %s including security patches. "+
 				"We strongly recommend you to download %s by \"getmesh fetch\".\n", g, t, t)
 		}
@@ -66,8 +66,8 @@ func securityPatchCheckerImpl(homedir string, m *api.Manifest) error {
 	return nil
 }
 
-func constructLatestVersionsMap(in []*api.IstioDistribution) (map[string]*api.IstioDistribution, error) {
-	ret := map[string]*api.IstioDistribution{}
+func constructLatestVersionsMap(in []*manifest.IstioDistribution) (map[string]*manifest.IstioDistribution, error) {
+	ret := map[string]*manifest.IstioDistribution{}
 	for _, v := range in {
 		vg, err := v.Group()
 		if err != nil {
@@ -90,8 +90,8 @@ func constructLatestVersionsMap(in []*api.IstioDistribution) (map[string]*api.Is
 }
 
 // walk thorough distributions in the manifest higher than "base" distribution in its minor version.
-func findSecurityPatchUpgrade(base *api.IstioDistribution, group string, remotes []*api.IstioDistribution) (
-	target *api.IstioDistribution, includeSecurityPatch bool, error error) {
+func findSecurityPatchUpgrade(base *manifest.IstioDistribution, group string, remotes []*manifest.IstioDistribution) (
+	target *manifest.IstioDistribution, includeSecurityPatch bool, error error) {
 
 	for _, r := range remotes {
 		rg, err := r.Group()

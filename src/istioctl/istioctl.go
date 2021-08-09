@@ -15,18 +15,21 @@
 package istioctl
 
 import (
-	"bytes"
+	"archive/tar"
+	"compress/gzip"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -37,26 +40,27 @@ import (
 const IstioVersionNoPodRunningMsg = "no running Istio pods in \"istio-system\""
 
 var (
-	istioDirSuffix     = "istio"
-	istioctlPathFormat = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
+	istioDirSuffix            = "istio"
+	istioctlPathFormat        = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
+	istioctlDownloadURLFormat = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s-%s.tar.gz"
 )
 
-func GetIstioctlPath(homeDir string, distribution *api.IstioDistribution) string {
-	path := fmt.Sprintf(istioctlPathFormat, distribution.ToString())
+func GetIstioctlPath(homeDir string, distribution *manifest.IstioDistribution) string {
+	path := fmt.Sprintf(istioctlPathFormat, distribution.String())
 	return filepath.Join(homeDir, path)
 }
 
-func GetFetchedVersions(homedir string) ([]*api.IstioDistribution, error) {
+func GetFetchedVersions(homedir string) ([]*manifest.IstioDistribution, error) {
 	istioDir := filepath.Join(homedir, istioDirSuffix)
 	ditros, _ := ioutil.ReadDir(istioDir) // intentionally ignore the error
 
-	ret := make([]*api.IstioDistribution, 0, len(ditros))
+	ret := make([]*manifest.IstioDistribution, 0, len(ditros))
 	for _, raw := range ditros {
 		if !raw.IsDir() {
 			continue
 		}
 
-		d, err := api.IstioDistributionFromString(raw.Name())
+		d, err := manifest.IstioDistributionFromString(raw.Name())
 		if err != nil {
 			continue
 		}
@@ -85,7 +89,7 @@ func PrintFetchedVersions(homeDir string) error {
 		}
 
 		name := dist.Name()
-		if curr != nil && strings.Contains(name, curr.ToString()) {
+		if curr != nil && strings.Contains(name, curr.String()) {
 			logger.Infof(name + " (Active)\n")
 		} else {
 			logger.Infof(name + "\n")
@@ -94,7 +98,7 @@ func PrintFetchedVersions(homeDir string) error {
 	return nil
 }
 
-func removeAll(homeDir string, current *api.IstioDistribution) error {
+func removeAll(homeDir string, current *manifest.IstioDistribution) error {
 	istioDir := filepath.Join(homeDir, istioDirSuffix)
 	ditros, err := ioutil.ReadDir(istioDir)
 	if err != nil {
@@ -107,7 +111,7 @@ func removeAll(homeDir string, current *api.IstioDistribution) error {
 		}
 
 		name := dist.Name()
-		if name == current.ToString() {
+		if name == current.String() {
 			continue
 		}
 
@@ -119,46 +123,46 @@ func removeAll(homeDir string, current *api.IstioDistribution) error {
 }
 
 // entrypoint for prune cmd
-func Remove(homeDir string, target, current *api.IstioDistribution) error {
+func Remove(homeDir string, target, current *manifest.IstioDistribution) error {
 	if target == nil {
 		return removeAll(homeDir, current)
 	} else if current != nil && target.Equal(current) {
 		logger.Infof("we skip removing %s since it is the current active version\n",
-			target.ToString())
+			target.String())
 		return nil
 	}
 
 	if err := checkExist(homeDir, target); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return fmt.Errorf("we skip removing %s since it does not exist in your system",
-				target.ToString())
+				target.String())
 		}
 		return fmt.Errorf("error checking existence of %s: %w",
-			target.ToString(), err)
+			target.String(), err)
 	}
 
-	p := filepath.Join(homeDir, istioDirSuffix, target.ToString())
+	p := filepath.Join(homeDir, istioDirSuffix, target.String())
 	if err := os.RemoveAll(p); err != nil {
-		return fmt.Errorf("failed to remove %s: %w", target.ToString(), err)
+		return fmt.Errorf("failed to remove %s: %w", target.String(), err)
 	}
 	return nil
 }
 
-func checkExist(homeDir string, distribution *api.IstioDistribution) error {
+func checkExist(homeDir string, distribution *manifest.IstioDistribution) error {
 	// check if the istio version already fetched
 	path := GetIstioctlPath(homeDir, distribution)
 	_, err := os.Stat(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return fmt.Errorf("istioctl not fetched for %s. Please run `getmesh fetch`: %w",
-				distribution.ToString(), os.ErrNotExist)
+				distribution.String(), os.ErrNotExist)
 		}
 		return fmt.Errorf("error checking istioctl: %v", err)
 	}
 	return nil
 }
 
-func GetCurrentExecutable(homeDir string) (*api.IstioDistribution, error) {
+func GetCurrentExecutable(homeDir string) (*manifest.IstioDistribution, error) {
 	conf := getmesh.GetActiveConfig()
 	if err := checkExist(homeDir, conf.IstioDistribution); err != nil {
 		return nil, fmt.Errorf("check exist failed: %w", err)
@@ -166,7 +170,7 @@ func GetCurrentExecutable(homeDir string) (*api.IstioDistribution, error) {
 	return conf.IstioDistribution, nil
 }
 
-func Switch(homeDir string, distribution *api.IstioDistribution) error {
+func Switch(homeDir string, distribution *manifest.IstioDistribution) error {
 	if err := checkExist(homeDir, distribution); err != nil {
 		return err
 	}
@@ -201,7 +205,7 @@ func ExecWithWriters(homeDir string, args []string, stdout, stderr io.Writer) er
 	return cmd.Run()
 }
 
-func Fetch(homeDir string, target *api.IstioDistribution, ms *api.Manifest) error {
+func Fetch(homeDir string, target *manifest.IstioDistribution, ms *manifest.Manifest) error {
 	var found bool
 	for _, m := range ms.IstioDistributions {
 		found = m.Equal(target)
@@ -212,41 +216,71 @@ func Fetch(homeDir string, target *api.IstioDistribution, ms *api.Manifest) erro
 	}
 
 	if err := checkExist(homeDir, target); err == nil {
-		logger.Infof("%s already fetched: download skipped\n", target.ToString())
+		logger.Infof("%s already fetched: download skipped\n", target.String())
 		return nil
 	}
 
 	if !found {
 		return fmt.Errorf("manifest not found for istioctl %s."+
 			" Please check the supported istio versions and flavors by `getmesh list`",
-			target.ToString())
+			target.String())
 	}
 
 	return fetchIstioctl(homeDir, target)
 }
 
-func fetchIstioctl(homeDir string, targetDistribution *api.IstioDistribution) error {
-	dir := filepath.Join(homeDir, istioDirSuffix, targetDistribution.ToString())
+func fetchIstioctl(homeDir string, targetDistribution *manifest.IstioDistribution) error {
+	// Create dir
+	dir := filepath.Join(homeDir, istioDirSuffix, targetDistribution.String(), "bin")
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
 
-	cmd := exec.Command("sh", "-")
-	cmd.Env = append(os.Environ(), fmt.Sprintf(
-		"ISTIO_VERSION=%s", targetDistribution.Version),
-		fmt.Sprintf("DISTRIBUTION_IDENTIFIER=%s", targetDistribution.ToString()),
-	)
-	cmd.Dir = dir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = bytes.NewBuffer([]byte(downloadScript))
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("error while dowloading istio: %v", err)
+	// Construct URL from GOOS,GOARCH
+	goarch := runtime.GOARCH
+	goos := runtime.GOOS
+	if goos == "darwin" {
+		goos = "osx"
+	}
+	url := fmt.Sprintf(istioctlDownloadURLFormat, targetDistribution.String(), goos, goarch)
+
+	// Download
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("404 not found for %s", url)
 	}
 
+	defer resp.Body.Close()
+
+	// Read body
+	gr, _ := gzip.NewReader(resp.Body)
+	defer gr.Close()
+	tr := tar.NewReader(gr)
+
+	for {
+		h, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+
+		if filepath.Base(h.Name) == "istioctl" {
+			bin, err := io.ReadAll(tr)
+			if err != nil {
+				return err
+			}
+			if err = os.WriteFile(filepath.Join(dir, "istioctl"), bin, 0755); err != nil {
+				return err
+			}
+		}
+	}
+
+	// Set active istioctl to the downloaded one
 	if conf := getmesh.GetActiveConfig(); conf.IstioDistribution == nil {
 		if err := getmesh.SetIstioVersion(homeDir, targetDistribution); err != nil {
-			return fmt.Errorf("error switching to %s", conf.IstioDistribution.ToString())
+			return fmt.Errorf("error switching to %s", conf.IstioDistribution.String())
 		}
 	}
 	return nil

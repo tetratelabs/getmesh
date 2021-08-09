@@ -20,9 +20,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/istioctl"
 	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/src/manifestchecker"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -84,9 +84,9 @@ $ getmesh switch --version 1.9
 // if there are no active distro exists, switch with only one or two command will use the default distro setting for unset command
 // if all commands are not set, use active setting if there has otherwise use default version
 // default version: latest version, default flavor: tetrate, default flavorversion: 0
-func switchParse(homedir string, flags *switchFlags) (*api.IstioDistribution, error) {
+func switchParse(homedir string, flags *switchFlags) (*manifest.IstioDistribution, error) {
 	if len(flags.name) != 0 {
-		d, err := api.IstioDistributionFromString(flags.name)
+		d, err := manifest.IstioDistributionFromString(flags.name)
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse given name to %s istio distribution", flags.name)
 		}
@@ -98,7 +98,7 @@ func switchParse(homedir string, flags *switchFlags) (*api.IstioDistribution, er
 	return switchHandleDistro(currDistro, flags)
 }
 
-func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.IstioDistribution, error) {
+func switchHandleDistro(curr *manifest.IstioDistribution, flags *switchFlags) (*manifest.IstioDistribution, error) {
 	var version, flavor string
 	var flavorVersion int64
 
@@ -120,7 +120,7 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 		return nil, fmt.Errorf("cannot infer the target version, no active distribution exists")
 	}
 
-	d := &api.IstioDistribution{
+	d := &manifest.IstioDistribution{
 		Version:       version,
 		Flavor:        flavor,
 		FlavorVersion: flavorVersion,
@@ -134,11 +134,16 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 	if len(vs) == 2 {
 		vs = append(vs, "0")
 		d.Version = strings.Join(vs, ".")
-		manifest, err := manifest.FetchManifest()
+		ms, err := manifest.FetchManifest()
 		if err != nil {
 			return nil, err
 		}
-		latest, _, err := api.GetLatestDistribution(d, manifest)
+
+		if err := manifestchecker.Check(ms); err != nil {
+			return nil, err
+		}
+
+		latest, _, err := manifest.GetLatestDistribution(d, ms)
 		if err != nil {
 			return nil, err
 		}
@@ -147,10 +152,10 @@ func switchHandleDistro(curr *api.IstioDistribution, flags *switchFlags) (*api.I
 	return d, nil
 }
 
-func switchExec(homedir string, distribution *api.IstioDistribution) error {
+func switchExec(homedir string, distribution *manifest.IstioDistribution) error {
 	if err := istioctl.Switch(homedir, distribution); err != nil {
 		return err
 	}
-	logger.Infof("istioctl switched to %s now\n", distribution.ToString())
+	logger.Infof("istioctl switched to %s now\n", distribution.String())
 	return nil
 }

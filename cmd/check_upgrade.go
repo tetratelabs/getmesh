@@ -22,14 +22,14 @@ import (
 	"os"
 	"strings"
 
-	istioversion "istio.io/pkg/version"
-
 	"github.com/spf13/cobra"
+	istioversion "istio.io/pkg/version"
 
 	"github.com/tetratelabs/getmesh/src/checkupgrade"
 	"github.com/tetratelabs/getmesh/src/getmesh"
 	"github.com/tetratelabs/getmesh/src/istioctl"
 	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/src/manifestchecker"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -59,6 +59,10 @@ Please refer to 'getmesh fetch --help' or 'getmesh list --help' for more informa
 			ms, err := manifest.FetchManifest()
 			if err != nil {
 				return fmt.Errorf(" failed to fetch manifests")
+			}
+
+			if err := manifestchecker.Check(ms); err != nil {
+				return err
 			}
 
 			w := new(bytes.Buffer)

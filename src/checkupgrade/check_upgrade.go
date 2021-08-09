@@ -25,13 +25,13 @@ import (
 	// 	using this may be fragile due to the I/F change in the future
 	istioversion "istio.io/pkg/version"
 
-	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 var ErrIssueFound = errors.New("version issue found")
 
-func IstioVersion(iv istioversion.Version, manifest *api.Manifest) error {
+func IstioVersion(iv istioversion.Version, manifest *manifest.Manifest) error {
 	logger.Infof("[Summary of your Istio mesh]\n")
 	printSummary(iv)
 	logger.Infof("[GetMesh Check]\n")
@@ -71,7 +71,7 @@ func printSummary(iv istioversion.Version) {
 	logger.Infof("%s\n", msg)
 }
 
-func printgetmeshCheck(iv istioversion.Version, manifest *api.Manifest) error {
+func printgetmeshCheck(iv istioversion.Version, manifest *manifest.Manifest) error {
 	var multiple bool
 	dpVersions, err := getDataPlaneVersions(iv.DataPlaneVersion)
 	if err != nil {
@@ -140,13 +140,13 @@ func printgetmeshCheck(iv istioversion.Version, manifest *api.Manifest) error {
 	return ErrIssueFound
 }
 
-func getLatestPatchInManifestMsg(target *api.IstioDistribution, manifest *api.Manifest) (string, bool, error) {
+func getLatestPatchInManifestMsg(target *manifest.IstioDistribution, ms *manifest.Manifest) (string, bool, error) {
 	tg, err := target.Group()
 	if err != nil {
 		return "", false, err
 	}
 
-	foundLatest, includeSecurityPatch, err := api.GetLatestDistribution(target, manifest)
+	foundLatest, includeSecurityPatch, err := manifest.GetLatestDistribution(target, ms)
 	if err != nil {
 		return "", false, err
 	}
@@ -157,20 +157,20 @@ func getLatestPatchInManifestMsg(target *api.IstioDistribution, manifest *api.Ma
 	}
 
 	if foundLatest.Equal(target) {
-		return fmt.Sprintf("- %s is the latest version in %s\n", target.ToString(), tg), true, nil
+		return fmt.Sprintf("- %s is the latest version in %s\n", target.String(), tg), true, nil
 	}
 
 	msg := fmt.Sprintf("- There is the available patch for the minor version %s", tg)
 	if includeSecurityPatch {
-		msg += fmt.Sprintf(" which includes **security upgrades**. We strongly recommend upgrading all %s versions -> %s\n", tg, foundLatest.ToString())
+		msg += fmt.Sprintf(" which includes **security upgrades**. We strongly recommend upgrading all %s versions -> %s\n", tg, foundLatest.String())
 	} else {
-		msg += fmt.Sprintf(". We recommend upgrading all %s versions -> %s\n", tg, foundLatest.ToString())
+		msg += fmt.Sprintf(". We recommend upgrading all %s versions -> %s\n", tg, foundLatest.String())
 
 	}
 	return msg, false, nil
 }
 
-func getMultipleMinorVersionRunningMsg(t string, mvs map[string]*api.IstioDistribution) string {
+func getMultipleMinorVersionRunningMsg(t string, mvs map[string]*manifest.IstioDistribution) string {
 	const template = "- Your %s running in multiple minor versions: %s\n"
 	vs := make([]string, 0, len(mvs))
 	for v := range mvs {
@@ -181,14 +181,14 @@ func getMultipleMinorVersionRunningMsg(t string, mvs map[string]*api.IstioDistri
 }
 
 // construct {version's group -> lowest patch version} map from control plane versions
-func getControlPlaneVersions(info *istioversion.MeshInfo) (map[string]*api.IstioDistribution, error) {
+func getControlPlaneVersions(info *istioversion.MeshInfo) (map[string]*manifest.IstioDistribution, error) {
 	if info == nil {
-		return map[string]*api.IstioDistribution{}, nil
+		return map[string]*manifest.IstioDistribution{}, nil
 	}
 
-	in := make([]*api.IstioDistribution, len(*info))
+	in := make([]*manifest.IstioDistribution, len(*info))
 	for i, raw := range *info {
-		v, err := api.IstioDistributionFromString(raw.Info.Version)
+		v, err := manifest.IstioDistributionFromString(raw.Info.Version)
 		if err != nil {
 			return nil, fmt.Errorf("error parsing control's version %s: %v", raw.Info.Version, err)
 		}
@@ -198,14 +198,14 @@ func getControlPlaneVersions(info *istioversion.MeshInfo) (map[string]*api.Istio
 }
 
 // construct {version's group -> lowest patch version} map from data plane versions
-func getDataPlaneVersions(info *[]istioversion.ProxyInfo) (map[string]*api.IstioDistribution, error) {
+func getDataPlaneVersions(info *[]istioversion.ProxyInfo) (map[string]*manifest.IstioDistribution, error) {
 	if info == nil {
-		return map[string]*api.IstioDistribution{}, nil
+		return map[string]*manifest.IstioDistribution{}, nil
 	}
 
-	in := make([]*api.IstioDistribution, len(*info))
+	in := make([]*manifest.IstioDistribution, len(*info))
 	for i, raw := range *info {
-		v, err := api.IstioDistributionFromString(raw.IstioVersion)
+		v, err := manifest.IstioDistributionFromString(raw.IstioVersion)
 		if err != nil {
 			return nil, fmt.Errorf("error parsing dataplane's version %s: %v", raw.IstioVersion, err)
 		}
@@ -215,8 +215,8 @@ func getDataPlaneVersions(info *[]istioversion.ProxyInfo) (map[string]*api.Istio
 	return findLowestPatchVersionsInGroup(in)
 }
 
-func findLowestPatchVersionsInGroup(in []*api.IstioDistribution) (map[string]*api.IstioDistribution, error) {
-	ret := make(map[string]*api.IstioDistribution, len(in))
+func findLowestPatchVersionsInGroup(in []*manifest.IstioDistribution) (map[string]*manifest.IstioDistribution, error) {
+	ret := make(map[string]*manifest.IstioDistribution, len(in))
 	for _, d := range in {
 		if d.IsUpstream() {
 			logger.Warnf("the upstream istio distributions are not supported by check-upgrade command: %s. "+
@@ -226,7 +226,7 @@ func findLowestPatchVersionsInGroup(in []*api.IstioDistribution) (map[string]*ap
 
 		vg, err := d.Group()
 		if err != nil {
-			return nil, fmt.Errorf("error parsing version %s: %v", d.ToString(), err)
+			return nil, fmt.Errorf("error parsing version %s: %v", d.String(), err)
 		}
 		prev, ok := ret[vg]
 		if !ok {
@@ -236,7 +236,7 @@ func findLowestPatchVersionsInGroup(in []*api.IstioDistribution) (map[string]*ap
 
 		ok, err = prev.GreaterThan(d)
 		if err != nil {
-			return nil, fmt.Errorf("error parsing version %s: %v", d.ToString(), err)
+			return nil, fmt.Errorf("error parsing version %s: %v", d.String(), err)
 		} else if ok {
 			ret[vg] = d
 		}

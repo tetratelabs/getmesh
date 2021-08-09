@@ -1,26 +1,25 @@
-package api
+// Copyright 2021 Tetrate
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package manifest
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
-
-func TestManifest_GetManifestEOLDates(t *testing.T) {
-	// This test virtually validates the HEAD manifest.json's `istio_minor_versions_eof_dates` field.
-	raw, err := ioutil.ReadFile("../site/manifest.json")
-	require.NoError(t, err)
-
-	var ms Manifest
-	require.NoError(t, json.Unmarshal(raw, &ms))
-
-	actual, err := ms.GetEOLDates()
-	require.NoError(t, err)
-	t.Log(actual)
-}
 
 func Test_parseManifestEOLDate(t *testing.T) {
 	t.Run("ng", func(t *testing.T) {
@@ -83,7 +82,7 @@ func TestIstioDistribution_ToString(t *testing.T) {
 			exp: "1.8.3-istio-v0",
 		},
 	} {
-		require.Equal(t, c.exp, c.in.ToString())
+		require.Equal(t, c.exp, c.in.String())
 	}
 }
 
@@ -177,7 +176,7 @@ func TestIstioDistribution_Group(t *testing.T) {
 }
 
 func TestIstioDistribution_IsUpstream(t *testing.T) {
-	require.True(t, (&IstioDistribution{Flavor: "istio"}).IsUpstream())
+	require.True(t, (&IstioDistribution{Flavor: ""}).IsUpstream())
 	require.False(t, (&IstioDistribution{Flavor: "tetrate"}).IsUpstream())
 	require.False(t, (&IstioDistribution{Flavor: "tetratefips"}).IsUpstream())
 }

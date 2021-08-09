@@ -1,4 +1,18 @@
-package api
+// Copyright 2021 Tetrate
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package manifest
 
 import (
 	"fmt"
@@ -7,6 +21,29 @@ import (
 	"time"
 )
 
+type Manifest struct {
+	IstioDistributions []*IstioDistribution `json:"istio_distributions"`
+	// the end of life of Istio minor versions
+	// key: "x.y", "1.7" for example
+	// value: "YYYY-MM-DD"
+	IstioMinorVersionsEOLDates map[string]string `json:"istio_minor_versions_eol_dates"`
+}
+
+type IstioDistribution struct {
+	// Distributions are tagged with `x.y.z-${flavor}-v${flavor_version}` where
+	// - ${flavor} is either "tetrate" or "tetratefips"
+	// - ${flavor_version} is ""numeric"" and the version  of that distribution
+	Version       string `json:"version,omitempty"`
+	Flavor        string `json:"flavor,omitempty"`
+	FlavorVersion int64  `json:"flavor_version,omitempty"`
+	// Supported k8s versions of this distribution.
+	K8SVersions []string `json:"k8s_versions,omitempty"`
+	// Indicates if this is a security update.
+	IsSecurityPatch bool `json:"is_security_patch,omitempty"`
+	// Release notes for this distribution.
+	ReleaseNotes []string `json:"release_notes,omitempty"`
+}
+
 const (
 	IstioDistributionFlavorTetrate     = "tetrate"
 	IstioDistributionFlavorTetrateFIPS = "tetratefips"
@@ -14,8 +51,8 @@ const (
 )
 
 func (x *Manifest) GetEOLDates() (map[string]time.Time, error) {
-	ret := make(map[string]time.Time, len(x.IstioMinorVersionsEolDates))
-	for k, v := range x.IstioMinorVersionsEolDates {
+	ret := make(map[string]time.Time, len(x.IstioMinorVersionsEOLDates))
+	for k, v := range x.IstioMinorVersionsEOLDates {
 		t, err := parseManifestEOLDate(v)
 		if err != nil {
 			return nil, err
@@ -30,7 +67,7 @@ func parseManifestEOLDate(in string) (time.Time, error) {
 	return time.Parse(layout, in)
 }
 
-func (x *IstioDistribution) ToString() string {
+func (x *IstioDistribution) String() string {
 	return fmt.Sprintf("%s-%s-v%d", x.Version, x.Flavor, x.FlavorVersion)
 }
 
@@ -90,7 +127,7 @@ func (x *IstioDistribution) GreaterThan(y *IstioDistribution) (bool, error) {
 
 	if xg != yg {
 		return false, fmt.Errorf("cannot compare two versions (%s, %s) in the differnet group: %s and %s",
-			x.ToString(), y.ToString(), xg, yg)
+			x.String(), y.String(), xg, yg)
 	}
 
 	xp, err := x.Patch()

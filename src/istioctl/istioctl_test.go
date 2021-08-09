@@ -16,7 +16,6 @@ package istioctl
 
 import (
 	"bytes"
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -25,8 +24,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -39,13 +38,13 @@ func TestGetFetchedVersions(t *testing.T) {
 	for _, v := range []string{
 		"20.1.1", "1.2.4", "1.7.3",
 	} {
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       v,
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 		ctlPath := GetIstioctlPath(dir, d)
-		exp[d.ToString()] = struct{}{}
+		exp[d.String()] = struct{}{}
 
 		suffix := strings.TrimSuffix(ctlPath, "/istioctl")
 		require.NoError(t, os.MkdirAll(suffix, 0755))
@@ -57,7 +56,7 @@ func TestGetFetchedVersions(t *testing.T) {
 	actual, err := GetFetchedVersions(dir)
 	require.NoError(t, err)
 	for _, a := range actual {
-		delete(exp, a.ToString())
+		delete(exp, a.String())
 	}
 
 	require.Empty(t, exp)
@@ -72,9 +71,9 @@ func TestPrintFetchedVersions(t *testing.T) {
 		require.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 
@@ -82,9 +81,9 @@ func TestPrintFetchedVersions(t *testing.T) {
 		for _, v := range []string{
 			"20.1.1", "1.2.4", "1.7.3",
 		} {
-			ctlPath := GetIstioctlPath(dir, &api.IstioDistribution{
+			ctlPath := GetIstioctlPath(dir, &manifest.IstioDistribution{
 				Version:       v,
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			})
 			suffix := strings.TrimSuffix(ctlPath, "/istioctl")
@@ -109,9 +108,9 @@ func TestGetCurrentExecutable(t *testing.T) {
 	t.Run("non exist", func(t *testing.T) {
 		getmesh.GlobalConfigMux.Lock()
 		defer getmesh.GlobalConfigMux.Unlock()
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 
@@ -131,9 +130,9 @@ func TestGetCurrentExecutable(t *testing.T) {
 		require.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 
@@ -147,14 +146,14 @@ func TestGetCurrentExecutable(t *testing.T) {
 
 		actual, err := GetCurrentExecutable(dir)
 		require.NoError(t, err)
-		require.Equal(t, "1.7.3-tetrate-v0", actual.ToString())
+		require.Equal(t, "1.7.3-tetrate-v0", actual.String())
 	})
 }
 
 func Test_getmeshctlPath(t *testing.T) {
-	d := &api.IstioDistribution{
+	d := &manifest.IstioDistribution{
 		Version:       "1.7.3",
-		Flavor:        api.IstioDistributionFlavorTetrate,
+		Flavor:        manifest.IstioDistributionFlavorTetrate,
 		FlavorVersion: 0,
 	}
 	require.Equal(t, "tmpdir/istio/1.7.3-tetrate-v0/bin/istioctl",
@@ -171,7 +170,7 @@ func Test_removeAll(t *testing.T) {
 		require.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		distros := []*api.IstioDistribution{
+		distros := []*manifest.IstioDistribution{
 			{Version: "1.7.1", Flavor: "tetrate", FlavorVersion: 1},
 			{Version: "1.7.2", Flavor: "tetrate", FlavorVersion: 1},
 			{Version: "1.7.3", Flavor: "tetrate", FlavorVersion: 1},
@@ -209,7 +208,7 @@ func TestRemove(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	t.Run("skip", func(t *testing.T) {
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "tetrate",
 			FlavorVersion: 1,
@@ -220,7 +219,7 @@ func TestRemove(t *testing.T) {
 	})
 
 	t.Run("non exist", func(t *testing.T) {
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "non-exist",
 			FlavorVersion: 1,
@@ -232,7 +231,7 @@ func TestRemove(t *testing.T) {
 	})
 
 	t.Run("specific", func(t *testing.T) {
-		target := &api.IstioDistribution{
+		target := &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "exist",
 			FlavorVersion: 1,
@@ -248,7 +247,7 @@ func TestRemove(t *testing.T) {
 		require.NoError(t, checkExist(dir, target))
 
 		// remove
-		require.NoError(t, Remove(dir, target, &api.IstioDistribution{
+		require.NoError(t, Remove(dir, target, &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "current",
 			FlavorVersion: 1,
@@ -268,9 +267,9 @@ func Test_checkExists(t *testing.T) {
 		dir, err := ioutil.TempDir("", "")
 		require.NoError(t, err)
 		defer os.RemoveAll(dir)
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 
@@ -284,7 +283,7 @@ func Test_checkExists(t *testing.T) {
 	})
 
 	t.Run("non exist", func(t *testing.T) {
-		require.Error(t, checkExist(dir, &api.IstioDistribution{
+		require.Error(t, checkExist(dir, &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "non-exist",
 			FlavorVersion: 0,
@@ -301,8 +300,8 @@ func TestSwitch(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	t.Run("exist", func(t *testing.T) {
-		d := &api.IstioDistribution{
-			Flavor:        api.IstioDistributionFlavorTetrate,
+		d := &manifest.IstioDistribution{
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 
@@ -326,12 +325,12 @@ func TestSwitch(t *testing.T) {
 	})
 
 	t.Run("non-exist", func(t *testing.T) {
-		require.Error(t, Switch(dir, &api.IstioDistribution{
+		require.Error(t, Switch(dir, &manifest.IstioDistribution{
 			Version:       "0.1.1",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}))
-		require.Error(t, Switch(dir, &api.IstioDistribution{
+		require.Error(t, Switch(dir, &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "non-exist",
 			FlavorVersion: 0,
@@ -347,9 +346,9 @@ func TestExec(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(dir)
 
-	d := &api.IstioDistribution{
+	d := &manifest.IstioDistribution{
 		Version:       "0.0.1",
-		Flavor:        api.IstioDistributionFlavorTetrate,
+		Flavor:        manifest.IstioDistributionFlavorTetrate,
 		FlavorVersion: 0,
 	}
 
@@ -376,30 +375,30 @@ func TestFetch(t *testing.T) {
 	dir, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
 	defer os.RemoveAll(dir)
-	ms := &api.Manifest{
-		IstioDistributions: []*api.IstioDistribution{
+	ms := &manifest.Manifest{
+		IstioDistributions: []*manifest.IstioDistribution{
 			{
 				Version:       "1.7.6",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.6",
-				Flavor:        api.IstioDistributionFlavorTetrateFIPS,
+				Flavor:        manifest.IstioDistributionFlavorTetrateFIPS,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.5",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			},
 		},
 	}
 	t.Run("not-supported", func(t *testing.T) {
-		for _, c := range []*api.IstioDistribution{
-			{Version: "1000.7.4", Flavor: api.IstioDistributionFlavorTetrate},
-			{Version: "1.7.5", Flavor: api.IstioDistributionFlavorTetrateFIPS},
-			{Version: "1.7.5", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 1},
+		for _, c := range []*manifest.IstioDistribution{
+			{Version: "1000.7.4", Flavor: manifest.IstioDistributionFlavorTetrate},
+			{Version: "1.7.5", Flavor: manifest.IstioDistributionFlavorTetrateFIPS},
+			{Version: "1.7.5", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 1},
 		} {
 			err = Fetch(dir, c, ms)
 			require.Error(t, err)
@@ -407,17 +406,19 @@ func TestFetch(t *testing.T) {
 	})
 
 	t.Run("supported", func(t *testing.T) {
-		for _, c := range []*api.IstioDistribution{
-			{Version: "1.7.5", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
-			{Version: "1.7.6", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+		for _, c := range []*manifest.IstioDistribution{
+			{Version: "1.7.5", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			{Version: "1.7.6", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
 		} {
+			require.Error(t, checkExist(dir, c))
 			err = Fetch(dir, c, ms)
 			require.NoError(t, err)
+			require.NoError(t, checkExist(dir, c))
 		}
 	})
 
 	t.Run("already exist", func(t *testing.T) {
-		target := &api.IstioDistribution{
+		target := &manifest.IstioDistribution{
 			Version:       "111111111111",
 			Flavor:        "noooooo",
 			FlavorVersion: 1000,
@@ -428,59 +429,35 @@ func TestFetch(t *testing.T) {
 		f, err := os.Create(ctlPath)
 		require.NoError(t, err)
 		defer f.Close()
-		require.NoError(t, Fetch(dir, target, &api.Manifest{}))
+		require.NoError(t, Fetch(dir, target, &manifest.Manifest{}))
 	})
 
 	t.Run("not found", func(t *testing.T) {
-		mf := &api.Manifest{
-			IstioDistributions: []*api.IstioDistribution{
-				{Version: "1.7.3", FlavorVersion: 100, Flavor: api.IstioDistributionFlavorTetrateFIPS},
-				{Version: "1.7.3", FlavorVersion: 0, Flavor: api.IstioDistributionFlavorTetrate},
+		mf := &manifest.Manifest{
+			IstioDistributions: []*manifest.IstioDistribution{
+				{Version: "1.7.3", FlavorVersion: 100, Flavor: manifest.IstioDistributionFlavorTetrateFIPS},
+				{Version: "1.7.3", FlavorVersion: 0, Flavor: manifest.IstioDistributionFlavorTetrate},
 			},
 		}
 
-		for _, target := range []*api.IstioDistribution{
+		for _, target := range []*manifest.IstioDistribution{
 			{
 				Version:       "1.7.4",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.3",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 10,
 			},
 			{
 				Version:       "1.7.3",
-				Flavor:        api.IstioDistributionFlavorTetrateFIPS,
+				Flavor:        manifest.IstioDistributionFlavorTetrateFIPS,
 				FlavorVersion: 100,
 			},
 		} {
 			require.Error(t, Fetch(dir, target, mf))
 		}
 	})
-}
-
-func Test_fetchIstioctl(t *testing.T) {
-	// This test virtually validates the HEAD istio distributions' existence in the HEAD manifest.json
-
-	f, err := ioutil.ReadFile("../../site/manifest.json")
-	require.NoError(t, err)
-	var m api.Manifest
-	require.NoError(t, json.Unmarshal(f, &m))
-
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
-
-	for _, d := range m.IstioDistributions {
-		d := d
-		t.Run(d.String(), func(t *testing.T) {
-			require.NoError(t, fetchIstioctl(dir, d))
-			ctlPath := GetIstioctlPath(dir, d)
-			_, err = os.Stat(ctlPath)
-			require.NoError(t, err)
-			t.Log(ctlPath)
-		})
-	}
 }

@@ -22,31 +22,30 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
 func TestFetchManifest(t *testing.T) {
-	manifest := &api.Manifest{
-		IstioDistributions: []*api.IstioDistribution{
+	manifest := &Manifest{
+		IstioDistributions: []*IstioDistribution{
 			{
 				Version:       "1.7.6",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.6",
-				Flavor:        api.IstioDistributionFlavorTetrateFIPS,
+				Flavor:        IstioDistributionFlavorTetrateFIPS,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.7",
-				Flavor:        api.IstioDistributionFlavorIstio,
+				Flavor:        IstioDistributionFlavorIstio,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.5",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			},
 		},
@@ -71,24 +70,24 @@ func TestFetchManifest(t *testing.T) {
 	}
 
 	for _, a := range actual.IstioDistributions {
-		delete(expIstioVersions, a.ToString())
+		delete(expIstioVersions, a.String())
 	}
 	require.Equal(t, map[string]struct{}{}, expIstioVersions)
 }
 
 func TestPrintManifest(t *testing.T) {
 	t.Run("nil-current", func(t *testing.T) {
-		manifest := &api.Manifest{
-			IstioDistributions: []*api.IstioDistribution{
+		manifest := &Manifest{
+			IstioDistributions: []*IstioDistribution{
 				{
 					Version:       "1.7.6",
-					Flavor:        api.IstioDistributionFlavorTetrate,
+					Flavor:        IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
 				},
 				{
 					Version:       "1.7.5",
-					Flavor:        api.IstioDistributionFlavorTetrate,
+					Flavor:        IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
 				},
@@ -106,29 +105,29 @@ func TestPrintManifest(t *testing.T) {
 	})
 
 	t.Run("non-nil-current", func(t *testing.T) {
-		current := &api.IstioDistribution{
+		current := &IstioDistribution{
 			Version:       "1.7.6",
-			Flavor:        api.IstioDistributionFlavorTetrateFIPS,
+			Flavor:        IstioDistributionFlavorTetrateFIPS,
 			FlavorVersion: 0,
 			K8SVersions:   []string{"1.16"},
 		}
-		manifest := &api.Manifest{
-			IstioDistributions: []*api.IstioDistribution{
+		manifest := &Manifest{
+			IstioDistributions: []*IstioDistribution{
 				{
 					Version:       "1.8.3",
-					Flavor:        api.IstioDistributionFlavorIstio,
+					Flavor:        IstioDistributionFlavorIstio,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.18"},
 				},
 				{
 					Version:       "1.7.6",
-					Flavor:        api.IstioDistributionFlavorTetrateFIPS,
+					Flavor:        IstioDistributionFlavorTetrateFIPS,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
 				},
 				{
 					Version:       "1.7.5",
-					Flavor:        api.IstioDistributionFlavorTetrate,
+					Flavor:        IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
 				},

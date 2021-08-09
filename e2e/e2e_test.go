@@ -22,8 +22,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"os/user"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
@@ -31,9 +29,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
 	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util"
 )
 
@@ -51,7 +49,6 @@ func TestMain(m *testing.M) {
 }
 
 func Test_E2E(t *testing.T) {
-	t.Run("getmesh_install", getmeshInstall)
 	t.Run("list", list)
 	t.Run("end_of_life", enfOfLife)
 	t.Run("security_patch_checker", securityPatchChecker)
@@ -66,27 +63,12 @@ func Test_E2E(t *testing.T) {
 	t.Run("config-validate", configValidate)
 }
 
-func getmeshInstall(t *testing.T) {
-	cmd := exec.Command("bash", "site/install.sh")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	require.NoError(t, cmd.Run())
-
-	// check directory
-	u, err := user.Current()
-	require.NoError(t, err)
-	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "bin", "getmesh"))
-	require.NoError(t, err)
-	_, err = os.Stat(filepath.Join(u.HomeDir, ".getmesh", "istio"))
-	require.NoError(t, err)
-}
-
 func securityPatchChecker(t *testing.T) {
-	m := &api.Manifest{
-		IstioDistributions: []*api.IstioDistribution{
+	m := &manifest.Manifest{
+		IstioDistributions: []*manifest.IstioDistribution{
 			{
 				Version:         "1.10.1000000000000",
-				Flavor:          api.IstioDistributionFlavorTetrate,
+				Flavor:          manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion:   0,
 				IsSecurityPatch: true,
 			},
@@ -115,7 +97,7 @@ func securityPatchChecker(t *testing.T) {
 func enfOfLife(t *testing.T) {
 	h, err := util.GetmeshHomeDir()
 	require.NoError(t, err)
-	require.NoError(t, getmesh.SetIstioVersion(h, &api.IstioDistribution{Version: "1.6.2"}))
+	require.NoError(t, getmesh.SetIstioVersion(h, &manifest.IstioDistribution{Version: "1.6.2"}))
 
 	cmd := exec.Command("./getmesh", "list")
 	buf := new(bytes.Buffer)
@@ -229,7 +211,7 @@ func prune(t *testing.T) {
 	// and we should restore the fetched versions for subsequent tests
 
 	t.Run("specific", func(t *testing.T) {
-		target := &api.IstioDistribution{
+		target := &manifest.IstioDistribution{
 			Version:       "1.7.8",
 			Flavor:        "tetrate",
 			FlavorVersion: 0,
@@ -259,7 +241,7 @@ func prune(t *testing.T) {
 	})
 
 	t.Run("all", func(t *testing.T) {
-		distros := []*api.IstioDistribution{
+		distros := []*manifest.IstioDistribution{
 			{
 				Version:       "1.7.8",
 				Flavor:        "tetrate",

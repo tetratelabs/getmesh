@@ -26,7 +26,6 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -34,16 +33,10 @@ const (
 	manifestURL = "https://istio.tetratelabs.io/getmesh/manifest.json"
 )
 
-// functions invoked when anytime we access to the remote manifest.json
-var manifestCheckers = map[string]func(*api.Manifest) error{
-	"checking end of life":    endOfLifeChecker,
-	"checking security patch": securityPatchChecker,
-}
-
 // GlobalManifestURLMux for test purpose
 var GlobalManifestURLMux sync.Mutex
 
-func FetchManifest() (ret *api.Manifest, err error) {
+func FetchManifest() (ret *Manifest, err error) {
 	if p := os.Getenv("GETMESH_TEST_MANIFEST_PATH"); len(p) != 0 {
 		raw, err := ioutil.ReadFile(p)
 		if err != nil {
@@ -59,16 +52,10 @@ func FetchManifest() (ret *api.Manifest, err error) {
 			return nil, err
 		}
 	}
-
-	for title, c := range manifestCheckers {
-		if err := c(ret); err != nil {
-			return nil, fmt.Errorf("%s failed: %w", title, err)
-		}
-	}
 	return
 }
 
-func fetchManifest(url string) (*api.Manifest, error) {
+func fetchManifest(url string) (*Manifest, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching manifest: %v", err)
@@ -80,7 +67,7 @@ func fetchManifest(url string) (*api.Manifest, error) {
 		return nil, fmt.Errorf("error reading fetched manifest: %v ", err)
 	}
 
-	var ret api.Manifest
+	var ret Manifest
 	if err := json.Unmarshal(raw, &ret); err != nil {
 		return nil, fmt.Errorf("error unmarshalling fetched manifest: %v", err)
 	}
@@ -88,7 +75,7 @@ func fetchManifest(url string) (*api.Manifest, error) {
 	return &ret, nil
 }
 
-func PrintManifest(ms *api.Manifest, current *api.IstioDistribution) error {
+func PrintManifest(ms *Manifest, current *IstioDistribution) error {
 	column := []string{"ISTIO VERSION", "FLAVOR", "FLAVOR VERSION", "K8S VERSIONS"}
 	data := make([][]string, len(ms.IstioDistributions))
 	for i, m := range ms.IstioDistributions {

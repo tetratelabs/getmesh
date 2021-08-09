@@ -16,7 +16,6 @@ package main
 
 import (
 	"os"
-
 	// required for authentication against GKE
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 

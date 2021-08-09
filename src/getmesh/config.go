@@ -22,21 +22,21 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/manifest"
 )
 
 // GlobalConfigMux for test purpose
 var GlobalConfigMux sync.Mutex
 
 type Config struct {
-	IstioDistribution *api.IstioDistribution `json:"istio_distribution"`
-	DefaultHub        string                 `json:"default_hub,omitempty"`
+	IstioDistribution *manifest.IstioDistribution `json:"istio_distribution"`
+	DefaultHub        string                      `json:"default_hub,omitempty"`
 }
 
 var currentConfig Config
 
 // for switch
-func SetIstioVersion(homedir string, d *api.IstioDistribution) error {
+func SetIstioVersion(homedir string, d *manifest.IstioDistribution) error {
 	configPath := getConfigPath(homedir)
 	currentConfig.IstioDistribution = d
 	raw, err := json.Marshal(currentConfig)
@@ -63,7 +63,6 @@ func SetDefaultHub(homedir, hub string) error {
 	return nil
 }
 
-// for istio cmd
 func GetActiveConfig() Config {
 	return currentConfig
 }

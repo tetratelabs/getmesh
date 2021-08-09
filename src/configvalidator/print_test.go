@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 

@@ -5,3 +5,7 @@ The following files are hosted on https://istio.tetratelabs.io, specifically via
 Latest master merge:
 * https://istio.tetratelabs.io/getmesh/install.sh -> [./install.sh](install.sh)
 * https://istio.tetratelabs.io/getmesh/manifest.json -> [./manifest.json](manifest.json)
+
+## Tests
+
+changes under site directory are tested on [site.yaml](../.github/workflows/site.yaml).

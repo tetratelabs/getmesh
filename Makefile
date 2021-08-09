@@ -1,5 +1,5 @@
 .PHONY: all
-all: lint license build unit-test e2e-test doc-gen
+all: lint license build test e2e-test doc-gen
 
 .PHONY: lint
 lint:
@@ -13,8 +13,8 @@ license:
 build:
 	go build .
 
-.PHONY: unit-test
-unit-test:
+.PHONY: test
+test:
 	go test -v ./src/... ./cmd/...
 
 .PHONY: e2e-test

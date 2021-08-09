@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package manifest
+package manifestchecker
 
 import (
 	"io/ioutil"
@@ -22,8 +22,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -32,27 +32,27 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(dir)
 
-	locals := []*api.IstioDistribution{
+	locals := []*manifest.IstioDistribution{
 		// non existent group
-		{Version: "1.2.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+		{Version: "1.2.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
 		// has a latest patch with security upgrade 1.7.6
-		{Version: "1.7.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 10},
-		{Version: "1.7.3", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 2},
+		{Version: "1.7.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 10},
+		{Version: "1.7.3", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 2},
 		// 1.8.1 has a patch but not a security upgrade one
-		{Version: "1.8.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 1},
+		{Version: "1.8.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 1},
 		// has a security patch in 1.9.2 and a higher patch 1.9.10. So should be upgraded to 1.9.10
-		{Version: "1.9.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+		{Version: "1.9.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
 		// up-to-date
-		{Version: "1.10.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+		{Version: "1.10.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
 	}
 
-	remotes := []*api.IstioDistribution{
-		{Version: "1.7.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 12, IsSecurityPatch: false},
-		{Version: "1.7.6", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 2, IsSecurityPatch: true},
-		{Version: "1.8.2", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 1, IsSecurityPatch: false},
-		{Version: "1.9.2", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: true},
-		{Version: "1.9.10", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: false},
-		{Version: "1.10.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: true},
+	remotes := []*manifest.IstioDistribution{
+		{Version: "1.7.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 12, IsSecurityPatch: false},
+		{Version: "1.7.6", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 2, IsSecurityPatch: true},
+		{Version: "1.8.2", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 1, IsSecurityPatch: false},
+		{Version: "1.9.2", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: true},
+		{Version: "1.9.10", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: false},
+		{Version: "1.10.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: true},
 	}
 
 	for _, d := range locals {
@@ -65,7 +65,7 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 	}
 
 	buf := logger.ExecuteWithLock(func() {
-		require.NoError(t, securityPatchCheckerImpl(dir, &api.Manifest{
+		require.NoError(t, securityPatchCheckerImpl(dir, &manifest.Manifest{
 			IstioDistributions: remotes,
 		}))
 	})
@@ -88,30 +88,30 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 
 func Test_constructLatestVersionsMap(t *testing.T) {
 	for _, c := range []struct {
-		in  []*api.IstioDistribution
-		exp map[string]*api.IstioDistribution
+		in  []*manifest.IstioDistribution
+		exp map[string]*manifest.IstioDistribution
 	}{
 		{
-			in: []*api.IstioDistribution{
+			in: []*manifest.IstioDistribution{
 				{Version: "1.8.10", FlavorVersion: 5, Flavor: "tetratefips"},
 				{Version: "1.8.4", FlavorVersion: 0, Flavor: "istio"},
 				{Version: "1.7.10", FlavorVersion: 1, Flavor: "tetrate"},
 				{Version: "1.7.8", FlavorVersion: 1, Flavor: "tetrate"},
 			},
-			exp: map[string]*api.IstioDistribution{
+			exp: map[string]*manifest.IstioDistribution{
 				"1.8-tetratefips": {FlavorVersion: 5, Flavor: "tetratefips", Version: "1.8.10"},
 				"1.8-istio":       {FlavorVersion: 0, Flavor: "istio", Version: "1.8.4"},
 				"1.7-tetrate":     {FlavorVersion: 1, Flavor: "tetrate", Version: "1.7.10"},
 			},
 		},
 		{
-			in: []*api.IstioDistribution{
+			in: []*manifest.IstioDistribution{
 				{Version: "1.8.10", FlavorVersion: 5, Flavor: "tetratefips"},
 				{Version: "1.7.10", FlavorVersion: 1, Flavor: "tetrate"},
 				{Version: "1.7.8", FlavorVersion: 3, Flavor: "tetratefips"},
 				{Version: "1.9.0", FlavorVersion: 0, Flavor: "istio"},
 			},
-			exp: map[string]*api.IstioDistribution{
+			exp: map[string]*manifest.IstioDistribution{
 				"1.8-tetratefips": {FlavorVersion: 5, Flavor: "tetratefips", Version: "1.8.10"},
 				"1.7-tetrate":     {FlavorVersion: 1, Flavor: "tetrate", Version: "1.7.10"},
 				"1.7-tetratefips": {FlavorVersion: 3, Flavor: "tetratefips", Version: "1.7.8"},
@@ -126,35 +126,35 @@ func Test_constructLatestVersionsMap(t *testing.T) {
 }
 
 func Test_findSecurityPatchUpgrade(t *testing.T) {
-	remotes := []*api.IstioDistribution{
-		{Version: "1.7.6", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 2, IsSecurityPatch: true},
-		{Version: "1.7.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 10, IsSecurityPatch: false},
-		{Version: "1.8.2", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 1, IsSecurityPatch: false},
-		{Version: "1.9.2", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: true},
-		{Version: "1.9.10", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: false},
+	remotes := []*manifest.IstioDistribution{
+		{Version: "1.7.6", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 2, IsSecurityPatch: true},
+		{Version: "1.7.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 10, IsSecurityPatch: false},
+		{Version: "1.8.2", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 1, IsSecurityPatch: false},
+		{Version: "1.9.2", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: true},
+		{Version: "1.9.10", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0, IsSecurityPatch: false},
 	}
 
 	for _, c := range []struct {
-		base                    *api.IstioDistribution
-		exp                     *api.IstioDistribution
+		base                    *manifest.IstioDistribution
+		exp                     *manifest.IstioDistribution
 		expIncludeSecurityPatch bool
 	}{
 		{
-			base:                    &api.IstioDistribution{Version: "1.2.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			base:                    &manifest.IstioDistribution{Version: "1.2.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
 			exp:                     nil,
 			expIncludeSecurityPatch: false,
 		},
 		{
-			base: &api.IstioDistribution{Version: "1.7.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 10},
-			exp: &api.IstioDistribution{
-				Version: "1.7.6", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 2, IsSecurityPatch: true,
+			base: &manifest.IstioDistribution{Version: "1.7.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 10},
+			exp: &manifest.IstioDistribution{
+				Version: "1.7.6", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 2, IsSecurityPatch: true,
 			},
 			expIncludeSecurityPatch: true,
 		},
 		{
-			base: &api.IstioDistribution{Version: "1.9.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
-			exp: &api.IstioDistribution{
-				Version: "1.9.10", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0,
+			base: &manifest.IstioDistribution{Version: "1.9.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			exp: &manifest.IstioDistribution{
+				Version: "1.9.10", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0,
 			},
 			expIncludeSecurityPatch: true,
 		},

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package manifest
+package manifestchecker
 
 import (
 	"encoding/json"
@@ -24,8 +24,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -37,13 +37,13 @@ func Test_endOfLifeChecker(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
 
-	m := &api.Manifest{
-		IstioDistributions: []*api.IstioDistribution{
-			{Version: "1.8.1", Flavor: api.IstioDistributionFlavorTetrate, FlavorVersion: 0},
-			{Version: "1.9.10", Flavor: api.IstioDistributionFlavorTetrateFIPS, FlavorVersion: 0},
-			{Version: "1.9.0", Flavor: api.IstioDistributionFlavorIstio, FlavorVersion: 0},
+	m := &manifest.Manifest{
+		IstioDistributions: []*manifest.IstioDistribution{
+			{Version: "1.8.1", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			{Version: "1.9.10", Flavor: manifest.IstioDistributionFlavorTetrateFIPS, FlavorVersion: 0},
+			{Version: "1.9.0", Flavor: manifest.IstioDistributionFlavorIstio, FlavorVersion: 0},
 		},
-		IstioMinorVersionsEolDates: map[string]string{
+		IstioMinorVersionsEOLDates: map[string]string{
 			"1.7": "2020-10-10",
 			"1.6": "2020-10-10",
 		},
@@ -61,7 +61,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
 
 	t.Run("ok version", func(t *testing.T) {
-		require.NoError(t, getmesh.SetIstioVersion(home, &api.IstioDistribution{Version: "1.8.1"}))
+		require.NoError(t, getmesh.SetIstioVersion(home, &manifest.IstioDistribution{Version: "1.8.1"}))
 		buf := logger.ExecuteWithLock(func() {
 			require.NoError(t, endOfLifeCheckerImpl(m, time.Now()))
 		})
@@ -70,7 +70,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 	})
 
 	t.Run("ok time", func(t *testing.T) {
-		require.NoError(t, getmesh.SetIstioVersion(home, &api.IstioDistribution{Version: "1.7.1"}))
+		require.NoError(t, getmesh.SetIstioVersion(home, &manifest.IstioDistribution{Version: "1.7.1"}))
 		buf := logger.ExecuteWithLock(func() {
 			now := time.Date(2020, 9, 5, 0, 0, 0, 0, time.Local)
 			require.NoError(t, endOfLifeCheckerImpl(m, now))
@@ -86,7 +86,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 			version, minorVersion string
 		}{{version: "1.7.1", minorVersion: "1.7"}, {version: "1.6.100", minorVersion: "1.6"}} {
 			t.Run(c.version, func(t *testing.T) {
-				require.NoError(t, getmesh.SetIstioVersion(home, &api.IstioDistribution{Version: c.version}))
+				require.NoError(t, getmesh.SetIstioVersion(home, &manifest.IstioDistribution{Version: c.version}))
 				buf := logger.ExecuteWithLock(func() {
 					require.NoError(t, endOfLifeCheckerImpl(m, now))
 				})

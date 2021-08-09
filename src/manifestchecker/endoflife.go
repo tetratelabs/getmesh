@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package manifest
+package manifestchecker
 
 import (
 	"strings"
@@ -20,16 +20,16 @@ import (
 
 	"github.com/Masterminds/semver"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
+	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
-func endOfLifeChecker(m *api.Manifest) error {
+func endOfLifeChecker(m *manifest.Manifest) error {
 	return endOfLifeCheckerImpl(m, time.Now())
 }
 
-func endOfLifeCheckerImpl(m *api.Manifest, now time.Time) error {
+func endOfLifeCheckerImpl(m *manifest.Manifest, now time.Time) error {
 	current := getmesh.GetActiveConfig().IstioDistribution
 	if current == nil {
 		return nil
@@ -53,8 +53,9 @@ func endOfLifeCheckerImpl(m *api.Manifest, now time.Time) error {
 		}
 
 		if v.Minor() > currentVer.Minor() {
-			greaterVersions = append(greaterVersions, d.ToString())
+			greaterVersions = append(greaterVersions, d.String())
 		}
+
 	}
 
 	for mv, eol := range dates {

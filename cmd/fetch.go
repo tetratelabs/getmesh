@@ -21,9 +21,9 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/istioctl"
 	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/src/manifestchecker"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
 
@@ -82,6 +82,11 @@ For more information, please refer to "getmesh list --help" command.
 			if err != nil {
 				return fmt.Errorf("error fetching manifest: %v", err)
 			}
+
+			if err := manifestchecker.Check(ms); err != nil {
+				return err
+			}
+
 			d, err := fetchParams(&flag, ms)
 			if err != nil {
 				return err
@@ -99,7 +104,7 @@ For more information, please refer to "getmesh list --help" command.
 
 			if len(notes) > 0 {
 				logger.Infof("For more information about %s, please refer to the release notes: \n%s\n",
-					d.ToString(), notes)
+					d.String(), notes)
 			}
 
 			return switchExec(homedir, d)
@@ -118,18 +123,18 @@ For more information, please refer to "getmesh list --help" command.
 }
 
 func fetchParams(flags *fetchFlags,
-	ms *api.Manifest) (*api.IstioDistribution, error) {
+	ms *manifest.Manifest) (*manifest.IstioDistribution, error) {
 	if len(flags.name) != 0 {
-		d, err := api.IstioDistributionFromString(flags.name)
+		d, err := manifest.IstioDistributionFromString(flags.name)
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse given name %s to istio distribution", flags.name)
 		}
 		return d, nil
 	}
-	if flags.flavor != api.IstioDistributionFlavorTetrate &&
-		flags.flavor != api.IstioDistributionFlavorTetrateFIPS &&
-		flags.flavor != api.IstioDistributionFlavorIstio {
-		flags.flavor = api.IstioDistributionFlavorTetrate
+	if flags.flavor != manifest.IstioDistributionFlavorTetrate &&
+		flags.flavor != manifest.IstioDistributionFlavorTetrateFIPS &&
+		flags.flavor != manifest.IstioDistributionFlavorIstio {
+		flags.flavor = manifest.IstioDistributionFlavorTetrate
 		logger.Infof("fallback to the %s flavor since --flavor flag is not given or not supported\n", flags.flavor)
 	}
 	if len(flags.version) == 0 {
@@ -140,13 +145,13 @@ func fetchParams(flags *fetchFlags,
 		}
 	}
 
-	ret := &api.IstioDistribution{Version: flags.version, Flavor: flags.flavor, FlavorVersion: flags.flavorVersion}
+	ret := &manifest.IstioDistribution{Version: flags.version, Flavor: flags.flavor, FlavorVersion: flags.flavorVersion}
 
 	if strings.Count(flags.version, ".") == 1 {
 		// In the case where patch version is not given,
 		// we find the latest patch version
 		var (
-			latest *api.IstioDistribution
+			latest *manifest.IstioDistribution
 			prev   *semver.Version
 		)
 

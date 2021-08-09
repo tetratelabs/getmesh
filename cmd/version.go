@@ -49,7 +49,7 @@ func newVersionCmd(homedir, getmeshVersion string) *cobra.Command {
 				return err
 			}
 
-			logger.Infof("getmesh version: %s\nactive istioctl: %s\n", getmeshVersion, cur.ToString())
+			logger.Infof("getmesh version: %s\nactive istioctl: %s\n", getmeshVersion, cur.String())
 			k8sCLient, err := util.GetK8sClient()
 			if err != nil {
 				logger.Infof("no active Kubernetes clusters found\n")

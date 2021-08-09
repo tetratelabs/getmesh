@@ -24,7 +24,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Positive test for whole workflow.

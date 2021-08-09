@@ -25,10 +25,10 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/getmesh"
 	"github.com/tetratelabs/getmesh/src/istioctl"
 	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/src/manifestchecker"
 	"github.com/tetratelabs/getmesh/src/util"
 	"github.com/tetratelabs/getmesh/src/util/logger"
 )
@@ -80,7 +80,7 @@ getmesh istioctl version`,
 	}
 }
 
-func istioctlArgChecks(args []string, currentDistro *api.IstioDistribution, defaultHub string) ([]string, error) {
+func istioctlArgChecks(args []string, currentDistro *manifest.IstioDistribution, defaultHub string) ([]string, error) {
 	// Sanitize args.
 	out := istioctlPreProcessArgs(args)
 
@@ -93,16 +93,21 @@ func istioctlArgChecks(args []string, currentDistro *api.IstioDistribution, defa
 	for _, a := range out {
 		if a == "install" {
 			hasInstallCMD = true
-			m, err := manifest.FetchManifest()
+			ms, err := manifest.FetchManifest()
 			if err != nil {
 				return nil, err
 			}
-			ok, err := currentDistro.ExistInManifest(m)
+
+			if err := manifestchecker.Check(ms); err != nil {
+				return nil, err
+			}
+
+			ok, err := currentDistro.ExistInManifest(ms)
 			if err != nil {
 				return nil, err
 			} else if !ok {
 				logger.Warnf("Your active istioctl of version %s is deprecated. "+
-					"We recommend you use the supported distribution listed in \"getmesh list\" command. \n", currentDistro.ToString())
+					"We recommend you use the supported distribution listed in \"getmesh list\" command. \n", currentDistro.String())
 				p := promptui.Prompt{
 					Label:     "Proceed",
 					IsConfirm: true,
@@ -113,7 +118,7 @@ func istioctlArgChecks(args []string, currentDistro *api.IstioDistribution, defa
 				}
 			}
 
-			err = istioctlPatchVersionCheck(currentDistro, m)
+			err = istioctlPatchVersionCheck(currentDistro, ms)
 			if err != nil {
 				return nil, err
 			}
@@ -138,8 +143,8 @@ func istioctlArgChecks(args []string, currentDistro *api.IstioDistribution, defa
 }
 
 // check on whether the current version is the latest patch given current group version
-func istioctlPatchVersionCheck(current *api.IstioDistribution, ms *api.Manifest) error {
-	latestPatch, _, err := api.GetLatestDistribution(current, ms)
+func istioctlPatchVersionCheck(current *manifest.IstioDistribution, ms *manifest.Manifest) error {
+	latestPatch, _, err := manifest.GetLatestDistribution(current, ms)
 	if err != nil {
 		logger.Warnf("unable to check latest trusted patch version, %v", err)
 		// should allow user to proceed further

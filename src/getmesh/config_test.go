@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/src/manifest"
 )
 
 func TestSetIstioVersion(t *testing.T) {
@@ -34,9 +34,9 @@ func TestSetIstioVersion(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
 
-	d := &api.IstioDistribution{
+	d := &manifest.IstioDistribution{
 		Version:       "1.8.1",
-		Flavor:        api.IstioDistributionFlavorTetrate,
+		Flavor:        manifest.IstioDistributionFlavorTetrate,
 		FlavorVersion: 0,
 	}
 
@@ -73,9 +73,9 @@ func TestInitConfig(t *testing.T) {
 		require.NoError(t, err)
 		defer os.RemoveAll(home)
 
-		d := &api.IstioDistribution{
+		d := &manifest.IstioDistribution{
 			Version:       "1.8.1",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 
@@ -91,7 +91,7 @@ func TestInitConfig(t *testing.T) {
 		require.NoError(t, err)
 		defer os.RemoveAll(home)
 
-		currentConfig = Config{IstioDistribution: &api.IstioDistribution{}}
+		currentConfig = Config{IstioDistribution: &manifest.IstioDistribution{}}
 		require.NoError(t, InitConfig(home))
 		assert.Nil(t, currentConfig.IstioDistribution)
 	})

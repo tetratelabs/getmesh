@@ -22,7 +22,7 @@ make lint
 Running unittests does not require any k8s cluster, and it can be done by
 
 ```
-make unit-test
+make test
 ```
 
 ### Build binary

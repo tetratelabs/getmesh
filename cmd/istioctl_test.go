@@ -22,7 +22,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
 	"github.com/tetratelabs/getmesh/src/manifest"
 	"github.com/tetratelabs/getmesh/src/util"
 	"github.com/tetratelabs/getmesh/src/util/logger"
@@ -36,16 +35,16 @@ func TestIstioctl_istioctlArgChecks(t *testing.T) {
 	manifest.GlobalManifestURLMux.Lock()
 	defer manifest.GlobalManifestURLMux.Unlock()
 
-	m := &api.Manifest{
-		IstioDistributions: []*api.IstioDistribution{
+	m := &manifest.Manifest{
+		IstioDistributions: []*manifest.IstioDistribution{
 			{
 				Version:       "1.7.6",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.5",
-				Flavor:        api.IstioDistributionFlavorTetrate,
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
 			},
 		},
@@ -94,9 +93,9 @@ func TestIstioctl_istioctlArgChecks(t *testing.T) {
 	t.Run("warning", func(t *testing.T) {
 		buf := logger.ExecuteWithLock(func() {
 			// confirmation failed so error must be returned
-			_, err := istioctlArgChecks([]string{"install"}, &api.IstioDistribution{
+			_, err := istioctlArgChecks([]string{"install"}, &manifest.IstioDistribution{
 				Version:       "1.7.4",
-				Flavor:        api.IstioDistributionFlavorTetrateFIPS,
+				Flavor:        manifest.IstioDistributionFlavorTetrateFIPS,
 				FlavorVersion: 0,
 			}, "")
 			require.Error(t, err)
@@ -252,23 +251,23 @@ func TestIstioctl_istioctlParseVerifyInstallArgs(t *testing.T) {
 }
 func TestIstioctl_istioctPatchVersionCheck(t *testing.T) {
 	t.Run("old-patch-version", func(t *testing.T) {
-		m := &api.Manifest{
-			IstioDistributions: []*api.IstioDistribution{
+		m := &manifest.Manifest{
+			IstioDistributions: []*manifest.IstioDistribution{
 				{
 					Version:       "1.7.6",
-					Flavor:        api.IstioDistributionFlavorTetrate,
+					Flavor:        manifest.IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 				},
 				{
 					Version:       "1.7.5",
-					Flavor:        api.IstioDistributionFlavorTetrate,
+					Flavor:        manifest.IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 				},
 			},
 		}
-		current := &api.IstioDistribution{
+		current := &manifest.IstioDistribution{
 			Version:       "1.7.5",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 		buf := logger.ExecuteWithLock(func() {
@@ -281,23 +280,23 @@ func TestIstioctl_istioctPatchVersionCheck(t *testing.T) {
 	})
 
 	t.Run("nil case", func(t *testing.T) {
-		m := &api.Manifest{
-			IstioDistributions: []*api.IstioDistribution{
+		m := &manifest.Manifest{
+			IstioDistributions: []*manifest.IstioDistribution{
 				{
 					Version:       "1.7.6",
-					Flavor:        api.IstioDistributionFlavorTetrate,
+					Flavor:        manifest.IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 				},
 				{
 					Version:       "1.7.5",
-					Flavor:        api.IstioDistributionFlavorTetrate,
+					Flavor:        manifest.IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 				},
 			},
 		}
-		current := &api.IstioDistribution{
+		current := &manifest.IstioDistribution{
 			Version:       "1.8.2",
-			Flavor:        api.IstioDistributionFlavorTetrate,
+			Flavor:        manifest.IstioDistributionFlavorTetrate,
 			FlavorVersion: 0,
 		}
 		buf := logger.ExecuteWithLock(func() {
