@@ -87,7 +87,7 @@ jobs:
         run: go mod download
 
       - name: run
-        run: make unit-test
+        run: make test
 
       - name: build
         run: go build .

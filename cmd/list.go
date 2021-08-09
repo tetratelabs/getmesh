@@ -19,8 +19,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/manifestchecker"
 )
 
 func newListCmd() *cobra.Command {
@@ -63,6 +64,10 @@ Supported k8s versions for the distribution
 			ms, err := manifest.FetchManifest()
 			if err != nil {
 				return fmt.Errorf("error fetching manifest: %v", err)
+			}
+
+			if err := manifestchecker.Check(ms); err != nil {
+				return err
 			}
 
 			if err := manifest.PrintManifest(ms, getmesh.GetActiveConfig().IstioDistribution); err != nil {

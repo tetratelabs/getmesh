@@ -23,10 +23,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/istioctl"
+	"github.com/tetratelabs/getmesh/internal/manifest"
 )
 
 func Test_switchParse(t *testing.T) {
@@ -37,16 +36,16 @@ func Test_switchParse(t *testing.T) {
 	manifest.GlobalManifestURLMux.Lock()
 	defer manifest.GlobalManifestURLMux.Unlock()
 
-	m := &api.Manifest{
-		IstioDistributions: []*api.IstioDistribution{
+	m := &manifest.Manifest{
+		IstioDistributions: []*manifest.IstioDistribution{
 			{
 				Version:       "1.7.6",
-				Flavor:        api.IstioDistributionFlavorIstio,
+				Flavor:        manifest.IstioDistributionFlavorIstio,
 				FlavorVersion: 0,
 			},
 			{
 				Version:       "1.7.5",
-				Flavor:        api.IstioDistributionFlavorIstio,
+				Flavor:        manifest.IstioDistributionFlavorIstio,
 				FlavorVersion: 0,
 			},
 		},
@@ -68,9 +67,9 @@ func Test_switchParse(t *testing.T) {
 	}()
 
 	// set up active distro
-	d := &api.IstioDistribution{
+	d := &manifest.IstioDistribution{
 		Version:       "1.7.6",
-		Flavor:        api.IstioDistributionFlavorTetrate,
+		Flavor:        manifest.IstioDistributionFlavorTetrate,
 		FlavorVersion: 0,
 	}
 
@@ -86,50 +85,50 @@ func Test_switchParse(t *testing.T) {
 		flag := &switchFlags{version: "1.7.6", flavor: "istio", flavorVersion: 0}
 		distro, err := switchParse(home, flag)
 		require.NoError(t, err)
-		exp := &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 0}
+		exp := &manifest.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 0}
 		require.Equal(t, distro, exp)
 	})
 	t.Run("name", func(t *testing.T) {
 		flag := &switchFlags{name: "1.8.3-istio-v0"}
 		distro, err := switchParse(home, flag)
 		require.NoError(t, err)
-		exp := &api.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 0}
+		exp := &manifest.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 0}
 		require.Equal(t, distro, exp)
 	})
 	t.Run("group", func(t *testing.T) {
 		flag := &switchFlags{version: "1.7", flavor: "istio", flavorVersion: 0}
 		distro, err := switchParse(home, flag)
 		require.NoError(t, err)
-		exp := &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 0}
+		exp := &manifest.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 0}
 		require.Equal(t, distro, exp)
 	})
 }
 
 func Test_switchHandleDistro(t *testing.T) {
 	for _, c := range []struct {
-		curr  *api.IstioDistribution
+		curr  *manifest.IstioDistribution
 		flags *switchFlags
-		exp   *api.IstioDistribution
+		exp   *manifest.IstioDistribution
 	}{
 		{
-			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			curr:  &manifest.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
 			flags: &switchFlags{version: "1.8.3", flavor: "istio", flavorVersion: 1},
-			exp:   &api.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 1},
+			exp:   &manifest.IstioDistribution{Version: "1.8.3", Flavor: "istio", FlavorVersion: 1},
 		},
 		{
-			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			curr:  &manifest.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
 			flags: &switchFlags{version: "", flavor: "istio", flavorVersion: 1},
-			exp:   &api.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 1},
+			exp:   &manifest.IstioDistribution{Version: "1.7.6", Flavor: "istio", FlavorVersion: 1},
 		},
 		{
-			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			curr:  &manifest.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
 			flags: &switchFlags{version: "1.8.3", flavor: "", flavorVersion: -1},
-			exp:   &api.IstioDistribution{Version: "1.8.3", Flavor: "tetratefips", FlavorVersion: 0},
+			exp:   &manifest.IstioDistribution{Version: "1.8.3", Flavor: "tetratefips", FlavorVersion: 0},
 		},
 		{
-			curr:  &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			curr:  &manifest.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
 			flags: &switchFlags{version: "", flavor: "", flavorVersion: -1},
-			exp:   &api.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
+			exp:   &manifest.IstioDistribution{Version: "1.7.6", Flavor: "tetratefips", FlavorVersion: 0},
 		},
 	} {
 		v, err := switchHandleDistro(c.curr, c.flags)

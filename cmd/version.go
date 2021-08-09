@@ -23,10 +23,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/istioctl"
+	"github.com/tetratelabs/getmesh/internal/util"
+	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
 func newVersionCmd(homedir, getmeshVersion string) *cobra.Command {
@@ -49,7 +49,7 @@ func newVersionCmd(homedir, getmeshVersion string) *cobra.Command {
 				return err
 			}
 
-			logger.Infof("getmesh version: %s\nactive istioctl: %s\n", getmeshVersion, cur.ToString())
+			logger.Infof("getmesh version: %s\nactive istioctl: %s\n", getmeshVersion, cur.String())
 			k8sCLient, err := util.GetK8sClient()
 			if err != nil {
 				logger.Infof("no active Kubernetes clusters found\n")

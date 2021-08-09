@@ -30,13 +30,13 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/tetratelabs/getmesh/src/cacerts/k8s"
-	"github.com/tetratelabs/getmesh/src/cacerts/providers"
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/config"
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/models"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getmesh/internal/cacerts/k8s"
+	"github.com/tetratelabs/getmesh/internal/cacerts/providers"
+	"github.com/tetratelabs/getmesh/internal/cacerts/providers/config"
+	"github.com/tetratelabs/getmesh/internal/cacerts/providers/models"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/util"
+	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
 func newGenCACmd() *cobra.Command {

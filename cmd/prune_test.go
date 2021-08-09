@@ -20,14 +20,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/api"
+	"github.com/tetratelabs/getmesh/internal/manifest"
 )
 
 func Test_pruneCheckFlags(t *testing.T) {
 	for i, c := range []struct {
 		version, flavor string
 		flavorVersion   int
-		exp             *api.IstioDistribution
+		exp             *manifest.IstioDistribution
 		expErr          bool
 	}{
 		{version: "", flavor: "", flavorVersion: -1, expErr: false, exp: nil},
@@ -36,7 +36,7 @@ func Test_pruneCheckFlags(t *testing.T) {
 		{version: "", flavor: "", flavorVersion: 1, expErr: true},
 		{version: "1.7.0", flavor: "tetrate", flavorVersion: -1, expErr: true},
 		{version: "", flavor: "tetrate", flavorVersion: 1, expErr: true},
-		{version: "1.7.0", flavor: "tetrate", flavorVersion: 1, expErr: false, exp: &api.IstioDistribution{
+		{version: "1.7.0", flavor: "tetrate", flavorVersion: 1, expErr: false, exp: &manifest.IstioDistribution{
 			Version:       "1.7.0",
 			Flavor:        "tetrate",
 			FlavorVersion: 1,

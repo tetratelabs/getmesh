@@ -19,9 +19,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/api"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/istioctl"
+	"github.com/tetratelabs/getmesh/internal/manifest"
 )
 
 func newPruneCmd(homedir string) *cobra.Command {
@@ -58,14 +58,14 @@ $ getmesh prune --version 1.7.4 --flavor tetrate --flavor-version 0
 	return cmd
 }
 
-func pruneCheckFlags(flagVersion string, flagFlavor string, flagFlavorVersion int) (*api.IstioDistribution, error) {
-	var target *api.IstioDistribution
+func pruneCheckFlags(flagVersion string, flagFlavor string, flagFlavorVersion int) (*manifest.IstioDistribution, error) {
+	var target *manifest.IstioDistribution
 	if flagFlavor != "" || flagFlavorVersion != -1 || flagVersion != "" {
 		if flagFlavor == "" || flagFlavorVersion == -1 || flagVersion == "" {
 			return nil, fmt.Errorf("all of \"--version\", \"--flavor\" and \"--flavor-version \" " +
 				"flags must be given when removing a specific version")
 		}
-		target = &api.IstioDistribution{
+		target = &manifest.IstioDistribution{
 			Version:       flagVersion,
 			Flavor:        flagFlavor,
 			FlavorVersion: int64(flagFlavorVersion),

@@ -17,20 +17,19 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
 	istioversion "istio.io/pkg/version"
 
-	"github.com/spf13/cobra"
-
-	"github.com/tetratelabs/getmesh/src/checkupgrade"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/manifest"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getmesh/internal/checkupgrade"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/istioctl"
+	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/manifestchecker"
+	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
 func newCheckCmd(homedir string) *cobra.Command {
@@ -51,7 +50,7 @@ In the above example, we call names in the form of x.y-${flavor} "minor version"
 Please refer to 'getmesh fetch --help' or 'getmesh list --help' for more information.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if getmesh.GetActiveConfig().IstioDistribution == nil {
-				return errors.New("please fetch Istioctl by `getmesh fetch` beforehand")
+				logger.Infof("fetching latest istioctl...\n")
 			}
 			return nil
 		},
@@ -59,6 +58,10 @@ Please refer to 'getmesh fetch --help' or 'getmesh list --help' for more informa
 			ms, err := manifest.FetchManifest()
 			if err != nil {
 				return fmt.Errorf(" failed to fetch manifests")
+			}
+
+			if err := manifestchecker.Check(ms); err != nil {
+				return err
 			}
 
 			w := new(bytes.Buffer)

@@ -28,7 +28,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/tetratelabs/getmesh/src/cacerts/providers/config"
+	"github.com/tetratelabs/getmesh/internal/cacerts/providers/config"
 )
 
 func TestPreFlightChecks(t *testing.T) {

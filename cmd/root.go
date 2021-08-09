@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getmesh/internal/util"
 )
 
 func Execute(version, homeDir string) {

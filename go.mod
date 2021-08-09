@@ -32,4 +32,6 @@ require (
 	k8s.io/client-go v0.20.1
 )
 
+replace github.com/tetratelabs/getmesh => ./
+
 replace github.com/kiali/kiali => github.com/kiali/kiali v1.29.1-0.20210125202741-72d2ce2fceb5

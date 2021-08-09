@@ -16,14 +16,13 @@ package main
 
 import (
 	"os"
-
 	// required for authentication against GKE
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	"github.com/tetratelabs/getmesh/cmd"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/util"
+	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
 var (

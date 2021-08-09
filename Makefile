@@ -1,5 +1,5 @@
 .PHONY: all
-all: lint license build unit-test e2e-test doc-gen
+all: lint license build test e2e-test doc-gen
 
 .PHONY: lint
 lint:
@@ -7,15 +7,15 @@ lint:
 
 .PHONY: license
 license:
-	addlicense -c "Tetrate" src/ cmd/ e2e/
+	addlicense -c "Tetrate" internal/ cmd/ e2e/
 
 .PHONY: build
 build:
 	go build .
 
-.PHONY: unit-test
-unit-test:
-	go test -v ./src/... ./cmd/...
+.PHONY: test
+test:
+	go test -v ./internal/... ./cmd/...
 
 .PHONY: e2e-test
 e2e-test:
