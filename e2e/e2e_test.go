@@ -27,10 +27,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/tetratelabs/getmesh/internal/istioctl"
-	"github.com/tetratelabs/getmesh/internal/manifest"
-	"github.com/tetratelabs/getmesh/internal/util"
 )
 
 func TestMain(m *testing.M) {
@@ -46,27 +42,33 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func Test_E2E(t *testing.T) {
-	t.Run("fetch", fetch)
-	t.Run("prune", prune)
-	t.Run("show", show)
-	t.Run("switch", switchTest)
-	t.Run("istioctl_install", istioctlInstall)
-	t.Run("unknown", unknown)
-	t.Run("version", version)
-	t.Run("check-upgrade", checkUpgrade)
-	t.Run("config-validate", configValidate)
+func getmeshFetchRequire(t *testing.T, version, flavor, flavorVersion string) {
+	require.NoError(t, exec.Command("./getmesh", "fetch", "--flavor", flavor, "--version", version, "--flavor-version", flavorVersion).Run())
 }
 
-func fetch(t *testing.T) {
-	defer func() {
-		cmd := exec.Command("./getmesh", "switch",
-			"--version", "1.10.3", "--flavor", "tetrate", "--flavor-version=0",
-		)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		require.NoError(t, cmd.Run())
-	}()
+func getmeshListRequire(t *testing.T, version, flavor, flavorVersion string) {
+	cmd := exec.Command("./getmesh", "show")
+	buf := new(bytes.Buffer)
+	cmd.Stdout = buf
+	cmd.Stderr = os.Stderr
+	require.NoError(t, cmd.Run())
+	require.Contains(t, buf.String(), fmt.Sprintf("%s-%s-v%s", version, flavor, flavorVersion))
+}
+
+func getmeshListRequireNot(t *testing.T, version, flavor, flavorVersion string) {
+	cmd := exec.Command("./getmesh", "show")
+	buf := new(bytes.Buffer)
+	cmd.Stdout = buf
+	cmd.Stderr = os.Stderr
+	require.NoError(t, cmd.Run())
+	require.NotContains(t, buf.String(), fmt.Sprintf("%s-%s-v%s", version, flavor, flavorVersion))
+}
+
+func TestFetch(t *testing.T) {
+	home, err := ioutil.TempDir("", "")
+	require.NoError(t, err)
+	defer os.RemoveAll(home)
+	require.NoError(t, os.Setenv("GETMESH_HOME", home))
 
 	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.6", "--flavor=tetrate", "--flavor-version=0")
 	buf := new(bytes.Buffer)
@@ -121,65 +123,57 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	require.Contains(t, buf.String(), `1.7.8-tetrate-v0 (Active)`)
 }
 
-func prune(t *testing.T) {
-	home, err := util.GetmeshHomeDir()
+func TestPrune(t *testing.T) {
+	home, err := ioutil.TempDir("", "")
 	require.NoError(t, err)
-
-	// note that this prune test depends on the above fetch test,
-	// and we should restore the fetched versions for subsequent tests
+	defer os.RemoveAll(home)
+	require.NoError(t, os.Setenv("GETMESH_HOME", home))
 
 	t.Run("specific", func(t *testing.T) {
-		target := &manifest.IstioDistribution{
-			Version:       "1.7.8",
-			Flavor:        "tetrate",
-			FlavorVersion: 0,
-		}
+		var version = "1.7.8"
+		var flavor = "tetrate"
+		var flavorVersion = strconv.Itoa(int(0))
 
-		// should exist
-		_, err = os.Stat(istioctl.GetIstioctlPath(home, target))
-		require.NoError(t, err)
+		// fetch the target.
+		getmeshFetchRequire(t, version, flavor, flavorVersion)
+		// fetch another target since the target should not be active.
+		getmeshFetchRequire(t, "1.8.3", flavor, flavorVersion)
+
+		// check existence
+		getmeshListRequire(t, version, flavor, flavorVersion)
 
 		// prune
-		cmd := exec.Command("./getmesh", "prune", "--version", target.Version,
-			"--flavor", target.Flavor, "--flavor-version", strconv.Itoa(int(target.FlavorVersion)))
+		cmd := exec.Command("./getmesh", "prune", "--version", version,
+			"--flavor", flavor, "--flavor-version", flavorVersion)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 
-		// should not exist
-		_, err = os.Stat(istioctl.GetIstioctlPath(home, target))
-		require.Error(t, err)
-
-		// restore the version
-		cmd = exec.Command("./getmesh", "fetch", "--version", target.Version,
-			"--flavor", target.Flavor, "--flavor-version", strconv.Itoa(int(target.FlavorVersion)))
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		require.NoError(t, cmd.Run())
+		// check non-existence
+		getmeshListRequireNot(t, version, flavor, flavorVersion)
 	})
 
 	t.Run("all", func(t *testing.T) {
-		distros := []*manifest.IstioDistribution{
+		distros := []struct{ version, flavor, flavorVersion string }{
 			{
-				Version:       "1.7.8",
-				Flavor:        "tetrate",
-				FlavorVersion: 0,
+				version:       "1.7.8",
+				flavor:        "tetrate",
+				flavorVersion: strconv.Itoa(int(0)),
 			},
 			{
-				Version:       "1.8.6",
-				Flavor:        "tetrate",
-				FlavorVersion: 0,
+				version:       "1.8.6",
+				flavor:        "tetrate",
+				flavorVersion: strconv.Itoa(int(0)),
 			},
 			{
-				Version:       "1.10.3",
-				Flavor:        "tetrate",
-				FlavorVersion: 0,
+				version:       "1.10.3",
+				flavor:        "tetrate",
+				flavorVersion: strconv.Itoa(int(0)),
 			},
 		}
 		for _, d := range distros {
-			// should exist
-			_, err = os.Stat(istioctl.GetIstioctlPath(home, d))
-			require.NoError(t, err)
+			getmeshFetchRequire(t, d.version, d.flavor, d.flavorVersion)
+			getmeshListRequire(t, d.version, d.flavor, d.flavorVersion)
 		}
 
 		// prune all except the active one
@@ -188,28 +182,45 @@ func prune(t *testing.T) {
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
 
-		for i, d := range distros {
-			if i == 0 {
-				// should exist
-				_, err = os.Stat(istioctl.GetIstioctlPath(home, d))
-				require.NoError(t, err)
-			} else {
-				// should not exist
-				_, err = os.Stat(istioctl.GetIstioctlPath(home, d))
-				require.Error(t, err)
-
-				// restore the version
-				cmd = exec.Command("./getmesh", "fetch", "--version", d.Version,
-					"--flavor", d.Flavor, "--flavor-version", strconv.Itoa(int(d.FlavorVersion)))
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				require.NoError(t, cmd.Run())
-			}
+		// check if non-active ones are removed.
+		for _, d := range distros[:len(distros)-1] {
+			getmeshListRequireNot(t, d.version, d.flavor, d.flavorVersion)
 		}
+
+		// check if the active one is not removed.
+		active := distros[len(distros)-1]
+		getmeshListRequireNot(t, active.version, active.flavor, active.flavorVersion)
 	})
 }
 
-func show(t *testing.T) {
+func TestShow(t *testing.T) {
+	home, err := ioutil.TempDir("", "")
+	require.NoError(t, err)
+	defer os.RemoveAll(home)
+	require.NoError(t, os.Setenv("GETMESH_HOME", home))
+
+	distros := []struct{ version, flavor, flavorVersion string }{
+		{
+			version:       "1.7.8",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(int(0)),
+		},
+		{
+			version:       "1.8.6",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(int(0)),
+		},
+		{
+			version:       "1.10.3",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(int(0)),
+		},
+	}
+	for _, d := range distros {
+		getmeshFetchRequire(t, d.version, d.flavor, d.flavorVersion)
+		getmeshListRequire(t, d.version, d.flavor, d.flavorVersion)
+	}
+
 	cmd := exec.Command("./getmesh", "show")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
@@ -221,7 +232,34 @@ func show(t *testing.T) {
 	require.Contains(t, buf.String(), exp)
 }
 
-func switchTest(t *testing.T) {
+func TestSwitch(t *testing.T) {
+	home, err := ioutil.TempDir("", "")
+	require.NoError(t, err)
+	defer os.RemoveAll(home)
+	require.NoError(t, os.Setenv("GETMESH_HOME", home))
+
+	distros := []struct{ version, flavor, flavorVersion string }{
+		{
+			version:       "1.7.8",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(int(0)),
+		},
+		{
+			version:       "1.8.6",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(int(0)),
+		},
+		{
+			version:       "1.10.3",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(int(0)),
+		},
+	}
+	for _, d := range distros {
+		getmeshFetchRequire(t, d.version, d.flavor, d.flavorVersion)
+		getmeshListRequire(t, d.version, d.flavor, d.flavorVersion)
+	}
+
 	t.Run("full", func(t *testing.T) {
 		for _, v := range []string{"1.8.6", "1.10.3"} {
 			{
@@ -303,6 +341,32 @@ func switchTest(t *testing.T) {
 	})
 }
 
+// E2E that requires k8s.
+func TestE2E_requirek8s(t *testing.T) {
+	var version = "1.10.3"
+	var flavor = "tetrate"
+	var flavorVersion = strconv.Itoa(int(0))
+
+	home, err := ioutil.TempDir("", "")
+	require.NoError(t, err)
+	defer os.RemoveAll(home)
+	require.NoError(t, os.Setenv("GETMESH_HOME", home))
+	getmeshFetchRequire(t, version, flavor, flavorVersion)
+
+	defer func() {
+		// Clean up.
+		cmd := exec.Command("kubectl", "delete", "-f", "./e2e/testdata/")
+		_ = cmd.Run()
+		cmd = exec.Command("./getmesh", "istioctl", "x", "--purge")
+		_ = cmd.Run()
+	}()
+
+	t.Run("istioctl_install", istioctlInstall)
+	t.Run("version", versionTest)
+	t.Run("check-upgrade", checkUpgrade)
+	t.Run("config-validate", configValidate)
+}
+
 func istioctlInstall(t *testing.T) {
 	cmd := exec.Command("./getmesh", "istioctl",
 		"install", "--set", "profile=default", "-y")
@@ -316,41 +380,7 @@ func istioctlInstall(t *testing.T) {
 	require.Contains(t, actual, "No issues found when checking the cluster. Istio is safe to install or upgrade")
 }
 
-func unknown(t *testing.T) {
-	cases := []struct {
-		name  string
-		cmd   *exec.Cmd
-		wants string
-	}{
-		{
-			name:  "unknown commands",
-			cmd:   exec.Command("./getmesh", "unknown"),
-			wants: `getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
-		},
-		{
-			name:  "unknown flags",
-			cmd:   exec.Command("./getmesh", "list", "--unknown"),
-			wants: `List available Istio distributions built by Tetrate`,
-		},
-		{
-			name:  "general tests",
-			cmd:   exec.Command("./getmesh", "unknown", "list"),
-			wants: `getmesh is an integration and lifecycle management CLI tool that ensures the use of supported and trusted versions of Istio.`,
-		},
-	}
-	for _, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
-			buf := new(bytes.Buffer)
-			c.cmd.Stdout = buf
-			c.cmd.Stderr = os.Stderr
-			require.Error(t, c.cmd.Run())
-			actual := buf.String()
-			require.Contains(t, actual, c.wants)
-		})
-	}
-}
-
-func version(t *testing.T) {
+func versionTest(t *testing.T) {
 	t.Run("remote", func(t *testing.T) {
 		for _, args := range [][]string{
 			{"version", "--remote=true"},
@@ -413,26 +443,17 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-
-	var i int
-	for ; i < 10; i++ {
-		time.Sleep(time.Second * 6)
+	require.Eventually(t, func() bool {
 		cmd := exec.Command("./getmesh", "check-upgrade")
 		buf := new(bytes.Buffer)
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		_ = cmd.Run()
-
 		actual := buf.String()
-		// - There is the available patch for the minor version 1.8-tetrate which includes **security upgrades**. We strongly recommend upgrading all 1.8-tetrate versions -> 1.8.6-tetrate-v0
-		if strings.Contains(actual,
+		return strings.Contains(actual,
 			"There is the available patch for the minor version 1.8-tetrate which includes **security upgrades**. "+
-				"We strongly recommend upgrading all 1.8-tetrate versions -> 1.8.6-tetrate-v0") {
-			break
-		}
-	}
-
-	require.NotEqual(t, 10, i)
+				"We strongly recommend upgrading all 1.8-tetrate versions -> 1.8.6-tetrate-v0")
+	}, time.Minute, 3*time.Second)
 }
 
 func configValidate(t *testing.T) {
