@@ -240,7 +240,7 @@ func fetchIstioctl(homeDir string, targetDistribution *manifest.IstioDistributio
 	// Construct URL from GOOS,GOARCH
 	var url string
 	if runtime.GOOS == "darwin" {
-		url = fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), runtime.GOOS)
+		url = fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), "osx")
 	} else {
 		url = fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), runtime.GOOS, runtime.GOARCH)
 	}
