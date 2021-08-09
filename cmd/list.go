@@ -19,9 +19,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/manifest"
-	"github.com/tetratelabs/getmesh/src/manifestchecker"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/manifestchecker"
 )
 
 func newListCmd() *cobra.Command {

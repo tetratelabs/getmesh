@@ -22,9 +22,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/src/manifest"
-	"github.com/tetratelabs/getmesh/src/util"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/util"
+	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
 func TestIstioctl_istioctlArgChecks(t *testing.T) {

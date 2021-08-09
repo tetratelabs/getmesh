@@ -7,7 +7,7 @@ lint:
 
 .PHONY: license
 license:
-	addlicense -c "Tetrate" src/ cmd/ e2e/
+	addlicense -c "Tetrate" internal/ cmd/ e2e/
 
 .PHONY: build
 build:
@@ -15,7 +15,7 @@ build:
 
 .PHONY: test
 test:
-	go test -v ./src/... ./cmd/...
+	go test -v ./internal/... ./cmd/...
 
 .PHONY: e2e-test
 e2e-test:

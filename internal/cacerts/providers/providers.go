@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,22 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cmd
+package providers
 
 import (
-	"github.com/spf13/cobra"
+	"context"
 
-	"github.com/tetratelabs/getmesh/internal/istioctl"
+	"github.com/tetratelabs/getmesh/internal/cacerts/k8s"
+	"github.com/tetratelabs/getmesh/internal/cacerts/providers/models"
 )
 
-func newShowCmd(homedir string) *cobra.Command {
-	return &cobra.Command{
-		Use:     "show",
-		Short:   "Show fetched Istio versions",
-		Long:    `Show fetched Istio version`,
-		Example: `getmesh show`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return istioctl.PrintFetchedVersions(homedir)
-		},
-	}
+// ProviderInterface defines the operations available on cloud providers
+type ProviderInterface interface {
+	// IssueCA creates an new intermediate CA according to the provider specified
+	// and returns the CA File Path and error (if any)
+	IssueCA(context.Context, models.IssueCAOptions) (*k8s.IstioSecretDetails, error)
 }

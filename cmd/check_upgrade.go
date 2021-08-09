@@ -25,12 +25,12 @@ import (
 	"github.com/spf13/cobra"
 	istioversion "istio.io/pkg/version"
 
-	"github.com/tetratelabs/getmesh/src/checkupgrade"
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/manifest"
-	"github.com/tetratelabs/getmesh/src/manifestchecker"
-	"github.com/tetratelabs/getmesh/src/util/logger"
+	"github.com/tetratelabs/getmesh/internal/checkupgrade"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/istioctl"
+	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/manifestchecker"
+	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
 func newCheckCmd(homedir string) *cobra.Command {

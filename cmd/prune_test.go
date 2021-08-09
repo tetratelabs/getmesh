@@ -20,7 +20,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/src/manifest"
+	"github.com/tetratelabs/getmesh/internal/manifest"
 )
 
 func Test_pruneCheckFlags(t *testing.T) {

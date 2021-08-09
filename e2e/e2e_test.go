@@ -29,10 +29,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/src/getmesh"
-	"github.com/tetratelabs/getmesh/src/istioctl"
-	"github.com/tetratelabs/getmesh/src/manifest"
-	"github.com/tetratelabs/getmesh/src/util"
+	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/istioctl"
+	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/util"
 )
 
 func TestMain(m *testing.M) {
@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	// set up manifest
+	// Set up manifest
 	if err := os.Setenv("GETMESH_TEST_MANIFEST_PATH", "site/manifest.json"); err != nil {
 		log.Fatal(err)
 	}
@@ -49,7 +49,6 @@ func TestMain(m *testing.M) {
 }
 
 func Test_E2E(t *testing.T) {
-	t.Run("list", list)
 	t.Run("end_of_life", enfOfLife)
 	t.Run("security_patch_checker", securityPatchChecker)
 	t.Run("fetch", fetch)
@@ -105,39 +104,6 @@ func enfOfLife(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
 	require.Contains(t, buf.String(), `Your current active minor version 1.6 is reaching the end of life on 2020-11-21. We strongly recommend you to upgrade to the available higher minor versions`)
-}
-
-func list(t *testing.T) {
-	cmd := exec.Command("./getmesh", "list")
-	buf := new(bytes.Buffer)
-	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
-	require.NoError(t, cmd.Run())
-
-	exp := `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	   K8S VERSIONS     
-   *1.10.3   	  tetrate  	      0       	1.17,1.18,1.19,1.20	
-   1.10.3    	tetratefips	      0       	1.17,1.18,1.19,1.20	
-   1.10.3    	   istio   	      0       	1.17,1.18,1.19,1.20	
-    1.9.7    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
-    1.9.7    	tetratefips	      0       	1.17,1.18,1.19,1.20	
-    1.9.7    	   istio   	      0       	1.17,1.18,1.19,1.20	
-    1.9.5    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
-    1.9.5    	   istio   	      0       	1.17,1.18,1.19,1.20	
-    1.9.4    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
-    1.9.4    	   istio   	      0       	1.17,1.18,1.19,1.20	
-    1.9.0    	  tetrate  	      0       	1.17,1.18,1.19,1.20	
-    1.9.0    	tetratefips	      1       	1.17,1.18,1.19,1.20	
-    1.9.0    	   istio   	      0       	1.17,1.18,1.19,1.20	
-    1.8.6    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
-    1.8.6    	   istio   	      0       	1.16,1.17,1.18,1.19	
-    1.8.5    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
-    1.8.5    	   istio   	      0       	1.16,1.17,1.18,1.19	
-    1.8.3    	  tetrate  	      0       	1.16,1.17,1.18,1.19	
-    1.8.3    	tetratefips	      1       	1.16,1.17,1.18,1.19	
-    1.8.3    	   istio   	      0       	1.16,1.17,1.18,1.19	
-    1.7.8    	  tetrate  	      0       	  1.16,1.17,1.18   	
-    1.7.8    	   istio   	      0       	  1.16,1.17,1.18`
-	require.Contains(t, buf.String(), exp)
 }
 
 func fetch(t *testing.T) {

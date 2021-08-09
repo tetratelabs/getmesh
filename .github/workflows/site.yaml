@@ -7,7 +7,7 @@ on:
 
 jobs:
   manifest:
-    name: check manifest change
+    name: test manifest/install script changes
     runs-on: ubuntu-latest
     steps:
       - name: checkout
