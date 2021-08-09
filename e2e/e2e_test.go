@@ -16,7 +16,6 @@ package e2e
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -29,7 +28,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tetratelabs/getmesh/internal/getmesh"
 	"github.com/tetratelabs/getmesh/internal/istioctl"
 	"github.com/tetratelabs/getmesh/internal/manifest"
 	"github.com/tetratelabs/getmesh/internal/util"
@@ -49,8 +47,6 @@ func TestMain(m *testing.M) {
 }
 
 func Test_E2E(t *testing.T) {
-	t.Run("end_of_life", enfOfLife)
-	t.Run("security_patch_checker", securityPatchChecker)
 	t.Run("fetch", fetch)
 	t.Run("prune", prune)
 	t.Run("show", show)
@@ -60,50 +56,6 @@ func Test_E2E(t *testing.T) {
 	t.Run("version", version)
 	t.Run("check-upgrade", checkUpgrade)
 	t.Run("config-validate", configValidate)
-}
-
-func securityPatchChecker(t *testing.T) {
-	m := &manifest.Manifest{
-		IstioDistributions: []*manifest.IstioDistribution{
-			{
-				Version:         "1.10.1000000000000",
-				Flavor:          manifest.IstioDistributionFlavorTetrate,
-				FlavorVersion:   0,
-				IsSecurityPatch: true,
-			},
-		},
-	}
-
-	raw, err := json.Marshal(m)
-	require.NoError(t, err)
-
-	f, err := ioutil.TempFile("", "")
-	require.NoError(t, err)
-	defer f.Close()
-
-	_, err = f.Write(raw)
-	require.NoError(t, err)
-
-	cmd := exec.Command("./getmesh", "list")
-	buf := new(bytes.Buffer)
-	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(), fmt.Sprintf("GETMESH_TEST_MANIFEST_PATH=%s", f.Name()))
-	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `[WARNING] The locally installed minor version 1.10-tetrate has a latest version 1.10.1000000000000-tetrate-v0 including security patches. We strongly recommend you to download 1.10.1000000000000-tetrate-v0 by "getmesh fetch".`)
-}
-
-func enfOfLife(t *testing.T) {
-	h, err := util.GetmeshHomeDir()
-	require.NoError(t, err)
-	require.NoError(t, getmesh.SetIstioVersion(h, &manifest.IstioDistribution{Version: "1.6.2"}))
-
-	cmd := exec.Command("./getmesh", "list")
-	buf := new(bytes.Buffer)
-	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
-	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `Your current active minor version 1.6 is reaching the end of life on 2020-11-21. We strongly recommend you to upgrade to the available higher minor versions`)
 }
 
 func fetch(t *testing.T) {
