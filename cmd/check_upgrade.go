@@ -17,7 +17,6 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -51,7 +50,7 @@ In the above example, we call names in the form of x.y-${flavor} "minor version"
 Please refer to 'getmesh fetch --help' or 'getmesh list --help' for more information.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if getmesh.GetActiveConfig().IstioDistribution == nil {
-				return errors.New("please fetch Istioctl by `getmesh fetch` beforehand")
+				logger.Infof("fetching latest istioctl...\n")
 			}
 			return nil
 		},

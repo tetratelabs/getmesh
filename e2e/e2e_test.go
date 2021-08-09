@@ -39,6 +39,12 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	// Setup the latest istioctl
+	cmd := exec.Command("./getmesh", "fetch")
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
+	}
+
 	os.Exit(m.Run())
 }
 
@@ -69,6 +75,7 @@ func TestFetch(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
+	defer os.Setenv("GETMESH_HOME", "")
 
 	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.6", "--flavor=tetrate", "--flavor-version=0")
 	buf := new(bytes.Buffer)
@@ -128,6 +135,7 @@ func TestPrune(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
+	defer os.Setenv("GETMESH_HOME", "")
 
 	t.Run("specific", func(t *testing.T) {
 		var version = "1.7.8"
@@ -198,6 +206,7 @@ func TestShow(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
+	defer os.Setenv("GETMESH_HOME", "")
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
@@ -237,6 +246,7 @@ func TestSwitch(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(home)
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
+	defer os.Setenv("GETMESH_HOME", "")
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
@@ -343,16 +353,6 @@ func TestSwitch(t *testing.T) {
 
 // E2E that requires k8s.
 func TestE2E_requirek8s(t *testing.T) {
-	var version = "1.10.3"
-	var flavor = "tetrate"
-	var flavorVersion = strconv.Itoa(int(0))
-
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
-	require.NoError(t, os.Setenv("GETMESH_HOME", home))
-	getmeshFetchRequire(t, version, flavor, flavorVersion)
-
 	defer func() {
 		// Clean up.
 		cmd := exec.Command("kubectl", "delete", "-f", "./e2e/testdata/")
