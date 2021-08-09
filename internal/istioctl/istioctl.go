@@ -40,9 +40,10 @@ import (
 const IstioVersionNoPodRunningMsg = "no running Istio pods in \"istio-system\""
 
 var (
-	istioDirSuffix            = "istio"
-	istioctlPathFormat        = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
-	istioctlDownloadURLFormat = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s-%s.tar.gz"
+	istioDirSuffix                       = "istio"
+	istioctlPathFormat                   = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
+	istioctlDownloadURLFormatWithArch    = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s-%s.tar.gz"
+	istioctlDownloadURLFormatWithoutArch = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s.tar.gz"
 )
 
 func GetIstioctlPath(homeDir string, distribution *manifest.IstioDistribution) string {
@@ -237,12 +238,12 @@ func fetchIstioctl(homeDir string, targetDistribution *manifest.IstioDistributio
 	}
 
 	// Construct URL from GOOS,GOARCH
-	goarch := runtime.GOARCH
-	goos := runtime.GOOS
-	if goos == "darwin" {
-		goos = "osx"
+	var url string
+	if runtime.GOOS == "darwin" {
+		url = fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), runtime.GOOS)
+	} else {
+		url = fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), runtime.GOOS, runtime.GOARCH)
 	}
-	url := fmt.Sprintf(istioctlDownloadURLFormat, targetDistribution.String(), goos, goarch)
 
 	// Download
 	resp, err := http.Get(url)
