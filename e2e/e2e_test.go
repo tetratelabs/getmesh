@@ -197,7 +197,7 @@ func TestPrune(t *testing.T) {
 
 		// check if the active one is not removed.
 		active := distros[len(distros)-1]
-		getmeshListRequireNot(t, active.version, active.flavor, active.flavorVersion)
+		getmeshListRequire(t, active.version, active.flavor, active.flavorVersion)
 	})
 }
 

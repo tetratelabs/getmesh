@@ -1,9 +1,16 @@
 name: site
 
 on:
+  pull_request:
+    paths:
+      - 'site/**'
+    branches:
+      - main
   push:
     paths:
       - 'site/**'
+    branches:
+      - main
 
 jobs:
   manifest:
