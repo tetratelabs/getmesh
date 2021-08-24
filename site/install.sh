@@ -468,7 +468,7 @@ update_profile() {
     printf "\n$path_str\n"
     return 1
   else
-    if ! command grep -qc 'GETMESH_HOME' "$detected_profile"; then
+    if ! (command grep -qc 'GETMESH_HOME' "$detected_profile"); then
       log_info "updating user profile ($detected_profile)..."
       log_info "the following two lines are added into your profile ($detected_profile):" 
       printf "\n$path_str\n"
