@@ -461,3 +461,57 @@ func TestFetch(t *testing.T) {
 		}
 	})
 }
+
+func TestFetchIstioctlURL(t *testing.T) {
+	istioDistribution := &manifest.IstioDistribution{
+		Version:       "1.7.6",
+		Flavor:        manifest.IstioDistributionFlavorTetrate,
+		FlavorVersion: 0,
+	}
+
+	tests := map[string]struct {
+		istioDistribution *manifest.IstioDistribution
+		goos              string
+		goarch            string
+		want              string
+	}{
+		"linux-amd64": {
+			istioDistribution: istioDistribution,
+			goos:              "linux",
+			goarch:            "amd64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-linux-amd64.tar.gz",
+		},
+		"linux-arm64": {
+			istioDistribution: istioDistribution,
+			goos:              "linux",
+			goarch:            "arm64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-linux-arm64.tar.gz",
+		},
+		"darwin-arm64": {
+			istioDistribution: istioDistribution,
+			goos:              "darwin",
+			goarch:            "arm64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-osx-arm64.tar.gz",
+		},
+		"darwin-amd64": {
+			istioDistribution: istioDistribution,
+			goos:              "darwin",
+			goarch:            "amd64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-osx.tar.gz", // No arch
+		},
+		"madeupoos-madeuparch": { //  Check that follows os-arch convention
+			istioDistribution: istioDistribution,
+			goos:              "madeupoos",
+			goarch:            "madeuparch",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-madeupoos-madeuparch.tar.gz",
+		},
+	}
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := fetchIstioctlURL(tc.istioDistribution, tc.goos, tc.goarch)
+			if tc.want != got {
+				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
+	}
+}
