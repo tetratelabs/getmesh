@@ -378,6 +378,16 @@ func TestFetch(t *testing.T) {
 	ms := &manifest.Manifest{
 		IstioDistributions: []*manifest.IstioDistribution{
 			{
+				Version:       "1.10.3",
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
+				FlavorVersion: 0,
+			},
+			{
+				Version:       "1.10.3",
+				Flavor:        manifest.IstioDistributionFlavorTetrateFIPS,
+				FlavorVersion: 0,
+			},
+			{
 				Version:       "1.7.6",
 				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
@@ -407,8 +417,8 @@ func TestFetch(t *testing.T) {
 
 	t.Run("supported", func(t *testing.T) {
 		for _, c := range []*manifest.IstioDistribution{
-			{Version: "1.7.5", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
-			{Version: "1.7.6", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			{Version: "1.10.3", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			{Version: "1.10.3", Flavor: manifest.IstioDistributionFlavorTetrateFIPS, FlavorVersion: 0},
 		} {
 			require.Error(t, checkExist(dir, c))
 			err = Fetch(dir, c, ms)
