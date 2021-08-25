@@ -286,15 +286,13 @@ func fetchIstioctlURL(targetDistribution *manifest.IstioDistribution, runtimeGOO
 		istioctlDownloadURLFormatWithoutArch = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s.tar.gz"
 	)
 
-	var url string
 	if runtimeGOOS != "darwin" {
-		url = fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), runtimeGOOS, runtimeGOARCH)
-		return url
+		return fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), runtimeGOOS, runtimeGOARCH)
 	}
+
 	if runtimeGOARCH == "arm64" {
-		url = fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), "osx", runtimeGOARCH)
+		return fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), "osx", runtimeGOARCH)
 	} else {
-		url = fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), "osx")
+		return fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), "osx")
 	}
-	return url
 }
