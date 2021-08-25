@@ -519,9 +519,7 @@ func TestFetchIstioctlURL(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			got := fetchIstioctlURL(tc.istioDistribution, tc.goos, tc.goarch)
-			if tc.want != got {
-				t.Fatalf("expected: %v, got: %v", tc.want, got)
-			}
+			require.Equal(t, tc.want, got)
 		})
 	}
 }
