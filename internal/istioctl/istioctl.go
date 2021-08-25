@@ -292,7 +292,6 @@ func fetchIstioctlURL(targetDistribution *manifest.IstioDistribution, runtimeGOO
 
 	if runtimeGOARCH == "arm64" {
 		return fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), "osx", runtimeGOARCH)
-	} else {
-		return fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), "osx")
 	}
+	return fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), "osx")
 }
