@@ -12,6 +12,10 @@ jobs:
     name: license
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16'
+
       - name: addlicense
         run: go get github.com/google/addlicense
 
@@ -32,10 +36,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: set up go 1.16.5
-        uses: actions/setup-go@v1
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.16.5
+          go-version: '^1.16'
 
       - uses: actions/cache@v2
         with:
@@ -71,10 +74,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: set up go 1.16.5
-        uses: actions/setup-go@v1
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.16.5
+          go-version: '^1.16'
 
       - uses: actions/cache@v2
         with:
@@ -102,10 +104,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: set up go 1.16.5
-        uses: actions/setup-go@v1
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.16.5
+          go-version: '^1.16'
 
       - uses: debianmaster/actions-k3s@master
         id: k3s
