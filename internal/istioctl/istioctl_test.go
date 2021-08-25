@@ -378,6 +378,16 @@ func TestFetch(t *testing.T) {
 	ms := &manifest.Manifest{
 		IstioDistributions: []*manifest.IstioDistribution{
 			{
+				Version:       "1.10.3",
+				Flavor:        manifest.IstioDistributionFlavorTetrate,
+				FlavorVersion: 0,
+			},
+			{
+				Version:       "1.10.3",
+				Flavor:        manifest.IstioDistributionFlavorTetrateFIPS,
+				FlavorVersion: 0,
+			},
+			{
 				Version:       "1.7.6",
 				Flavor:        manifest.IstioDistributionFlavorTetrate,
 				FlavorVersion: 0,
@@ -407,8 +417,8 @@ func TestFetch(t *testing.T) {
 
 	t.Run("supported", func(t *testing.T) {
 		for _, c := range []*manifest.IstioDistribution{
-			{Version: "1.7.5", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
-			{Version: "1.7.6", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			{Version: "1.10.3", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 0},
+			{Version: "1.10.3", Flavor: manifest.IstioDistributionFlavorTetrateFIPS, FlavorVersion: 0},
 		} {
 			require.Error(t, checkExist(dir, c))
 			err = Fetch(dir, c, ms)
@@ -460,4 +470,56 @@ func TestFetch(t *testing.T) {
 			require.Error(t, Fetch(dir, target, mf))
 		}
 	})
+}
+
+func TestFetchIstioctlURL(t *testing.T) {
+	istioDistribution := &manifest.IstioDistribution{
+		Version:       "1.7.6",
+		Flavor:        manifest.IstioDistributionFlavorTetrate,
+		FlavorVersion: 0,
+	}
+
+	tests := map[string]struct {
+		istioDistribution *manifest.IstioDistribution
+		goos              string
+		goarch            string
+		want              string
+	}{
+		"linux-amd64": {
+			istioDistribution: istioDistribution,
+			goos:              "linux",
+			goarch:            "amd64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-linux-amd64.tar.gz",
+		},
+		"linux-arm64": {
+			istioDistribution: istioDistribution,
+			goos:              "linux",
+			goarch:            "arm64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-linux-arm64.tar.gz",
+		},
+		"darwin-arm64": {
+			istioDistribution: istioDistribution,
+			goos:              "darwin",
+			goarch:            "arm64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-osx-arm64.tar.gz",
+		},
+		"darwin-amd64": {
+			istioDistribution: istioDistribution,
+			goos:              "darwin",
+			goarch:            "amd64",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-osx.tar.gz", // No arch
+		},
+		"madeupoos-madeuparch": { //  Check that follows os-arch convention
+			istioDistribution: istioDistribution,
+			goos:              "madeupoos",
+			goarch:            "madeuparch",
+			want:              "https://istio.tetratelabs.io/getmesh/files/istio-1.7.6-tetrate-v0-madeupoos-madeuparch.tar.gz",
+		},
+	}
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := fetchIstioctlURL(tc.istioDistribution, tc.goos, tc.goarch)
+			require.Equal(t, tc.want, got)
+		})
+	}
 }

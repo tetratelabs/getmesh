@@ -40,10 +40,8 @@ import (
 const IstioVersionNoPodRunningMsg = "no running Istio pods in \"istio-system\""
 
 var (
-	istioDirSuffix                       = "istio"
-	istioctlPathFormat                   = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
-	istioctlDownloadURLFormatWithArch    = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s-%s.tar.gz"
-	istioctlDownloadURLFormatWithoutArch = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s.tar.gz"
+	istioDirSuffix     = "istio"
+	istioctlPathFormat = filepath.Join(istioDirSuffix, "%s/bin/istioctl")
 )
 
 func GetIstioctlPath(homeDir string, distribution *manifest.IstioDistribution) string {
@@ -238,12 +236,7 @@ func fetchIstioctl(homeDir string, targetDistribution *manifest.IstioDistributio
 	}
 
 	// Construct URL from GOOS,GOARCH
-	var url string
-	if runtime.GOOS == "darwin" {
-		url = fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), "osx")
-	} else {
-		url = fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), runtime.GOOS, runtime.GOARCH)
-	}
+	url := fetchIstioctlURL(targetDistribution, runtime.GOOS, runtime.GOARCH)
 
 	// Download
 	resp, err := http.Get(url)
@@ -285,4 +278,20 @@ func fetchIstioctl(homeDir string, targetDistribution *manifest.IstioDistributio
 		}
 	}
 	return nil
+}
+
+func fetchIstioctlURL(targetDistribution *manifest.IstioDistribution, runtimeGOOS string, runtimeGOARCH string) string {
+	const (
+		istioctlDownloadURLFormatWithArch    = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s-%s.tar.gz"
+		istioctlDownloadURLFormatWithoutArch = "https://istio.tetratelabs.io/getmesh/files/istio-%s-%s.tar.gz"
+	)
+
+	if runtimeGOOS != "darwin" {
+		return fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), runtimeGOOS, runtimeGOARCH)
+	}
+
+	if runtimeGOARCH == "arm64" {
+		return fmt.Sprintf(istioctlDownloadURLFormatWithArch, targetDistribution.String(), "osx", runtimeGOARCH)
+	}
+	return fmt.Sprintf(istioctlDownloadURLFormatWithoutArch, targetDistribution.String(), "osx")
 }
