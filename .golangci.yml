@@ -5,6 +5,6 @@ linters:
   enable:
     - govet
     - gofmt
-    - golint
+    - revive
     - goimports
     - gofmt
