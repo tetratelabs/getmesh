@@ -30,5 +30,5 @@ jobs:
         run: |
           cat site/manifest.json | jq -r '.istio_distributions[] | [.version, .flavor, .flavor_version] | @csv' | tr -d '"' | 
           while IFS=, read -r version flavor flavor_version; do
-              getmesh fetch --version $version --flavor $flavor --flavor-version $flavor_version
+              GETMESH_TEST_MANIFEST_PATH=site/manifest.json getmesh fetch --version $version --flavor $flavor --flavor-version $flavor_version
           done
