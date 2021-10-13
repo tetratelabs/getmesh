@@ -174,7 +174,7 @@ func TestPrune(t *testing.T) {
 				flavorVersion: strconv.Itoa(int(0)),
 			},
 			{
-				version:       "1.10.3",
+				version:       "1.11.3",
 				flavor:        "tetrate",
 				flavorVersion: strconv.Itoa(int(0)),
 			},
@@ -220,7 +220,7 @@ func TestShow(t *testing.T) {
 			flavorVersion: strconv.Itoa(int(0)),
 		},
 		{
-			version:       "1.10.3",
+			version:       "1.11.3",
 			flavor:        "tetrate",
 			flavorVersion: strconv.Itoa(int(0)),
 		},
@@ -235,7 +235,7 @@ func TestShow(t *testing.T) {
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	exp := `1.10.3-tetrate-v0 (Active)
+	exp := `1.11.3-tetrate-v0 (Active)
 1.7.8-tetrate-v0
 1.8.6-tetrate-v0`
 	require.Contains(t, buf.String(), exp)
@@ -260,7 +260,7 @@ func TestSwitch(t *testing.T) {
 			flavorVersion: strconv.Itoa(int(0)),
 		},
 		{
-			version:       "1.10.3",
+			version:       "1.11.3",
 			flavor:        "tetrate",
 			flavorVersion: strconv.Itoa(int(0)),
 		},
@@ -271,7 +271,7 @@ func TestSwitch(t *testing.T) {
 	}
 
 	t.Run("full", func(t *testing.T) {
-		for _, v := range []string{"1.8.6", "1.10.3"} {
+		for _, v := range []string{"1.8.6", "1.11.3"} {
 			{
 				cmd := exec.Command("./getmesh", "switch",
 					"--version", v, "--flavor", "tetrate", "--flavor-version=0",
@@ -306,7 +306,7 @@ func TestSwitch(t *testing.T) {
 		require.Contains(t, buf.String(), "1.8.6-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
-			"--name", "1.10.3-tetrate-v0",
+			"--name", "1.11.3-tetrate-v0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -317,11 +317,11 @@ func TestSwitch(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "1.10.3-tetrate-v0")
+		require.Contains(t, buf.String(), "1.11.3-tetrate-v0")
 	})
 	t.Run("active", func(t *testing.T) {
 		cmd := exec.Command("./getmesh", "fetch",
-			"--version=1.10.3", "--flavor=istio", "--flavor-version=0",
+			"--version=1.11.3", "--flavor=istio", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -332,8 +332,8 @@ func TestSwitch(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "1.10.3")
-		require.NotContains(t, buf.String(), "1.10.3-tetrate-v0")
+		require.Contains(t, buf.String(), "client version: 1.11.3")
+		require.NotContains(t, buf.String(), "client version: 1.11.3-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
 			"--flavor=tetrate",
@@ -347,7 +347,7 @@ func TestSwitch(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "1.10.3-tetrate-v0")
+		require.Contains(t, buf.String(), "1.11.3-tetrate-v0")
 	})
 }
 
@@ -432,7 +432,7 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	require.Contains(t, actual, "1.10.3-tetrate-v0 is the latest version in 1.10-tetrate")
+	require.Contains(t, actual, "1.11.3-tetrate-v0 is the latest version in 1.11-tetrate")
 
 	// change image to 1.8.1-tetrate-v0
 	image := "containers.istio.tetratelabs.com/pilot:1.8.1-tetrate-v0"
