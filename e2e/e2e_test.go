@@ -332,8 +332,8 @@ func TestSwitch(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "client version: 1.11.3")
-		require.NotContains(t, buf.String(), "client version: 1.11.3-tetrate-v0")
+		require.Contains(t, buf.String(), "1.11.3")
+		require.NotContains(t, buf.String(), "1.11.3-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
 			"--flavor=tetrate",
