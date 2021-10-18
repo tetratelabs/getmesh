@@ -1,5 +1,6 @@
 {
   "istio_minor_versions_eol_dates": {
+    "1.11": "2022-10-11",
     "1.10": "2022-07-17",
     "1.9": "2022-04-08",
     "1.8": "2022-01-18",
@@ -7,6 +8,36 @@
     "1.6": "2020-11-21"
   },
   "istio_distributions": [
+   {
+      "version": "1.11.3",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.17",
+        "1.18",
+        "1.19",
+        "1.20"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.11.x/announcing-1.11.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.11.3",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.17",
+        "1.18",
+        "1.19",
+        "1.20"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.11.x/announcing-1.11.3/"
+      ],
+      "is_security_patch": false
+    },
     {
       "version": "1.10.3",
       "flavor": "tetrate",
