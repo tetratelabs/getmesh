@@ -36,6 +36,7 @@ func GetKubeConfigLocation() string {
 	}
 	return kubeconfig
 }
+
 func GetK8sConfig() (*rest.Config, error) {
 	kubeconfig := GetKubeConfigLocation()
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
