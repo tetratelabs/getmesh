@@ -15,10 +15,11 @@
 package manifestchecker
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 
@@ -28,9 +29,7 @@ import (
 )
 
 func Test_securityPatchCheckerImpl(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	dir := test.TempDir(t, "", "")
 
 	locals := []*manifest.IstioDistribution{
 		// non existent group
@@ -61,7 +60,7 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
 		require.NoError(t, err)
-		_ = f.Close()
+		require.NoError(t, f.Close())
 	}
 
 	buf := logger.ExecuteWithLock(func() {

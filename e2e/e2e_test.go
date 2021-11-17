@@ -17,7 +17,6 @@ package e2e
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -27,6 +26,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/tetratelabs/getmesh/internal/test"
 )
 
 func TestMain(m *testing.M) {
@@ -71,9 +71,7 @@ func getmeshListRequireNot(t *testing.T, version, flavor, flavorVersion string) 
 }
 
 func TestFetch(t *testing.T) {
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
 	defer os.Setenv("GETMESH_HOME", "")
 
@@ -131,16 +129,14 @@ istioctl switched to 1.8.6-tetrate-v0 now
 }
 
 func TestPrune(t *testing.T) {
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
 	defer os.Setenv("GETMESH_HOME", "")
 
 	t.Run("specific", func(t *testing.T) {
 		var version = "1.7.8"
 		var flavor = "tetrate"
-		var flavorVersion = strconv.Itoa(int(0))
+		var flavorVersion = strconv.Itoa(0)
 
 		// fetch the target.
 		getmeshFetchRequire(t, version, flavor, flavorVersion)
@@ -166,17 +162,17 @@ func TestPrune(t *testing.T) {
 			{
 				version:       "1.7.8",
 				flavor:        "tetrate",
-				flavorVersion: strconv.Itoa(int(0)),
+				flavorVersion: strconv.Itoa(0),
 			},
 			{
 				version:       "1.8.6",
 				flavor:        "tetrate",
-				flavorVersion: strconv.Itoa(int(0)),
+				flavorVersion: strconv.Itoa(0),
 			},
 			{
 				version:       "1.11.3",
 				flavor:        "tetrate",
-				flavorVersion: strconv.Itoa(int(0)),
+				flavorVersion: strconv.Itoa(0),
 			},
 		}
 		for _, d := range distros {
@@ -202,9 +198,7 @@ func TestPrune(t *testing.T) {
 }
 
 func TestShow(t *testing.T) {
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
 	defer os.Setenv("GETMESH_HOME", "")
 
@@ -212,17 +206,17 @@ func TestShow(t *testing.T) {
 		{
 			version:       "1.7.8",
 			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(int(0)),
+			flavorVersion: strconv.Itoa(0),
 		},
 		{
 			version:       "1.8.6",
 			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(int(0)),
+			flavorVersion: strconv.Itoa(0),
 		},
 		{
 			version:       "1.11.3",
 			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(int(0)),
+			flavorVersion: strconv.Itoa(0),
 		},
 	}
 	for _, d := range distros {
@@ -242,9 +236,7 @@ func TestShow(t *testing.T) {
 }
 
 func TestSwitch(t *testing.T) {
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 	require.NoError(t, os.Setenv("GETMESH_HOME", home))
 	defer os.Setenv("GETMESH_HOME", "")
 
@@ -252,17 +244,17 @@ func TestSwitch(t *testing.T) {
 		{
 			version:       "1.7.8",
 			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(int(0)),
+			flavorVersion: strconv.Itoa(0),
 		},
 		{
 			version:       "1.8.6",
 			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(int(0)),
+			flavorVersion: strconv.Itoa(0),
 		},
 		{
 			version:       "1.11.3",
 			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(int(0)),
+			flavorVersion: strconv.Itoa(0),
 		},
 	}
 	for _, d := range distros {
@@ -502,9 +494,7 @@ func configValidate(t *testing.T) {
 		t.Parallel()
 		// make a new location for config
 		// TODO: misconfigured kubeconfig, i,e: unauthorized kubeconfig file
-		f, err := ioutil.TempFile("", "")
-		require.NoError(t, err)
-		defer f.Close()
+		f := test.TempFile(t, "", "")
 		cmd := exec.Command("./getmesh", "config-validate", "--kubeconfig", f.Name())
 		bufErr := new(bytes.Buffer)
 		cmd.Stderr = bufErr

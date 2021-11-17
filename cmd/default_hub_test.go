@@ -15,13 +15,12 @@
 package cmd
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/internal/getmesh"
+	"github.com/tetratelabs/getmesh/internal/test"
 	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
@@ -53,9 +52,7 @@ func Test_defaultHubCheckFlags(t *testing.T) {
 func Test_defaultHubHandleSet(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 
 	value := "myhub.com"
 	buf := logger.ExecuteWithLock(func() {
@@ -85,9 +82,7 @@ func Test_defaultHubHandleShow(t *testing.T) {
 func Test_defaultHubHandleRemove(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 
 	value := "myhub.com"
 	require.NoError(t, defaultHubHandleSet(home, value))

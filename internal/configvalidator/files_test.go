@@ -15,32 +15,28 @@
 package configvalidator
 
 import (
-	"io/ioutil"
 	"testing"
+
+	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestExtractYamlFilePaths(t *testing.T) {
-	root, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
+	root := test.TempDir(t, "", "")
 
 	var in, exp []string
-	f, err := ioutil.TempFile(root, "*.yaml")
-	require.NoError(t, err)
+	f := test.TempFile(t, root, "*.yaml")
 	in = append(in, f.Name())
 	exp = append(exp, f.Name())
 
-	sub, err := ioutil.TempDir(root, "")
-	require.NoError(t, err)
+	sub := test.TempDir(t, root, "")
 	in = append(in, sub)
 
-	f, err = ioutil.TempFile(sub, "*.yaml")
-	require.NoError(t, err)
+	f = test.TempFile(t, sub, "*.yaml")
 	exp = append(exp, f.Name())
 
-	f, err = ioutil.TempFile(sub, "*.go")
-	require.NoError(t, err)
+	f = test.TempFile(t, sub, "*.go")
 	excluded := f.Name()
 
 	actual, err := extractYamlFilePaths([]string{root})

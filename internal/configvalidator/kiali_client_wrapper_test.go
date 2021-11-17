@@ -15,16 +15,16 @@
 package configvalidator
 
 import (
-	"io/ioutil"
 	"testing"
+
+	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestParseFilesAsKialiIstioObjects(t *testing.T) {
-	f, err := ioutil.TempFile("", "")
-	require.NoError(t, err)
-	_, err = f.WriteString(`
+	f := test.TempFile(t, "", "")
+	_, err := f.WriteString(`
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -77,8 +77,7 @@ b: b
 `)
 	require.NoError(t, err)
 
-	g, err := ioutil.TempFile("", "")
-	require.NoError(t, err)
+	g := test.TempFile(t, "", "")
 	_, err = g.WriteString(`
 apiVersion: v1
 kind: Service

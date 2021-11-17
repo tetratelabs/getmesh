@@ -16,11 +16,12 @@ package istioctl
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"testing"
+
+	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 
@@ -30,9 +31,7 @@ import (
 )
 
 func TestGetFetchedVersions(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	dir := test.TempDir(t, "", "")
 
 	exp := map[string]struct{}{}
 	for _, v := range []string{
@@ -50,7 +49,7 @@ func TestGetFetchedVersions(t *testing.T) {
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
 		require.NoError(t, err)
-		_ = f.Close()
+		require.NoError(t, f.Close())
 	}
 
 	actual, err := GetFetchedVersions(dir)
@@ -67,9 +66,7 @@ func TestPrintFetchedVersions(t *testing.T) {
 	defer getmesh.GlobalConfigMux.Unlock()
 
 	t.Run("ok", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(dir)
+		dir := test.TempDir(t, "", "")
 
 		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
@@ -90,7 +87,7 @@ func TestPrintFetchedVersions(t *testing.T) {
 			require.NoError(t, os.MkdirAll(suffix, 0755))
 			f, err := os.Create(ctlPath)
 			require.NoError(t, err)
-			_ = f.Close()
+			require.NoError(t, f.Close())
 		}
 
 		buf := logger.ExecuteWithLock(func() {
@@ -114,11 +111,9 @@ func TestGetCurrentExecutable(t *testing.T) {
 			FlavorVersion: 0,
 		}
 
-		dir, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(dir)
+		dir := test.TempDir(t, "", "")
 		require.NoError(t, getmesh.SetIstioVersion(dir, d))
-		_, err = GetCurrentExecutable(dir)
+		_, err := GetCurrentExecutable(dir)
 		require.Error(t, err)
 	})
 
@@ -126,9 +121,7 @@ func TestGetCurrentExecutable(t *testing.T) {
 		getmesh.GlobalConfigMux.Lock()
 		defer getmesh.GlobalConfigMux.Unlock()
 
-		dir, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(dir)
+		dir := test.TempDir(t, "", "")
 
 		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
@@ -166,9 +159,7 @@ func Test_removeAll(t *testing.T) {
 	})
 
 	t.Run("ok", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(dir)
+		dir := test.TempDir(t, "", "")
 
 		distros := []*manifest.IstioDistribution{
 			{Version: "1.7.1", Flavor: "tetrate", FlavorVersion: 1},
@@ -183,7 +174,7 @@ func Test_removeAll(t *testing.T) {
 			require.NoError(t, os.MkdirAll(suffix, 0755))
 			f, err := os.Create(ctlPath)
 			require.NoError(t, err)
-			f.Close()
+			require.NoError(t, f.Close())
 
 			// should exist
 			require.NoError(t, checkExist(dir, d))
@@ -203,9 +194,7 @@ func Test_removeAll(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	dir := test.TempDir(t, "", "")
 
 	t.Run("skip", func(t *testing.T) {
 		d := &manifest.IstioDistribution{
@@ -259,14 +248,9 @@ func TestRemove(t *testing.T) {
 }
 
 func Test_checkExists(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
 
 	t.Run("exist", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(dir)
+		dir := test.TempDir(t, "", "")
 		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        manifest.IstioDistributionFlavorTetrate,
@@ -278,16 +262,18 @@ func Test_checkExists(t *testing.T) {
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
 		require.NoError(t, err)
-		f.Close()
+		require.NoError(t, f.Close())
 		require.NoError(t, checkExist(dir, d))
 	})
 
 	t.Run("non exist", func(t *testing.T) {
-		require.Error(t, checkExist(dir, &manifest.IstioDistribution{
+		dir := test.TempDir(t, "", "")
+		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "non-exist",
 			FlavorVersion: 0,
-		}))
+		}
+		require.Error(t, checkExist(dir, d))
 	})
 }
 
@@ -295,9 +281,7 @@ func TestSwitch(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
 
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	dir := test.TempDir(t, "", "")
 
 	t.Run("exist", func(t *testing.T) {
 		d := &manifest.IstioDistribution{
@@ -314,7 +298,7 @@ func TestSwitch(t *testing.T) {
 			require.NoError(t, os.MkdirAll(suffix, 0755))
 			f, err := os.Create(ctlPath)
 			require.NoError(t, err)
-			f.Close()
+			require.NoError(t, f.Close())
 		}
 
 		d.Version = "1.7.3"
@@ -342,9 +326,7 @@ func TestExec(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
 
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	dir := test.TempDir(t, "", "")
 
 	d := &manifest.IstioDistribution{
 		Version:       "0.0.1",
@@ -372,9 +354,7 @@ func TestExec(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	dir := test.TempDir(t, "", "")
 	ms := &manifest.Manifest{
 		IstioDistributions: []*manifest.IstioDistribution{
 			{
@@ -410,7 +390,7 @@ func TestFetch(t *testing.T) {
 			{Version: "1.7.5", Flavor: manifest.IstioDistributionFlavorTetrateFIPS},
 			{Version: "1.7.5", Flavor: manifest.IstioDistributionFlavorTetrate, FlavorVersion: 1},
 		} {
-			err = Fetch(dir, c, ms)
+			err := Fetch(dir, c, ms)
 			require.Error(t, err)
 		}
 	})
@@ -421,7 +401,7 @@ func TestFetch(t *testing.T) {
 			{Version: "1.10.3", Flavor: manifest.IstioDistributionFlavorTetrateFIPS, FlavorVersion: 0},
 		} {
 			require.Error(t, checkExist(dir, c))
-			err = Fetch(dir, c, ms)
+			err := Fetch(dir, c, ms)
 			require.NoError(t, err)
 			require.NoError(t, checkExist(dir, c))
 		}

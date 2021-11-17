@@ -15,17 +15,15 @@
 package config
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
+
+	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewConfigDefault(t *testing.T) {
-	file, err := ioutil.TempFile("", "config")
-	require.NoError(t, err)
-	defer os.Remove(file.Name())
+	file := test.TempFile(t, "", "config")
 
 	setConfig := `providerName: "aws"
 providerConfig:
@@ -36,7 +34,7 @@ certificateParameters:
   secretOptions:
     istioCANamespace: "dummy-istio-ns"`
 
-	_, err = file.WriteString(setConfig)
+	_, err := file.WriteString(setConfig)
 	require.NoError(t, err)
 
 	getConfig, err := NewConfig(file.Name())
@@ -65,16 +63,14 @@ certificateParameters:
 }
 
 func TestNewConfigWithoutProvider(t *testing.T) {
-	file, err := ioutil.TempFile("", "config")
-	require.NoError(t, err)
-	defer os.Remove(file.Name())
+	file := test.TempFile(t, "", "config")
 
 	setConfig := `providerName: "aws"
 certificateParameters:
   secretOptions:
     istioCANamespace: "dummy-istio-ns"`
 
-	_, err = file.WriteString(setConfig)
+	_, err := file.WriteString(setConfig)
 	require.NoError(t, err)
 
 	getConfig, err := NewConfig(file.Name())
@@ -86,9 +82,7 @@ certificateParameters:
 }
 
 func TestNewConfigWithoutProviderRegion(t *testing.T) {
-	file, err := ioutil.TempFile("", "config")
-	require.NoError(t, err)
-	defer os.Remove(file.Name())
+	file := test.TempFile(t, "", "config")
 
 	setConfig := `providerName: "aws"
 providerConfig:
@@ -99,7 +93,7 @@ certificateParameters:
   secretOptions:
     istioCANamespace: "dummy-istio-ns"`
 
-	_, err = file.WriteString(setConfig)
+	_, err := file.WriteString(setConfig)
 	require.NoError(t, err)
 
 	getConfig, err := NewConfig(file.Name())
@@ -111,9 +105,7 @@ certificateParameters:
 }
 
 func TestNewConfigWithoutProviderTemplateARN(t *testing.T) {
-	file, err := ioutil.TempFile("", "config")
-	require.NoError(t, err)
-	defer os.Remove(file.Name())
+	file := test.TempFile(t, "", "config")
 
 	setConfig := `providerName: "aws"
 providerConfig:
@@ -123,7 +115,7 @@ certificateParameters:
   secretOptions:
     istioCANamespace: "dumy-istio-ns"`
 
-	_, err = file.WriteString(setConfig)
+	_, err := file.WriteString(setConfig)
 	require.NoError(t, err)
 
 	getConfig, err := NewConfig(file.Name())
@@ -135,9 +127,7 @@ certificateParameters:
 }
 
 func TestNewConfigWithoutProviderSigningCA(t *testing.T) {
-	file, err := ioutil.TempFile("", "config")
-	require.NoError(t, err)
-	defer os.Remove(file.Name())
+	file := test.TempFile(t, "", "config")
 
 	setConfig := `providerName: "aws"
 providerConfig:
@@ -147,7 +137,7 @@ certificateParameters:
   secretOptions:
     istioCANamespace: "dumy-istio-ns"`
 
-	_, err = file.WriteString(setConfig)
+	_, err := file.WriteString(setConfig)
 	require.NoError(t, err)
 
 	getConfig, err := NewConfig(file.Name())

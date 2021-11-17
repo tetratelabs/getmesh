@@ -17,10 +17,11 @@ package manifestchecker
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 
@@ -30,9 +31,7 @@ import (
 )
 
 func Test_endOfLifeChecker(t *testing.T) {
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
@@ -52,9 +51,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 	raw, err := json.Marshal(m)
 	require.NoError(t, err)
 
-	f, err := ioutil.TempFile("", "")
-	require.NoError(t, err)
-	defer f.Close()
+	f := test.TempFile(t, "", "")
 
 	_, err = f.Write(raw)
 	require.NoError(t, err)

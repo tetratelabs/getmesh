@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -26,12 +25,11 @@ import (
 	"github.com/tetratelabs/getmesh/internal/getmesh"
 	"github.com/tetratelabs/getmesh/internal/istioctl"
 	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/test"
 )
 
 func Test_switchParse(t *testing.T) {
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := test.TempDir(t, "", "")
 
 	manifest.GlobalManifestURLMux.Lock()
 	defer manifest.GlobalManifestURLMux.Unlock()
@@ -54,9 +52,7 @@ func Test_switchParse(t *testing.T) {
 	raw, err := json.Marshal(m)
 	require.NoError(t, err)
 
-	f, err := ioutil.TempFile("", "")
-	require.NoError(t, err)
-	defer f.Close()
+	f := test.TempFile(t, "", "")
 
 	_, err = f.Write(raw)
 	require.NoError(t, err)
