@@ -17,6 +17,7 @@ package util
 import (
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 	"testing"
 
@@ -25,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetIstioHomeDir(t *testing.T) {
+func TestGetmeshHomeDir(t *testing.T) {
 	t.Run("not created", func(t *testing.T) {
 		dir := test.TempDir(t, "", "")
 
@@ -56,5 +57,24 @@ func TestGetIstioHomeDir(t *testing.T) {
 		b, err := ioutil.ReadFile(filePath)
 		require.NoError(t, err)
 		require.Equal(t, expBytes, b)
+	})
+
+	t.Run("env exists", func(t *testing.T) {
+		path := filepath.Join(test.TempDir(t, "", ""), getmeshDirname)
+		t.Setenv(getmeshHomeEnvName, path)
+
+		dir, err := GetmeshHomeDir()
+		require.NoError(t, err)
+		require.Equal(t, path, dir)
+	})
+
+	t.Run("env does not exist", func(t *testing.T) {
+		usr, err := user.Current()
+		require.NoError(t, err)
+		require.NotNil(t, usr)
+
+		dir, err := GetmeshHomeDir()
+		require.NoError(t, err)
+		require.Equal(t, filepath.Join(usr.HomeDir, getmeshDirname), dir)
 	})
 }
