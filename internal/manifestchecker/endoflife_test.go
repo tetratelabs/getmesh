@@ -17,16 +17,14 @@ package manifestchecker
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"testing"
 	"time"
-
-	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/internal/getmesh"
 	"github.com/tetratelabs/getmesh/internal/manifest"
+	"github.com/tetratelabs/getmesh/internal/test"
 	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
@@ -55,7 +53,7 @@ func Test_endOfLifeChecker(t *testing.T) {
 
 	_, err = f.Write(raw)
 	require.NoError(t, err)
-	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
+	t.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name())
 
 	t.Run("ok version", func(t *testing.T) {
 		require.NoError(t, getmesh.SetIstioVersion(home, &manifest.IstioDistribution{Version: "1.8.1"}))

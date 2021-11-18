@@ -57,10 +57,7 @@ func Test_switchParse(t *testing.T) {
 	_, err = f.Write(raw)
 	require.NoError(t, err)
 
-	require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name()))
-	defer func() {
-		require.NoError(t, os.Setenv("GETMESH_TEST_MANIFEST_PATH", ""))
-	}()
+	t.Setenv("GETMESH_TEST_MANIFEST_PATH", f.Name())
 
 	// set up active distro
 	d := &manifest.IstioDistribution{

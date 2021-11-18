@@ -72,8 +72,7 @@ func getmeshListRequireNot(t *testing.T, version, flavor, flavorVersion string) 
 
 func TestFetch(t *testing.T) {
 	home := test.TempDir(t, "", "")
-	require.NoError(t, os.Setenv("GETMESH_HOME", home))
-	defer os.Setenv("GETMESH_HOME", "")
+	t.Setenv("GETMESH_HOME", home)
 
 	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.6", "--flavor=tetrate", "--flavor-version=0")
 	buf := new(bytes.Buffer)
@@ -130,8 +129,7 @@ istioctl switched to 1.8.6-tetrate-v0 now
 
 func TestPrune(t *testing.T) {
 	home := test.TempDir(t, "", "")
-	require.NoError(t, os.Setenv("GETMESH_HOME", home))
-	defer os.Setenv("GETMESH_HOME", "")
+	t.Setenv("GETMESH_HOME", home)
 
 	t.Run("specific", func(t *testing.T) {
 		var version = "1.7.8"
@@ -199,8 +197,7 @@ func TestPrune(t *testing.T) {
 
 func TestShow(t *testing.T) {
 	home := test.TempDir(t, "", "")
-	require.NoError(t, os.Setenv("GETMESH_HOME", home))
-	defer os.Setenv("GETMESH_HOME", "")
+	t.Setenv("GETMESH_HOME", home)
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
@@ -237,8 +234,7 @@ func TestShow(t *testing.T) {
 
 func TestSwitch(t *testing.T) {
 	home := test.TempDir(t, "", "")
-	require.NoError(t, os.Setenv("GETMESH_HOME", home))
-	defer os.Setenv("GETMESH_HOME", "")
+	t.Setenv("GETMESH_HOME", home)
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
