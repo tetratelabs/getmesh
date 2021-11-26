@@ -18,52 +18,52 @@ cat <<EOF >> aws.yaml
 providerName: aws
 disableSecretCreation: false
 providerConfig:
-  aws:
-    signingCAArn: <your ACM PCA CA ARN>
-    templateArn: arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1
-    signingAlgorithm: SHA256WITHRSA
+    aws:
+        signingCAArn: <your ACM PCA CA ARN>
+        templateArn: arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1
+        signingAlgorithm: SHA256WITHRSA
 certificateParameters:
-  secretOptions:
-    istioCANamespace: istio-system
-    secretFilePath: ~/.getmesh/secret/
-    overrideExistingCACertsSecret: false
-  caOptions:
-    certSigningRequestParams:
-      raw: []
-      rawtbscertificaterequest: []
-      rawsubjectpublickeyinfo: []
-      rawsubject: []
-      version: 0
-      signature: []
-      signaturealgorithm: 0
-      publickeyalgorithm: 0
-      publickey: null
-      subject:
-        country:
-        - US
-        organization:
-        - Istio
-        organizationalunit: []
-        locality:
-        - Sunnyvale
-        province:
-        - California
-        streetaddress: []
-        postalcode: []
-        serialnumber: ""
-        commonname: Istio CA
-        names: []
-        extranames: []
-      attributes: []
-      extensions: []
-      extraextensions: []
-      dnsnames:
-      - ca.istio.io
-      emailaddresses: []
-      ipaddresses: []
-      uris: []
-    validityDays: 3650
-    keyLength: 2048
+    secretOptions:
+        istioCANamespace: istio-system
+        secretFilePath: ~/.getmesh/secret/
+        overrideExistingCACertsSecret: false
+    caOptions:
+        certSigningRequestParams:
+            raw: []
+            rawtbscertificaterequest: []
+            rawsubjectpublickeyinfo: []
+            rawsubject: []
+            version: 0
+            signature: []
+            signaturealgorithm: 0
+            publickeyalgorithm: 0
+            publickey: null
+            subject:
+                country:
+                    - US
+                organization:
+                    - Istio
+                organizationalunit: []
+                locality:
+                    - Sunnyvale
+                province:
+                    - California
+                streetaddress: []
+                postalcode: []
+                serialnumber: ""
+                commonname: Istio CA
+                names: []
+                extranames: []
+            attributes: []
+            extensions: []
+            extraextensions: []
+            dnsnames:
+                - ca.istio.io
+            emailaddresses: []
+            ipaddresses: []
+            uris: []
+        validityDays: 3650
+        keyLength: 2048
 
 EOF
 getmesh gen-ca --config-file aws.yaml
@@ -75,51 +75,51 @@ cat <<EOF >> gcp.yaml
 providerName: gcp
 disableSecretCreation: false
 providerConfig:
-  gcp:
-    casCAName: projects/{project-id}/locations/{location}/certificateAuthorities/{YourCA}
-    maxIssuerPathLen: 0
+    gcp:
+        casCAName: projects/{project-id}/locations/{location}/certificateAuthorities/{YourCA}
+        maxIssuerPathLen: 0
 certificateParameters:
-  secretOptions:
-    istioCANamespace: istio-system
-    secretFilePath: ~/.getmesh/secret/
-    overrideExistingCACertsSecret: false
-  caOptions:
-    certSigningRequestParams:
-      raw: []
-      rawtbscertificaterequest: []
-      rawsubjectpublickeyinfo: []
-      rawsubject: []
-      version: 0
-      signature: []
-      signaturealgorithm: 0
-      publickeyalgorithm: 0
-      publickey: null
-      subject:
-        country:
-        - US
-        organization:
-        - Istio
-        organizationalunit: []
-        locality:
-        - Sunnyvale
-        province:
-        - California
-        streetaddress: []
-        postalcode: []
-        serialnumber: ""
-        commonname: Istio CA
-        names: []
-        extranames: []
-      attributes: []
-      extensions: []
-      extraextensions: []
-      dnsnames:
-      - ca.istio.io
-      emailaddresses: []
-      ipaddresses: []
-      uris: []
-    validityDays: 3650
-    keyLength: 2048
+    secretOptions:
+        istioCANamespace: istio-system
+        secretFilePath: ~/.getmesh/secret/
+        overrideExistingCACertsSecret: false
+    caOptions:
+        certSigningRequestParams:
+            raw: []
+            rawtbscertificaterequest: []
+            rawsubjectpublickeyinfo: []
+            rawsubject: []
+            version: 0
+            signature: []
+            signaturealgorithm: 0
+            publickeyalgorithm: 0
+            publickey: null
+            subject:
+                country:
+                    - US
+                organization:
+                    - Istio
+                organizationalunit: []
+                locality:
+                    - Sunnyvale
+                province:
+                    - California
+                streetaddress: []
+                postalcode: []
+                serialnumber: ""
+                commonname: Istio CA
+                names: []
+                extranames: []
+            attributes: []
+            extensions: []
+            extraextensions: []
+            dnsnames:
+                - ca.istio.io
+            emailaddresses: []
+            ipaddresses: []
+            uris: []
+        validityDays: 3650
+        keyLength: 2048
 
 EOF
 getmesh gen-ca --config-file gcp.yaml

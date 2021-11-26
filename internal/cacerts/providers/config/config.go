@@ -23,7 +23,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	ops "github.com/tetratelabs/getmesh/internal/cacerts/providers"
 	"github.com/tetratelabs/getmesh/internal/cacerts/providers/models"
