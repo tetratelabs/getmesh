@@ -15,7 +15,6 @@
 package util
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -24,9 +23,7 @@ import (
 
 func TestGetKubeConfigLocation(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		original := os.Getenv("KUBECONFIG")
-		os.Setenv("KUBECONFIG", "")
-		defer os.Setenv("KUBECONFIG", original)
+		t.Setenv("KUBECONFIG", "")
 
 		config := GetKubeConfigLocation()
 		require.Equal(t, config, clientcmd.RecommendedHomeFile)
@@ -34,18 +31,14 @@ func TestGetKubeConfigLocation(t *testing.T) {
 
 	t.Run("KUBECONFIG", func(t *testing.T) {
 		actual := "./testconfig"
-		original := os.Getenv("KUBECONFIG")
-		os.Setenv("KUBECONFIG", actual)
-		defer os.Setenv("KUBECONFIG", original)
+		t.Setenv("KUBECONFIG", actual)
 
 		config := GetKubeConfigLocation()
 		require.Equal(t, config, actual)
 	})
 	t.Run("local", func(t *testing.T) {
 		actual := "./testconfig"
-		original := os.Getenv("KUBECONFIG")
-		os.Setenv("KUBECONFIG", "")
-		defer os.Setenv("KUBECONFIG", original)
+		t.Setenv("KUBECONFIG", "")
 
 		KubeConfig = actual
 		config := GetKubeConfigLocation()
