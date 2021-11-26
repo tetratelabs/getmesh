@@ -36,7 +36,7 @@ func TestPreFlightChecks(t *testing.T) {
 		cfg := &config.Config{}
 		cfg.SetDefaultValues()
 
-		d := test.TempDir(t, "", "")
+		d := t.TempDir()
 
 		cfg.CertParameters.SecretFilePath = filepath.Join(d, "non-exist")
 
@@ -64,7 +64,7 @@ func TestPreFlightChecks(t *testing.T) {
 	})
 
 	t.Run("genCAValidateSecretFilePath", func(t *testing.T) {
-		d := test.TempDir(t, "", "")
+		d := t.TempDir()
 
 		cs := fake.NewSimpleClientset()
 		cfg := &config.Config{}

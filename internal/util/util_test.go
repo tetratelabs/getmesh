@@ -21,14 +21,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/tetratelabs/getmesh/internal/test"
-
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetmeshHomeDir(t *testing.T) {
 	t.Run("not created", func(t *testing.T) {
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 
 		actual, err := getmeshHomeDir(dir)
 		require.NoError(t, err)
@@ -36,7 +34,7 @@ func TestGetmeshHomeDir(t *testing.T) {
 	})
 
 	t.Run("created", func(t *testing.T) {
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 
 		// create .getmesh prior to calling getmeshHomeDir
 		home := filepath.Join(dir, getmeshDirname)
@@ -60,7 +58,7 @@ func TestGetmeshHomeDir(t *testing.T) {
 	})
 
 	t.Run("env exists", func(t *testing.T) {
-		path := filepath.Join(test.TempDir(t, "", ""), getmeshDirname)
+		path := filepath.Join(t.TempDir(), getmeshDirname)
 		t.Setenv(getmeshHomeEnvName, path)
 
 		dir, err := GetmeshHomeDir()

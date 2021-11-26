@@ -21,8 +21,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/getmesh/internal/test"
-
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/internal/getmesh"
@@ -31,7 +29,7 @@ import (
 )
 
 func TestGetFetchedVersions(t *testing.T) {
-	dir := test.TempDir(t, "", "")
+	dir := t.TempDir()
 
 	exp := map[string]struct{}{}
 	for _, v := range []string{
@@ -66,7 +64,7 @@ func TestPrintFetchedVersions(t *testing.T) {
 	defer getmesh.GlobalConfigMux.Unlock()
 
 	t.Run("ok", func(t *testing.T) {
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 
 		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
@@ -111,7 +109,7 @@ func TestGetCurrentExecutable(t *testing.T) {
 			FlavorVersion: 0,
 		}
 
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 		require.NoError(t, getmesh.SetIstioVersion(dir, d))
 		_, err := GetCurrentExecutable(dir)
 		require.Error(t, err)
@@ -121,7 +119,7 @@ func TestGetCurrentExecutable(t *testing.T) {
 		getmesh.GlobalConfigMux.Lock()
 		defer getmesh.GlobalConfigMux.Unlock()
 
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 
 		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
@@ -159,7 +157,7 @@ func Test_removeAll(t *testing.T) {
 	})
 
 	t.Run("ok", func(t *testing.T) {
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 
 		distros := []*manifest.IstioDistribution{
 			{Version: "1.7.1", Flavor: "tetrate", FlavorVersion: 1},
@@ -194,7 +192,7 @@ func Test_removeAll(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	dir := test.TempDir(t, "", "")
+	dir := t.TempDir()
 
 	t.Run("skip", func(t *testing.T) {
 		d := &manifest.IstioDistribution{
@@ -250,7 +248,7 @@ func TestRemove(t *testing.T) {
 func Test_checkExists(t *testing.T) {
 
 	t.Run("exist", func(t *testing.T) {
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        manifest.IstioDistributionFlavorTetrate,
@@ -267,7 +265,7 @@ func Test_checkExists(t *testing.T) {
 	})
 
 	t.Run("non exist", func(t *testing.T) {
-		dir := test.TempDir(t, "", "")
+		dir := t.TempDir()
 		d := &manifest.IstioDistribution{
 			Version:       "1.7.3",
 			Flavor:        "non-exist",
@@ -281,7 +279,7 @@ func TestSwitch(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
 
-	dir := test.TempDir(t, "", "")
+	dir := t.TempDir()
 
 	t.Run("exist", func(t *testing.T) {
 		d := &manifest.IstioDistribution{
@@ -326,7 +324,7 @@ func TestExec(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
 
-	dir := test.TempDir(t, "", "")
+	dir := t.TempDir()
 
 	d := &manifest.IstioDistribution{
 		Version:       "0.0.1",
@@ -354,7 +352,7 @@ func TestExec(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	dir := test.TempDir(t, "", "")
+	dir := t.TempDir()
 	ms := &manifest.Manifest{
 		IstioDistributions: []*manifest.IstioDistribution{
 			{

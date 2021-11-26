@@ -29,7 +29,7 @@ import (
 )
 
 func Test_switchParse(t *testing.T) {
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 
 	manifest.GlobalManifestURLMux.Lock()
 	defer manifest.GlobalManifestURLMux.Unlock()

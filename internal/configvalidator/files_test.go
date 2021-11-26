@@ -15,6 +15,7 @@
 package configvalidator
 
 import (
+	"io/ioutil"
 	"testing"
 
 	"github.com/tetratelabs/getmesh/internal/test"
@@ -23,14 +24,15 @@ import (
 )
 
 func TestExtractYamlFilePaths(t *testing.T) {
-	root := test.TempDir(t, "", "")
+	root := t.TempDir()
 
 	var in, exp []string
 	f := test.TempFile(t, root, "*.yaml")
 	in = append(in, f.Name())
 	exp = append(exp, f.Name())
 
-	sub := test.TempDir(t, root, "")
+	sub, err := ioutil.TempDir(root, "")
+	require.NoError(t, err)
 	in = append(in, sub)
 
 	f = test.TempFile(t, sub, "*.yaml")

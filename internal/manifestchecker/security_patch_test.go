@@ -19,8 +19,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/getmesh/internal/test"
-
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/internal/istioctl"
@@ -29,7 +27,7 @@ import (
 )
 
 func Test_securityPatchCheckerImpl(t *testing.T) {
-	dir := test.TempDir(t, "", "")
+	dir := t.TempDir()
 
 	locals := []*manifest.IstioDistribution{
 		// non existent group

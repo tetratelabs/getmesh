@@ -71,7 +71,7 @@ func getmeshListRequireNot(t *testing.T, version, flavor, flavorVersion string) 
 }
 
 func TestFetch(t *testing.T) {
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 	t.Setenv("GETMESH_HOME", home)
 
 	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.6", "--flavor=tetrate", "--flavor-version=0")
@@ -128,7 +128,7 @@ istioctl switched to 1.8.6-tetrate-v0 now
 }
 
 func TestPrune(t *testing.T) {
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 	t.Setenv("GETMESH_HOME", home)
 
 	t.Run("specific", func(t *testing.T) {
@@ -196,7 +196,7 @@ func TestPrune(t *testing.T) {
 }
 
 func TestShow(t *testing.T) {
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 	t.Setenv("GETMESH_HOME", home)
 
 	distros := []struct{ version, flavor, flavorVersion string }{
@@ -233,7 +233,7 @@ func TestShow(t *testing.T) {
 }
 
 func TestSwitch(t *testing.T) {
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 	t.Setenv("GETMESH_HOME", home)
 
 	distros := []struct{ version, flavor, flavorVersion string }{

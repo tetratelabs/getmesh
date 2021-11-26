@@ -29,7 +29,7 @@ import (
 )
 
 func Test_endOfLifeChecker(t *testing.T) {
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()

@@ -20,7 +20,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/tetratelabs/getmesh/internal/getmesh"
-	"github.com/tetratelabs/getmesh/internal/test"
 	"github.com/tetratelabs/getmesh/internal/util/logger"
 )
 
@@ -52,7 +51,7 @@ func Test_defaultHubCheckFlags(t *testing.T) {
 func Test_defaultHubHandleSet(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 
 	value := "myhub.com"
 	buf := logger.ExecuteWithLock(func() {
@@ -82,7 +81,7 @@ func Test_defaultHubHandleShow(t *testing.T) {
 func Test_defaultHubHandleRemove(t *testing.T) {
 	getmesh.GlobalConfigMux.Lock()
 	defer getmesh.GlobalConfigMux.Unlock()
-	home := test.TempDir(t, "", "")
+	home := t.TempDir()
 
 	value := "myhub.com"
 	require.NoError(t, defaultHubHandleSet(home, value))
