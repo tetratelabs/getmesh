@@ -17,17 +17,16 @@ package util
 import (
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetIstioHomeDir(t *testing.T) {
+func TestGetmeshHomeDir(t *testing.T) {
 	t.Run("not created", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(dir)
+		dir := t.TempDir()
 
 		actual, err := getmeshHomeDir(dir)
 		require.NoError(t, err)
@@ -35,9 +34,7 @@ func TestGetIstioHomeDir(t *testing.T) {
 	})
 
 	t.Run("created", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(dir)
+		dir := t.TempDir()
 
 		// create .getmesh prior to calling getmeshHomeDir
 		home := filepath.Join(dir, getmeshDirname)
@@ -58,5 +55,24 @@ func TestGetIstioHomeDir(t *testing.T) {
 		b, err := ioutil.ReadFile(filePath)
 		require.NoError(t, err)
 		require.Equal(t, expBytes, b)
+	})
+
+	t.Run("env exists", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), getmeshDirname)
+		t.Setenv(getmeshHomeEnvName, path)
+
+		dir, err := GetmeshHomeDir()
+		require.NoError(t, err)
+		require.Equal(t, path, dir)
+	})
+
+	t.Run("env does not exist", func(t *testing.T) {
+		usr, err := user.Current()
+		require.NoError(t, err)
+		require.NotNil(t, usr)
+
+		dir, err := GetmeshHomeDir()
+		require.NoError(t, err)
+		require.Equal(t, filepath.Join(usr.HomeDir, getmeshDirname), dir)
 	})
 }

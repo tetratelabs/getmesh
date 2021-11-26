@@ -12,42 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package configvalidator
+package test
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
-
-	"github.com/tetratelabs/getmesh/internal/test"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestExtractYamlFilePaths(t *testing.T) {
-	root := t.TempDir()
+// TempFile is a helper function which creates a temporary file
+// and automatically closes after test is completed
+func TempFile(t *testing.T, dir, pattern string) *os.File {
+	t.Helper()
 
-	var in, exp []string
-	f := test.TempFile(t, root, "*.yaml")
-	in = append(in, f.Name())
-	exp = append(exp, f.Name())
-
-	sub, err := ioutil.TempDir(root, "")
+	tempFile, err := os.CreateTemp(dir, pattern)
 	require.NoError(t, err)
-	in = append(in, sub)
+	require.NotNil(t, tempFile)
 
-	f = test.TempFile(t, sub, "*.yaml")
-	exp = append(exp, f.Name())
-
-	f = test.TempFile(t, sub, "*.go")
-	excluded := f.Name()
-
-	actual, err := extractYamlFilePaths([]string{root})
-	require.NoError(t, err)
-
-	for _, e := range exp {
-		require.Contains(t, actual, e)
-	}
-
-	require.NotContains(t, actual, excluded)
-	t.Logf("in: %v, out: %v", in, actual)
+	t.Cleanup(func() { require.NoError(t, os.Remove(tempFile.Name())) })
+	return tempFile
 }

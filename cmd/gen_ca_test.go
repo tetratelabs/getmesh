@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -29,6 +28,7 @@ import (
 	"k8s.io/client-go/kubernetes/fake"
 
 	"github.com/tetratelabs/getmesh/internal/cacerts/providers/config"
+	"github.com/tetratelabs/getmesh/internal/test"
 )
 
 func TestPreFlightChecks(t *testing.T) {
@@ -36,18 +36,14 @@ func TestPreFlightChecks(t *testing.T) {
 		cfg := &config.Config{}
 		cfg.SetDefaultValues()
 
-		d, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(d)
+		d := t.TempDir()
 
 		cfg.CertParameters.SecretFilePath = filepath.Join(d, "non-exist")
 
 		require.NoError(t, genCAPreFlightChecks(cfg, nil))
-		file, err := ioutil.TempFile(d, "")
-		require.NoError(t, err)
-		defer file.Close()
+		f := test.TempFile(t, d, "")
 
-		cfg.CertParameters.SecretFilePath = path.Join(d, file.Name())
+		cfg.CertParameters.SecretFilePath = path.Join(d, f.Name())
 		require.Error(t, genCAPreFlightChecks(cfg, nil))
 	})
 
@@ -68,9 +64,7 @@ func TestPreFlightChecks(t *testing.T) {
 	})
 
 	t.Run("genCAValidateSecretFilePath", func(t *testing.T) {
-		d, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(d)
+		d := t.TempDir()
 
 		cs := fake.NewSimpleClientset()
 		cfg := &config.Config{}
@@ -81,12 +75,11 @@ func TestPreFlightChecks(t *testing.T) {
 		ro := filepath.Join(d, "readonly")
 		require.NoError(t, os.Mkdir(ro, 0400))
 		cfg.CertParameters.SecretFilePath = filepath.Join(ro, "test.yaml")
-		err = genCAPreFlightChecks(cfg, cs)
+		err := genCAPreFlightChecks(cfg, cs)
 		require.Contains(t, err.Error(), "unable to write on secret file path:")
 
 		// ok
-		f, err := ioutil.TempFile(d, "")
-		require.NoError(t, err)
+		f := test.TempFile(t, d, "")
 		cfg.CertParameters.SecretFilePath = f.Name()
 		err = genCAPreFlightChecks(cfg, cs)
 		require.Contains(t, err.Error(), f.Name()+"` already exist, please change the file path before proceeding")

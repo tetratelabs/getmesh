@@ -15,7 +15,6 @@
 package manifestchecker
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -28,9 +27,7 @@ import (
 )
 
 func Test_securityPatchCheckerImpl(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	locals := []*manifest.IstioDistribution{
 		// non existent group
@@ -61,7 +58,7 @@ func Test_securityPatchCheckerImpl(t *testing.T) {
 		require.NoError(t, os.MkdirAll(suffix, 0755))
 		f, err := os.Create(ctlPath)
 		require.NoError(t, err)
-		_ = f.Close()
+		require.NoError(t, f.Close())
 	}
 
 	buf := logger.ExecuteWithLock(func() {

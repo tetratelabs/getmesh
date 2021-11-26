@@ -17,22 +17,18 @@ package getmesh
 import (
 	"encoding/json"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
 	"github.com/tetratelabs/getmesh/internal/manifest"
 )
 
 func TestSetIstioVersion(t *testing.T) {
 	GlobalConfigMux.Lock()
 	defer GlobalConfigMux.Unlock()
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := t.TempDir()
 
 	d := &manifest.IstioDistribution{
 		Version:       "1.8.1",
@@ -52,9 +48,7 @@ func TestSetIstioVersion(t *testing.T) {
 func TestSetDefaultHub(t *testing.T) {
 	GlobalConfigMux.Lock()
 	defer GlobalConfigMux.Unlock()
-	home, err := ioutil.TempDir("", "")
-	require.NoError(t, err)
-	defer os.RemoveAll(home)
+	home := t.TempDir()
 
 	hub := "gcr.io/istio-testing"
 	require.NoError(t, SetDefaultHub(home, hub))
@@ -69,9 +63,7 @@ func TestInitConfig(t *testing.T) {
 	GlobalConfigMux.Lock()
 	defer GlobalConfigMux.Unlock()
 	t.Run("exists", func(t *testing.T) {
-		home, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(home)
+		home := t.TempDir()
 
 		d := &manifest.IstioDistribution{
 			Version:       "1.8.1",
@@ -87,9 +79,7 @@ func TestInitConfig(t *testing.T) {
 	})
 
 	t.Run("non-exists", func(t *testing.T) {
-		home, err := ioutil.TempDir("", "")
-		require.NoError(t, err)
-		defer os.RemoveAll(home)
+		home := t.TempDir()
 
 		currentConfig = Config{IstioDistribution: &manifest.IstioDistribution{}}
 		require.NoError(t, InitConfig(home))
