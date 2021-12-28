@@ -64,14 +64,6 @@ getmesh --help
 
 <br />
 
-Once getmesh is downloaded, it can be self-updated to the latest version by running the [update command](/doc/en/getmesh-cli/reference/getmesh_update/_index.md):
-
-```sh
-getmesh update
-```
-
-<br />
-
 For more information on getmesh, please visit [istio.tetratelabs.io](https://istio.tetratelabs.io/).
 
 # Contributing
