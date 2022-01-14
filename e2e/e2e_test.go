@@ -102,7 +102,13 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-tetrate-v0 now`)
+	flavor := "v0"
+	ver := buf.String()
+	// 1.12.1 only has a v1 flavor.
+	if strings.Contains(ver, "1.12.1") {
+		flavor = "v1"
+	}
+	require.Contains(t, buf.String(), fmt.Sprintf(`-tetrate-%s now`, flavor))
 
 	// fetch with single flavor flag
 	cmd = exec.Command("./getmesh", "fetch", "--flavor=tetrate")
@@ -110,7 +116,13 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-tetrate-v0 now`)
+	flavor = "v0"
+	ver = buf.String()
+	// 1.12.1 only has a v1 flavor.
+	if strings.Contains(ver, "1.12.1") {
+		flavor = "v1"
+	}
+	require.Contains(t, buf.String(), fmt.Sprintf(`-tetrate-%s now`, flavor))
 
 	// fetch another version
 	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.8")
