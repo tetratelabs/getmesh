@@ -102,7 +102,13 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-tetrate-v0 now`)
+	flavor := "v0"
+	ver := buf.String()
+	// 1.12.1 only has a v1 flavor.
+	if strings.Contains(ver, "1.12.1") {
+		flavor = "v1"
+	}
+	require.Contains(t, buf.String(), fmt.Sprintf(`-tetrate-%s now`, flavor))
 
 	// fetch with single flavor flag
 	cmd = exec.Command("./getmesh", "fetch", "--flavor=tetrate")
@@ -110,7 +116,13 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `-tetrate-v0 now`)
+	flavor = "v0"
+	ver = buf.String()
+	// 1.12.1 only has a v1 flavor.
+	if strings.Contains(ver, "1.12.1") {
+		flavor = "v1"
+	}
+	require.Contains(t, buf.String(), fmt.Sprintf(`-tetrate-%s now`, flavor))
 
 	// fetch another version
 	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.8")
@@ -420,14 +432,24 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	require.Contains(t, actual, "1.11.3-tetrate-v0 is the latest version in 1.11-tetrate")
+	require.Contains(t, actual, "1.12.1-tetrate-v1 is the latest version in 1.12-tetrate")
 
 	// change image to 1.8.1-tetrate-v0
 	image := "containers.istio.tetratelabs.com/pilot:1.8.1-tetrate-v0"
+	// Update the Istiod image
 	patch := fmt.Sprintf(`{"spec":{"template":{"spec":{"containers":[{"name":"discovery","image":"%s"}]}}}}`,
 		image)
 	cmd = exec.Command("kubectl", "patch", "deployment",
 		"-nistio-system", "istiod", "-p", patch)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	require.NoError(t, cmd.Run())
+	// Update the ingress gateway image
+	image = "containers.istio.tetratelabs.com/proxyv2:1.8.1-tetrate-v0"
+	patch = fmt.Sprintf(`{"spec":{"template":{"spec":{"containers":[{"name":"istio-proxy","image":"%s"}]}}}}`,
+		image)
+	cmd = exec.Command("kubectl", "patch", "deployment",
+		"-nistio-system", "istio-ingressgateway", "-p", patch)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
