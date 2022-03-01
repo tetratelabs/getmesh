@@ -474,6 +474,7 @@ update_profile() {
       printf "\n$path_str\n"
       command printf "$path_str" >> "$detected_profile"
       printf "\nFinished installation. Open a new terminal to start using getmesh!\n"
+      printf "\nOr run source ~/.bashrc for bash shell \nOr  source ~/.zshrc for zsh shell \n"
     fi
   fi
 }
