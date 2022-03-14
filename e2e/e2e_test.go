@@ -441,7 +441,7 @@ func checkUpgrade(t *testing.T) {
 		return strings.Contains(actual,
 			"There is the available patch for the minor version 1.8-tetrate which includes **security upgrades**. "+
 				"We strongly recommend upgrading all 1.8-tetrate versions -> 1.8.6-tetrate-v0")
-	}, time.Minute, 10*time.Second)
+	}, time.Minute, 3*time.Second)
 }
 
 func configValidate(t *testing.T) {
