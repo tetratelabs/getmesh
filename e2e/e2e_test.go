@@ -414,6 +414,11 @@ func versionTest(t *testing.T) {
 }
 
 func checkUpgrade(t *testing.T) {
+	// Override the manifest so 1.8 will always be supported
+	if err := os.Setenv("GETMESH_TEST_MANIFEST_PATH", "e2e/testdata/check-upgrade-manifest.json"); err != nil {
+		log.Fatal(err)
+	}
+
 	cmd := exec.Command("./getmesh", "check-upgrade")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
