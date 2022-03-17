@@ -113,7 +113,7 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	require.Contains(t, buf.String(), `-tetrate-v0 now`)
 
 	// fetch another version
-	cmd = exec.Command("./getmesh", "fetch", "--version=1.7.8")
+	cmd = exec.Command("./getmesh", "fetch", "--version=1.9.7")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
@@ -124,7 +124,7 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `1.7.8-tetrate-v0 (Active)`)
+	require.Contains(t, buf.String(), `1.9.7-tetrate-v0 (Active)`)
 }
 
 func TestPrune(t *testing.T) {
@@ -132,7 +132,7 @@ func TestPrune(t *testing.T) {
 	t.Setenv("GETMESH_HOME", home)
 
 	t.Run("specific", func(t *testing.T) {
-		var version = "1.7.8"
+		var version = "1.9.7"
 		var flavor = "tetrate"
 		var flavorVersion = strconv.Itoa(0)
 
@@ -158,7 +158,7 @@ func TestPrune(t *testing.T) {
 	t.Run("all", func(t *testing.T) {
 		distros := []struct{ version, flavor, flavorVersion string }{
 			{
-				version:       "1.7.8",
+				version:       "1.9.7",
 				flavor:        "tetrate",
 				flavorVersion: strconv.Itoa(0),
 			},
@@ -201,7 +201,7 @@ func TestShow(t *testing.T) {
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
-			version:       "1.7.8",
+			version:       "1.9.7",
 			flavor:        "tetrate",
 			flavorVersion: strconv.Itoa(0),
 		},
@@ -227,8 +227,8 @@ func TestShow(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
 	exp := `1.12.4-tetrate-v0 (Active)
-1.7.8-tetrate-v0
-1.8.6-tetrate-v0`
+1.8.6-tetrate-v0
+1.9.7-tetrate-v0`
 	require.Contains(t, buf.String(), exp)
 }
 
@@ -238,7 +238,7 @@ func TestSwitch(t *testing.T) {
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
-			version:       "1.7.8",
+			version:       "1.9.7",
 			flavor:        "tetrate",
 			flavorVersion: strconv.Itoa(0),
 		},
@@ -380,7 +380,6 @@ func versionTest(t *testing.T) {
 			cmd.Stderr = os.Stderr
 			require.NoError(t, cmd.Run())
 			actual := buf.String()
-			fmt.Println(t)
 			require.Contains(t, actual, "getmesh version: dev")
 			require.Contains(t, actual, "active istioctl")
 			// latest version is available
@@ -444,8 +443,6 @@ func checkUpgrade(t *testing.T) {
 		cmd.Stderr = os.Stderr
 		_ = cmd.Run()
 		actual := buf.String()
-		fmt.Println(actual)
-
 		return strings.Contains(actual,
 			"1.12.4-tetrate-v0 is the latest version in 1.12-tetrate")
 	}, time.Minute, 3*time.Second)
@@ -466,7 +463,6 @@ func configValidate(t *testing.T) {
 		cmd.Stderr = os.Stderr
 		require.Error(t, cmd.Run())
 		exps := []string{
-			// `IST0101`, `Referenced selector not found: "app=nonexisting"`,
 			`KIA0505`, `Destination Rule disabling namespace-wide mTLS is missing`,
 			`KIA1102`, `VirtualService is pointing to a non-existent gateway`,
 		}
@@ -517,7 +513,6 @@ func configValidate(t *testing.T) {
 		require.Error(t, cmd.Run())
 
 		exps := []string{
-			// `IST0101`, `Referenced selector not found: "app=nonexisting"`,
 			`KIA0505`, `Destination Rule disabling namespace-wide mTLS is missing`,
 			`KIA1102`, `VirtualService is pointing to a non-existent gateway`,
 		}
@@ -554,9 +549,7 @@ func configValidate(t *testing.T) {
 		require.Error(t, cmd.Run())
 
 		exps := []string{
-			// `IST0101`,
 			`ratings-bogus-weight-default`,
-			// `[e2e/testdata/config-validate-local.yaml:29] Referenced host+subset in destinationrule not found: "ratings+v1`,
 			`KIA1104`, `[e2e/testdata/config-validate-local.yaml] The weight is assumed to be 100 because there is only one route destination`,
 		}
 		out := bufOut.String()
@@ -579,7 +572,6 @@ func configValidate(t *testing.T) {
 
 		exps := []string{
 			`KIA1101`,
-			// `[e2e/testdata/config-validate-local/config-validate-local.yaml:1] Unknown annotation: networking.istio.io/non-exist`,
 		}
 		out := bufOut.String()
 		for _, exp := range exps {

@@ -4,9 +4,7 @@
     "1.11": "2022-10-11",
     "1.10": "2022-07-17",
     "1.9": "2022-04-08",
-    "1.8": "2092-01-18",
-    "1.7": "2021-10-20",
-    "1.6": "2020-11-21"
+    "1.8": "2092-01-18"
   },
   "istio_distributions": [
     {
@@ -426,34 +424,6 @@
       ],
       "release_notes": [
         "https://istio.io/latest/news/releases/1.8.x/announcing-1.8.3/"
-      ],
-      "is_security_patch": false
-    },
-    {
-      "version": "1.7.8",
-      "flavor": "tetrate",
-      "flavor_version": 0,
-      "k8s_versions": [
-        "1.16",
-        "1.17",
-        "1.18"
-      ],
-      "release_notes": [
-        "https://istio.io/latest/news/releases/1.7.x/announcing-1.7.8/"
-      ],
-      "is_security_patch": false
-    },
-    {
-      "version": "1.7.8",
-      "flavor": "istio",
-      "flavor_version": 0,
-      "k8s_versions": [
-        "1.16",
-        "1.17",
-        "1.18"
-      ],
-      "release_notes": [
-        "https://istio.io/latest/news/releases/1.7.x/announcing-1.7.8/"
       ],
       "is_security_patch": false
     }
