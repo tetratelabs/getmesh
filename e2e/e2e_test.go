@@ -74,15 +74,15 @@ func TestFetch(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("GETMESH_HOME", home)
 
-	cmd := exec.Command("./getmesh", "fetch", "--version=1.8.6", "--flavor=tetrate", "--flavor-version=0")
+	cmd := exec.Command("./getmesh", "fetch", "--version=1.12.4", "--flavor=tetrate", "--flavor-version=0")
 	buf := new(bytes.Buffer)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
-	require.Contains(t, buf.String(), `For more information about 1.8.6-tetrate-v0, please refer to the release notes: 
-- https://istio.io/latest/news/releases/1.8.x/announcing-1.8.6/
+	require.Contains(t, buf.String(), `For more information about 1.12.4-tetrate-v0, please refer to the release notes: 
+- https://istio.io/latest/news/releases/1.12.x/announcing-1.12.4/
 
-istioctl switched to 1.8.6-tetrate-v0 now
+istioctl switched to 1.12.4-tetrate-v0 now
 `)
 
 	// not listed version should be error
@@ -113,7 +113,7 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	require.Contains(t, buf.String(), `-tetrate-v0 now`)
 
 	// fetch another version
-	cmd = exec.Command("./getmesh", "fetch", "--version=1.9.7")
+	cmd = exec.Command("./getmesh", "fetch", "--version=1.13.2")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
@@ -124,7 +124,7 @@ istioctl switched to 1.8.6-tetrate-v0 now
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	require.Contains(t, buf.String(), `1.9.7-tetrate-v0 (Active)`)
+	require.Contains(t, buf.String(), `1.13.2-tetrate-v0 (Active)`)
 }
 
 func TestPrune(t *testing.T) {
@@ -132,14 +132,14 @@ func TestPrune(t *testing.T) {
 	t.Setenv("GETMESH_HOME", home)
 
 	t.Run("specific", func(t *testing.T) {
-		var version = "1.9.7"
+		var version = "1.13.2"
 		var flavor = "tetrate"
 		var flavorVersion = strconv.Itoa(0)
 
 		// fetch the target.
 		getmeshFetchRequire(t, version, flavor, flavorVersion)
 		// fetch another target since the target should not be active.
-		getmeshFetchRequire(t, "1.8.3", flavor, flavorVersion)
+		getmeshFetchRequire(t, "1.10.3", flavor, flavorVersion)
 
 		// check existence
 		getmeshListRequire(t, version, flavor, flavorVersion)
@@ -158,17 +158,17 @@ func TestPrune(t *testing.T) {
 	t.Run("all", func(t *testing.T) {
 		distros := []struct{ version, flavor, flavorVersion string }{
 			{
-				version:       "1.9.7",
-				flavor:        "tetrate",
-				flavorVersion: strconv.Itoa(0),
-			},
-			{
-				version:       "1.8.6",
-				flavor:        "tetrate",
-				flavorVersion: strconv.Itoa(0),
-			},
-			{
 				version:       "1.12.4",
+				flavor:        "tetrate",
+				flavorVersion: strconv.Itoa(0),
+			},
+			{
+				version:       "1.13.2",
+				flavor:        "tetrate",
+				flavorVersion: strconv.Itoa(0),
+			},
+			{
+				version:       "1.10.3",
 				flavor:        "tetrate",
 				flavorVersion: strconv.Itoa(0),
 			},
@@ -201,17 +201,17 @@ func TestShow(t *testing.T) {
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
-			version:       "1.9.7",
-			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(0),
-		},
-		{
-			version:       "1.8.6",
-			flavor:        "tetrate",
-			flavorVersion: strconv.Itoa(0),
-		},
-		{
 			version:       "1.12.4",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(0),
+		},
+		{
+			version:       "1.13.2",
+			flavor:        "tetrate",
+			flavorVersion: strconv.Itoa(0),
+		},
+		{
+			version:       "1.10.3",
 			flavor:        "tetrate",
 			flavorVersion: strconv.Itoa(0),
 		},
@@ -226,9 +226,9 @@ func TestShow(t *testing.T) {
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run())
-	exp := `1.12.4-tetrate-v0 (Active)
-1.8.6-tetrate-v0
-1.9.7-tetrate-v0`
+	exp := `1.10.3-tetrate-v0 (Active)
+1.12.4-tetrate-v0
+1.13.2-tetrate-v0`
 	require.Contains(t, buf.String(), exp)
 }
 
@@ -238,12 +238,12 @@ func TestSwitch(t *testing.T) {
 
 	distros := []struct{ version, flavor, flavorVersion string }{
 		{
-			version:       "1.9.7",
+			version:       "1.13.2",
 			flavor:        "tetrate",
 			flavorVersion: strconv.Itoa(0),
 		},
 		{
-			version:       "1.8.6",
+			version:       "1.10.3",
 			flavor:        "tetrate",
 			flavorVersion: strconv.Itoa(0),
 		},
@@ -259,7 +259,7 @@ func TestSwitch(t *testing.T) {
 	}
 
 	t.Run("full", func(t *testing.T) {
-		for _, v := range []string{"1.8.6", "1.12.4"} {
+		for _, v := range []string{"1.10.3", "1.12.4"} {
 			{
 				cmd := exec.Command("./getmesh", "switch",
 					"--version", v, "--flavor", "tetrate", "--flavor-version=0",
@@ -280,7 +280,7 @@ func TestSwitch(t *testing.T) {
 	})
 	t.Run("name", func(t *testing.T) {
 		cmd := exec.Command("./getmesh", "switch",
-			"--version", "1.8.6", "--flavor", "tetrate", "--flavor-version=0",
+			"--version", "1.10.3", "--flavor", "tetrate", "--flavor-version=0",
 		)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -291,7 +291,7 @@ func TestSwitch(t *testing.T) {
 		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
 		require.NoError(t, cmd.Run())
-		require.Contains(t, buf.String(), "1.8.6-tetrate-v0")
+		require.Contains(t, buf.String(), "1.10.3-tetrate-v0")
 
 		cmd = exec.Command("./getmesh", "switch",
 			"--name", "1.12.4-tetrate-v0",
@@ -414,10 +414,6 @@ func versionTest(t *testing.T) {
 }
 
 func checkUpgrade(t *testing.T) {
-	// Override the manifest so 1.8 will always be supported
-	if err := os.Setenv("GETMESH_TEST_MANIFEST_PATH", "e2e/testdata/check-upgrade-manifest.json"); err != nil {
-		log.Fatal(err)
-	}
 
 	cmd := exec.Command("./getmesh", "check-upgrade")
 	buf := new(bytes.Buffer)
@@ -425,7 +421,7 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
-	require.Contains(t, actual, "1.12.4-tetrate-v0 is the latest version in 1.12-tetrate")
+	require.Contains(t, actual, "1.13.2-tetrate-v0 is the latest version in 1.13-tetrate")
 
 	// change image to 1.8.1-tetrate-v0
 	image := "containers.istio.tetratelabs.com/pilot:1.8.1-tetrate-v0"
@@ -444,7 +440,7 @@ func checkUpgrade(t *testing.T) {
 		_ = cmd.Run()
 		actual := buf.String()
 		return strings.Contains(actual,
-			"1.12.4-tetrate-v0 is the latest version in 1.12-tetrate")
+			"1.13.2-tetrate-v0 is the latest version in 1.13-tetrate")
 	}, time.Minute, 3*time.Second)
 }
 
