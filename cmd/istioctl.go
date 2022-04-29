@@ -280,7 +280,7 @@ func istioctlProcessChecksArgs(args []string, ourArg *[]string, precheck bool) b
 		}
 		switch prev {
 		case "-f", "--filename", "--revision", "-r":
-			*ourArg = append(*ourArg, prev, a)
+			*ourArg = append(*ourArg, a)
 		case "--set", "-s":
 			kv := strings.SplitN(a, "=", 2)
 			if len(kv) != 2 || strings.TrimSpace(kv[0]) != "values.global.istioNamespace" {
