@@ -110,7 +110,7 @@ func TestIstioctl_istioctlParsePreCheckArgs(t *testing.T) {
 		{
 			name: "istioOperator files",
 			args: []string{"install", "-f", "a", "--filename", "b"},
-			exp:  []string{"x", "precheck", "--kubeconfig", util.GetKubeConfigLocation(), "-f", "a", "--filename", "b"},
+			exp:  []string{"x", "precheck", "--kubeconfig", util.GetKubeConfigLocation(), "a", "b"},
 		},
 		{
 			name: "revision",
@@ -125,7 +125,7 @@ func TestIstioctl_istioctlParsePreCheckArgs(t *testing.T) {
 		{
 			name: "istioOperator files",
 			args: []string{"install", "-f", "a", "--filename", "b"},
-			exp:  []string{"x", "precheck", "--kubeconfig", util.GetKubeConfigLocation(), "-f", "a", "--filename", "b"},
+			exp:  []string{"x", "precheck", "--kubeconfig", util.GetKubeConfigLocation(), "a", "b"},
 		},
 		{
 			name: "help",
@@ -147,14 +147,14 @@ func TestIstioctl_istioctlParsePreCheckArgs(t *testing.T) {
 			args: []string{"install", "-s=values.global.istioNamespace=default",
 				"--revision", "canary", "-f", "a", "--filename=b"},
 			exp: []string{"x", "precheck", "--kubeconfig", util.GetKubeConfigLocation(),
-				"--istioNamespace", "default", "--revision", "canary", "-f", "a", "--filename", "b"},
+				"--istioNamespace", "default", "--revision", "canary", "a", "b"},
 		},
 		{
 			name: "full 2",
 			args: []string{"-s=values.global.istioNamespace=default",
 				"--revision", "canary", "-f", "a", "--filename=b", "install"},
 			exp: []string{"x", "precheck", "--kubeconfig", util.GetKubeConfigLocation(),
-				"--istioNamespace", "default", "--revision", "canary", "-f", "a", "--filename", "b"},
+				"--istioNamespace", "default", "--revision", "canary", "a", "b"},
 		},
 	}
 	for _, c := range cases {
@@ -184,7 +184,7 @@ func TestIstioctl_istioctlParseVerifyInstallArgs(t *testing.T) {
 		{
 			name: "istioOperator files",
 			args: []string{"install", "-f", "a", "--filename", "b"},
-			exp:  []string{"verify-install", "--kubeconfig", util.GetKubeConfigLocation(), "-f", "a", "--filename", "b"},
+			exp:  []string{"verify-install", "--kubeconfig", util.GetKubeConfigLocation(), "a", "b"},
 		},
 		{
 			name: "revision",
@@ -215,21 +215,21 @@ func TestIstioctl_istioctlParseVerifyInstallArgs(t *testing.T) {
 			name: "eq",
 			args: []string{"install", "--manifests=manifests/", "--set=values.global.istioNamespace=default", "-f=a", "--filename=b"},
 			exp: []string{"verify-install", "--kubeconfig", util.GetKubeConfigLocation(), "--manifests", "manifests/",
-				"--istioNamespace", "default", "-f", "a", "--filename", "b"},
+				"--istioNamespace", "default", "a", "b"},
 		},
 		{
 			name: "full",
 			args: []string{"install", "--set", "values.global.istioNamespace=default",
 				"--revision", "canary", "-f", "a", "--filename", "b", "--manifests", "test/"},
 			exp: []string{"verify-install", "--kubeconfig", util.GetKubeConfigLocation(),
-				"--istioNamespace", "default", "--revision", "canary", "-f", "a", "--filename", "b", "--manifests", "test/"},
+				"--istioNamespace", "default", "--revision", "canary", "a", "b", "--manifests", "test/"},
 		},
 		{
 			name: "full 2",
 			args: []string{"--set", "values.global.istioNamespace=default",
 				"--revision", "canary", "-f", "a", "--filename", "b", "--manifests", "test/", "install"},
 			exp: []string{"verify-install", "--kubeconfig", util.GetKubeConfigLocation(),
-				"--istioNamespace", "default", "--revision", "canary", "-f", "a", "--filename", "b", "--manifests", "test/"},
+				"--istioNamespace", "default", "--revision", "canary", "a", "b", "--manifests", "test/"},
 		},
 	}
 	for _, c := range cases {
