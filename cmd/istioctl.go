@@ -279,8 +279,11 @@ func istioctlProcessChecksArgs(args []string, ourArg *[]string, precheck bool) b
 			hasInstallCMD = true
 		}
 		switch prev {
-		case "-f", "--filename", "--revision", "-r":
+		case "--revision", "-r":
 			*ourArg = append(*ourArg, prev, a)
+		case "-f", "--filename":
+			*ourArg = append(*ourArg, a)
+
 		case "--set", "-s":
 			kv := strings.SplitN(a, "=", 2)
 			if len(kv) != 2 || strings.TrimSpace(kv[0]) != "values.global.istioNamespace" {
