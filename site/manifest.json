@@ -1,5 +1,6 @@
 {
   "istio_minor_versions_eol_dates": {
+    "1.15": "2023-05-31",
     "1.14": "2023-03-23",
     "1.13": "2022-12-10",
     "1.12": "2022-09-17",
@@ -7,6 +8,51 @@
     "1.10": "2022-03-07"
   },
   "istio_distributions": [
+    {
+      "version": "1.15.1",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.14.x/announcing-1.14.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.15.1",
+      "flavor": "tetratefips",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.14.x/announcing-1.14.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.15.1",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.14.x/announcing-1.14.3/"
+      ],
+      "is_security_patch": false
+    },
     {
       "version": "1.14.4",
       "flavor": "tetrate",
