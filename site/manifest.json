@@ -9,6 +9,51 @@
   },
   "istio_distributions": [
     {
+      "version": "1.15.3",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.14.x/announcing-1.14.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.15.3",
+      "flavor": "tetratefips",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.14.x/announcing-1.14.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.15.3",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.14.x/announcing-1.14.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
       "version": "1.15.1",
       "flavor": "tetrate",
       "flavor_version": 0,
