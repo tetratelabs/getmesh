@@ -115,7 +115,7 @@ jobs:
       - uses: debianmaster/actions-k3s@master
         id: k3s
         with:
-          version: 'v1.21.2-k3s1'
+          version: 'latest'
 
       - uses: actions/cache@v2
         with:
