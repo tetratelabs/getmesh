@@ -97,7 +97,7 @@ func TestPrintManifest(t *testing.T) {
 		buf := logger.ExecuteWithLock(func() {
 			require.NoError(t, PrintManifest(manifest, nil))
 		})
-		require.Equal(t, `ISTIO VERSION	FLAVOR 	FLAVOR VERSION	K8S VERSIONS 
+		require.Equal(t, `ISTIO VERSION	FLAVOR 	FLAVOR VERSION	K8S VERSIONS	END OF LIFE
     1.7.6    	tetrate	      0       	    1.16    	
     1.7.5    	tetrate	      0       	    1.16    	
 `,
@@ -138,7 +138,7 @@ func TestPrintManifest(t *testing.T) {
 			require.NoError(t, PrintManifest(manifest, current))
 		})
 
-		require.Equal(t, `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	K8S VERSIONS 
+		require.Equal(t, `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	K8S VERSIONS	END OF LIFE
     1.8.3    	   istio   	      0       	    1.18    	
    *1.7.6    	tetratefips	      0       	    1.16    	
     1.7.5    	  tetrate  	      0       	    1.16    	

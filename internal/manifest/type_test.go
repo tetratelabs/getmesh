@@ -580,3 +580,29 @@ func TestGetLatestDistribution(t *testing.T) {
 		})
 	}
 }
+
+func TestEOLInIstioDistributions(t *testing.T) {
+	ms := &Manifest{
+		IstioDistributions: []*IstioDistribution{
+			{
+				Version:       "1.8.1",
+				Flavor:        IstioDistributionFlavorTetrate,
+				FlavorVersion: 10,
+				K8SVersions:   []string{"1.16"},
+			},
+			{
+				Version:       "1.7.5",
+				Flavor:        IstioDistributionFlavorTetrate,
+				FlavorVersion: 0,
+				K8SVersions:   []string{"1.16"},
+			},
+		},
+		IstioMinorVersionsEOLDates: map[string]string{
+			"1.7": "2022-01-01",
+			"1.8": "2023-01-01",
+		},
+	}
+	require.NoError(t, ms.SetEOLInIstioDistributions())
+	require.Equal(t, "2023-01-01", ms.IstioDistributions[0].EndOfLife)
+	require.Equal(t, "2022-01-01", ms.IstioDistributions[1].EndOfLife)
+}
