@@ -19,6 +19,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Masterminds/semver"
 )
 
 type Manifest struct {
@@ -42,6 +44,8 @@ type IstioDistribution struct {
 	IsSecurityPatch bool `json:"is_security_patch,omitempty"`
 	// Release notes for this distribution.
 	ReleaseNotes []string `json:"release_notes,omitempty"`
+	// EndOfLife of this distribution (format: "YYYY-MM-DD")
+	EndOfLife string `json:"end_of_life,omitempty"`
 }
 
 const (
@@ -60,6 +64,25 @@ func (x *Manifest) GetEOLDates() (map[string]time.Time, error) {
 		ret[k] = t
 	}
 	return ret, nil
+}
+
+func (x *Manifest) SetEOLInIstioDistributions() error {
+	for _, dist := range x.IstioDistributions {
+		iVer, err := semver.NewVersion(dist.Version)
+		if err != nil {
+			return err
+		}
+		for v, date := range x.IstioMinorVersionsEOLDates {
+			dVer, err := semver.NewVersion(v)
+			if err != nil {
+				return err
+			}
+			if (dVer.Major() == iVer.Major()) && (dVer.Minor() == iVer.Minor()) {
+				dist.EndOfLife = date
+			}
+		}
+	}
+	return nil
 }
 
 func parseManifestEOLDate(in string) (time.Time, error) {
