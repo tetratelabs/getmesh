@@ -84,12 +84,14 @@ func TestPrintManifest(t *testing.T) {
 					Flavor:        IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
+					EndOfLife:     "2022-01-01",
 				},
 				{
 					Version:       "1.7.5",
 					Flavor:        IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
+					EndOfLife:     "2022-01-01",
 				},
 			},
 		}
@@ -97,9 +99,9 @@ func TestPrintManifest(t *testing.T) {
 		buf := logger.ExecuteWithLock(func() {
 			require.NoError(t, PrintManifest(manifest, nil))
 		})
-		require.Equal(t, `ISTIO VERSION	FLAVOR 	FLAVOR VERSION	K8S VERSIONS	END OF LIFE
-    1.7.6    	tetrate	      0       	    1.16    	
-    1.7.5    	tetrate	      0       	    1.16    	
+		require.Equal(t, `ISTIO VERSION	FLAVOR 	FLAVOR VERSION	K8S VERSIONS	END OF LIFE 
+    1.7.6    	tetrate	      0       	    1.16    	2022-01-01 	
+    1.7.5    	tetrate	      0       	    1.16    	2022-01-01 	
 `,
 			buf.String())
 	})
@@ -118,18 +120,21 @@ func TestPrintManifest(t *testing.T) {
 					Flavor:        IstioDistributionFlavorIstio,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.18"},
+					EndOfLife:     "2023-01-01",
 				},
 				{
 					Version:       "1.7.6",
 					Flavor:        IstioDistributionFlavorTetrateFIPS,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
+					EndOfLife:     "2022-01-01",
 				},
 				{
 					Version:       "1.7.5",
 					Flavor:        IstioDistributionFlavorTetrate,
 					FlavorVersion: 0,
 					K8SVersions:   []string{"1.16"},
+					EndOfLife:     "2022-01-01",
 				},
 			},
 		}
@@ -138,10 +143,10 @@ func TestPrintManifest(t *testing.T) {
 			require.NoError(t, PrintManifest(manifest, current))
 		})
 
-		require.Equal(t, `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	K8S VERSIONS	END OF LIFE
-    1.8.3    	   istio   	      0       	    1.18    	
-   *1.7.6    	tetratefips	      0       	    1.16    	
-    1.7.5    	  tetrate  	      0       	    1.16    	
+		require.Equal(t, `ISTIO VERSION	  FLAVOR   	FLAVOR VERSION	K8S VERSIONS	END OF LIFE 
+    1.8.3    	   istio   	      0       	    1.18    	2023-01-01 	
+   *1.7.6    	tetratefips	      0       	    1.16    	2022-01-01 	
+    1.7.5    	  tetrate  	      0       	    1.16    	2022-01-01 	
 `,
 			buf.String())
 	})
