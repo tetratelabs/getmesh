@@ -72,11 +72,15 @@ func fetchManifest(url string) (*Manifest, error) {
 		return nil, fmt.Errorf("error unmarshalling fetched manifest: %v", err)
 	}
 
+	// Populate End of Life field within each distribution
+	if err := (&ret).SetEOLInIstioDistributions(); err != nil {
+		return nil, fmt.Errorf("error setting end of life in istio distribution: %v", err)
+	}
 	return &ret, nil
 }
 
 func PrintManifest(ms *Manifest, current *IstioDistribution) error {
-	column := []string{"ISTIO VERSION", "FLAVOR", "FLAVOR VERSION", "K8S VERSIONS"}
+	column := []string{"ISTIO VERSION", "FLAVOR", "FLAVOR VERSION", "K8S VERSIONS", "END OF LIFE"}
 	data := make([][]string, len(ms.IstioDistributions))
 	for i, m := range ms.IstioDistributions {
 		ps := strings.Join(m.K8SVersions, ",")
@@ -84,7 +88,7 @@ func PrintManifest(ms *Manifest, current *IstioDistribution) error {
 			m.Version = "*" + m.Version
 		}
 		data[i] = []string{m.Version, m.Flavor,
-			strconv.Itoa(int(m.FlavorVersion)), ps}
+			strconv.Itoa(int(m.FlavorVersion)), ps, m.EndOfLife}
 	}
 
 	table := tablewriter.NewWriter(logger.GetWriter())
