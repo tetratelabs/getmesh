@@ -86,7 +86,7 @@
       "is_security_patch": false
     },
         {
-      "version": "1.16.2",
+      "version": "1.16.3",
       "flavor": "tetrate",
       "flavor_version": 0,
       "k8s_versions": [
@@ -96,12 +96,12 @@
         "1.25"
       ],
       "release_notes": [
-        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.2/"
+        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.3/"
       ],
       "is_security_patch": false
     },
     {
-      "version": "1.16.2",
+      "version": "1.16.3",
       "flavor": "tetratefips",
       "flavor_version": 0,
       "k8s_versions": [
@@ -111,12 +111,12 @@
         "1.25"
       ],
       "release_notes": [
-        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.2/"
+        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.3/"
       ],
       "is_security_patch": false
     },
     {
-      "version": "1.16.2",
+      "version": "1.16.3",
       "flavor": "istio",
       "flavor_version": 0,
       "k8s_versions": [
@@ -126,7 +126,7 @@
         "1.25"
       ],
       "release_notes": [
-        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.2/"
+        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.3/"
       ],
       "is_security_patch": false
     },
