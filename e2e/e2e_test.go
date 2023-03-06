@@ -421,7 +421,11 @@ func checkUpgrade(t *testing.T) {
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Run(), buf.String())
 	actual := buf.String()
+<<<<<<< HEAD
 	require.Contains(t, actual, "1.16.3-tetrate-v0 is the latest version in 1.16-tetrate")
+=======
+	require.Contains(t, actual, "1.17.1-tetrate-v0 is the latest version in 1.17-tetrate")
+>>>>>>> 1428073d30553e2f92506ee23842a46aaa9b4e9a
 
 	// change image to 1.8.1-tetrate-v0
 	image := "containers.istio.tetratelabs.com/pilot:1.12.2-tetrate-v0"
@@ -440,7 +444,11 @@ func checkUpgrade(t *testing.T) {
 		_ = cmd.Run()
 		actual := buf.String()
 		return strings.Contains(actual,
+<<<<<<< HEAD
 			"1.16.3-tetrate-v0 is the latest version in 1.16-tetrate")
+=======
+			"1.17.1-tetrate-v0 is the latest version in 1.17-tetrate")
+>>>>>>> 1428073d30553e2f92506ee23842a46aaa9b4e9a
 	}, time.Minute, 3*time.Second)
 }
 
