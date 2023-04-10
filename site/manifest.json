@@ -10,6 +10,51 @@
     "1.10": "2022-03-07"
   },
   "istio_distributions": [
+        {
+      "version": "1.17.2",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.17.x/announcing-1.17.2/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.17.2",
+      "flavor": "tetratefips",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.17.x/announcing-1.17.2/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.17.2",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.17.x/announcing-1.17.2/"
+      ],
+      "is_security_patch": false
+    },
     {
       "version": "1.17.1",
       "flavor": "tetrate",
