@@ -1,5 +1,6 @@
 {
   "istio_minor_versions_eol_dates": {
+    "1.18": "2024-12-07",
     "1.17": "2024-08-14",
     "1.16": "2024-01-15",
     "1.15": "2023-10-31",
@@ -10,6 +11,98 @@
     "1.10": "2022-03-07"
   },
   "istio_distributions": [
+    {
+      "version": "1.18.0",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.18.x/announcing-1.18/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.18.0",
+      "flavor": "tetratefips",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.18.x/announcing-1.18/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.18.0",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.18.x/announcing-1.18/"
+      ],
+      "is_security_patch": false
+    },
+
+    {
+      "version": "1.17.3",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.17.x/announcing-1.17.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.17.3",
+      "flavor": "tetratefips",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.17.x/announcing-1.17.3/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.17.3",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.23",
+        "1.24",
+        "1.25",
+        "1.26"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.17.x/announcing-1.17.3/"
+      ],
+      "is_security_patch": false
+    },
+
         {
       "version": "1.17.2",
       "flavor": "tetrate",
@@ -127,6 +220,51 @@
       ],
       "release_notes": [
         "https://istio.io/latest/news/releases/1.17.x/announcing-1.17/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.16.5",
+      "flavor": "tetrate",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.5/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.16.5",
+      "flavor": "tetratefips",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.5/"
+      ],
+      "is_security_patch": false
+    },
+    {
+      "version": "1.16.5",
+      "flavor": "istio",
+      "flavor_version": 0,
+      "k8s_versions": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "release_notes": [
+        "https://istio.io/latest/news/releases/1.16.x/announcing-1.16.5/"
       ],
       "is_security_patch": false
     },
