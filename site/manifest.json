@@ -901,7 +901,7 @@
     {
       "version": "1.14.5",
       "flavor": "tetrate",
-      "flavor_version": 0,
+      "flavor_version": 1,
       "k8s_versions": [
         "1.21",
         "1.22",
@@ -916,7 +916,7 @@
     {
       "version": "1.14.5",
       "flavor": "tetratefips",
-      "flavor_version": 0,
+      "flavor_version": 1,
       "k8s_versions": [
         "1.21",
         "1.22",
